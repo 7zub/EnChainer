@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"awesomeProject/models"
+	"awesomeProject/models/exchangeResponse"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -9,7 +10,7 @@ import (
 	"net/http"
 )
 
-func ApiGetBook(currency string) models.OrderBook {
+func ApiGetBook(currency string) exchangeResponse.BinanceBook {
 	resp, err := http.Get("https://api.binance.com/api/v3/depth?symbol=" + currency + "&limit=10")
 
 	if err != nil {
@@ -19,9 +20,9 @@ func ApiGetBook(currency string) models.OrderBook {
 		if err != nil {
 			log.Fatalln(err)
 		}
-		var tp models.OrderBook
+		var tp exchangeResponse.BinanceBook
 		json.Unmarshal(body, &tp)
 		return tp
 	}
-	return models.OrderBook{}
+	return exchangeResponse.BinanceBook{}
 }

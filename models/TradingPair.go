@@ -10,9 +10,14 @@ type TradingPair struct {
 }
 
 type OrderBook struct {
-	LastUpdateId int        `json:"lastUpdateId"`
-	Bids         [][]string `json:"bids"`
-	Asks         [][]string `json:"asks"`
+	LastUpdateId int
+	Bids         []ValueBook
+	Asks         []ValueBook
+}
+
+type ValueBook struct {
+	Price  float64
+	Volume float64
 }
 
 const (

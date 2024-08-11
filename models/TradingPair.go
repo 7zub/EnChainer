@@ -10,6 +10,7 @@ type TradingPair struct {
 }
 
 type OrderBook struct {
+	Exchange     int
 	LastUpdateId int
 	Bids         []ValueBook
 	Asks         []ValueBook

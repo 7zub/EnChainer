@@ -2,41 +2,40 @@ package controllers
 
 import (
 	"awesomeProject/models"
+	"encoding/json"
 	"fmt"
+	"os"
+	"strconv"
 )
 
-func CalculateSpread(pair models.TradingPair) {
-	//pair.OrderBook = append(pair.OrderBook, ApiGetBook("SOLUSDT")) // TODO
-	//pair.OrderBook = append(pair.OrderBook, ApiGetBook(pair.Currency))
+func CalculateSpread(pair models.TradingPair) models.Result {
+	pair.OrderBook = append(pair.OrderBook, BookMapper(ApiGetBook("SOLUSDT"))) // TODO
+	pair.OrderBook = append(pair.OrderBook, BookMapper(ApiGetBook(pair.Currency)))
+	pair.OrderBook = append(pair.OrderBook, BookMapper(ApiGetBook("NEOUSDT")))
 
-	ord := ApiGetBook("SOLUSDT")
-	omap := BookMapper(ord)
-	fmt.Println(omap)
-	//jsonBytes, err := json.Marshal(&pair)
-	//file, err := os.Create("export.json")
-	//
-	//if err != nil {
-	//	fmt.Println("Unable to create file:", err)
-	//	os.Exit(1)
-	//}
-	//defer file.Close()
-	//file.WriteString(string(jsonBytes))
+	jsonBytes, err := json.Marshal(&pair)
+	file, err := os.Create("export.json")
 
-	//a1 := pair.OrderBook[0].Bids
+	if err != nil {
+		fmt.Println("Unable to create file:", err)
+		os.Exit(1)
+	}
+	defer file.Close()
+	file.WriteString(string(jsonBytes))
 
-	//if s, err := strconv.ParseFloat(a1[0][0], 64); err == nil {
-	//	fmt.Println(s) // 3.14159265
-	//}
+	var result string
 
-	//sort.Ints(a1[0][0])
-	// Вывод: 15
-	//fmt.Println(strconv.ParseFloat(a1[0][0], 64))
+	for i, order := range pair.OrderBook {
+		for j, orderOther := range pair.OrderBook {
+			if i != j && order.Asks[0].Price < orderOther.Bids[0].Price {
+				s := fmt.Sprintf("%.6f", order.Asks[0].Price)
+				o := fmt.Sprintf("%.6f", orderOther.Bids[0].Price)
 
-	//m, _ := max(strconv.Atoi()
+				result = result +
+					"[Купить в " + strconv.Itoa(order.Exchange) + " по " + s + ", продать в " + strconv.Itoa(orderOther.Exchange) + " по " + o + "]\n"
+			}
+		}
+	}
 
-	//for i, order := range pair.OrderBook {
-	//	if order.Bids[0][0] == "1" {
-	//		//return i, models.Result{Status: "OK"}
-	//	}
-	//}
+	return models.Result{Status: "OK", Message: result}
 }

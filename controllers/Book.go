@@ -80,10 +80,10 @@ func OnPair(w http.ResponseWriter, r *http.Request) {
 
 	if i != -1 {
 		TradingPair[i].Status = models.On
-		CalculateSpread(TradingPair[i])
+		json.NewEncoder(w).Encode(CalculateSpread(TradingPair[i]))
+	} else {
+		json.NewEncoder(w).Encode(res)
 	}
-
-	json.NewEncoder(w).Encode(res)
 }
 
 func OffPair(w http.ResponseWriter, r *http.Request) {

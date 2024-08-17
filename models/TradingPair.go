@@ -29,5 +29,5 @@ const (
 const (
 	BINANCE = 1
 	GATEIO  = 2
-	BYBIT
+	BYBIT   = 3
 )

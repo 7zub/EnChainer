@@ -9,9 +9,9 @@ import (
 )
 
 func CalculateSpread(pair models.TradingPair) models.Result {
-	pair.OrderBook = append(pair.OrderBook, BookMapper(ApiGetBook("SOLUSDT"))) // TODO
-	pair.OrderBook = append(pair.OrderBook, BookMapper(ApiGetBook(pair.Currency)))
-	pair.OrderBook = append(pair.OrderBook, BookMapper(ApiGetBook("NEOUSDT")))
+	pair.OrderBook = append(pair.OrderBook, ApiGetBook("SOLUSDT").BookMapper()) // TODO
+	pair.OrderBook = append(pair.OrderBook, ApiGetBook(pair.Currency).BookMapper())
+	pair.OrderBook = append(pair.OrderBook, ApiGetBook1("NEO_USDT").BookMapper())
 
 	jsonBytes, err := json.Marshal(&pair)
 	file, err := os.Create("export.json")

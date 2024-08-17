@@ -1,12 +1,18 @@
-package controllers
+package exchangeResponse
 
 import (
 	"awesomeProject/models"
-	"awesomeProject/models/exchangeResponse"
 	"strconv"
 )
 
-func BookMapper(book exchangeResponse.BinanceBook) models.OrderBook {
+type GateioBook struct {
+	Current int        `json:"current"`
+	Update  int        `json:"update"`
+	Bids    [][]string `json:"bids"`
+	Asks    [][]string `json:"asks"`
+}
+
+func (book GateioBook) BookMapper() models.OrderBook {
 	var newBids, newAsks []models.ValueBook
 
 	for _, bid := range book.Bids {
@@ -30,8 +36,8 @@ func BookMapper(book exchangeResponse.BinanceBook) models.OrderBook {
 	}
 
 	return models.OrderBook{
-		Exchange:     models.BINANCE,
-		LastUpdateId: book.LastUpdateId,
+		Exchange:     models.GATEIO,
+		LastUpdateId: book.Update,
 		Bids:         newBids,
 		Asks:         newAsks,
 	}

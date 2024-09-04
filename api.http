@@ -1,0 +1,5 @@
+# curl -i http://httpbin.org/ip
+GET http://localhost:10/addpair?currency=CKBUSDC&desc=test&name=og
+###
+GET http://localhost:10/onpair?id=1
+###

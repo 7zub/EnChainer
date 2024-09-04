@@ -28,3 +28,7 @@ func OnPair(w http.ResponseWriter, rr *http.Request) {
 func OffPair(w http.ResponseWriter, rr *http.Request) {
 	controllers.OffPair(w, rr)
 }
+
+func Ws(w http.ResponseWriter, rr *http.Request) {
+	controllers.Ws()
+}

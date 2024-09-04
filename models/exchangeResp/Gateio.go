@@ -1,4 +1,4 @@
-package exchangeResponse
+package exchangeResp
 
 import (
 	"awesomeProject/models"

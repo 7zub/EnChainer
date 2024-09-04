@@ -4,9 +4,15 @@ import (
 	"awesomeProject/models"
 	"encoding/json"
 	"fmt"
+	"math"
 	"os"
-	"strconv"
 )
+
+func Calc__TaskManDev(pair models.TradingPair) models.Result { //TODO
+	UrlCreator(ReqCreator(pair))
+
+	return models.Result{"test", "em"}
+}
 
 func CalculateSpread(pair models.TradingPair) models.Result {
 	pair.OrderBook = append(pair.OrderBook, ApiGetBook("SOLUSDT").BookMapper()) // TODO
@@ -28,11 +34,19 @@ func CalculateSpread(pair models.TradingPair) models.Result {
 	for i, order := range pair.OrderBook {
 		for j, orderOther := range pair.OrderBook {
 			if i != j && order.Asks[0].Price < orderOther.Bids[0].Price {
-				s := fmt.Sprintf("%.6f", order.Asks[0].Price)
-				o := fmt.Sprintf("%.6f", orderOther.Bids[0].Price)
 
-				result = result +
-					"[Купить в " + strconv.Itoa(order.Exchange) + " по " + s + ", продать в " + strconv.Itoa(orderOther.Exchange) + " по " + o + "]\n"
+				task := models.TradeTask{
+					TaskId:       1,
+					Currency:     pair.Currency,
+					ExchangeBuy:  order.Exchange,
+					ExchangeSell: orderOther.Exchange,
+					PriceBuy:     order.Asks[0].Price,
+					PriceSell:    orderOther.Bids[0].Price,
+					Profit:       math.Round(orderOther.Bids[0].Price/order.Asks[0].Price - 1),
+				}
+
+				str, _ := json.Marshal(task)
+				result = result + string(str)
 			}
 		}
 	}

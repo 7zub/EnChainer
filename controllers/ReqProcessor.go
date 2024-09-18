@@ -2,36 +2,34 @@ package controllers
 
 import (
 	"awesomeProject/models"
-	"awesomeProject/models/exchangeReq"
-	"encoding/json"
+	"awesomeProject/models/exchange"
+	"awesomeProject/models/exchange/exchangeReq"
 	"fmt"
-	"log"
-	"net/http"
 )
 
-func ReqCreator(pair models.TradingPair) models.Request {
-	for i := 1; i <= 1; i++ {
-		switch i {
-		case models.BINANCE:
-			return models.Request{
-				Url:      "exchangeReq.BookRequest",
-				Currency: pair.Currency,
-				Params:   exchangeReq.BinanceParams{pair.Currency, 10},
-			}
-
-		case models.GATEIO:
-			return models.Request{
-				Url:      "exchangeReq.BookRequest",
-				Currency: pair.Currency,
-				Params:   exchangeReq.GateioParams{pair.Currency},
-			}
-		}
-
+func createStruct1() []exchange.IGetReq1 {
+	return []exchange.IGetReq1{
+		exchange.ExchangeBinance{
+			Requests: struct{ BookReq models.Request }{BookReq: exchangeReq.BinanceBookParams{}.GetParams()},
+		},
 	}
-	return models.Request{}
 }
 
-func UrlCreator(req models.Request) {
+func main1() {
+	structs := createStruct1()
+
+	// Вызов метода Get для каждой структуры
+	for _, obj := range structs {
+		callGetMethod(obj)
+	}
+}
+
+func callGetMethod(g exchange.IGetReq1) {
+	fmt.Println(g.GetReq1())
+}
+
+/*
+func (req models.Request) UrlCreator {
 	//fields := reflect.TypeOf(req.Params)
 	//values := reflect.ValueOf(req.Params)
 
@@ -58,4 +56,4 @@ func UrlCreator(req models.Request) {
 	var result map[string]interface{}
 	json.NewDecoder(resp.Body).Decode(&result)
 	log.Println(result)
-}
+}*/

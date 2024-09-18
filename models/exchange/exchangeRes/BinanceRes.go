@@ -1,18 +1,17 @@
-package exchangeResp
+package exchangeRes
 
 import (
 	"awesomeProject/models"
 	"strconv"
 )
 
-type GateioBook struct {
-	Current int        `json:"current"`
-	Update  int        `json:"update"`
-	Bids    [][]string `json:"bids"`
-	Asks    [][]string `json:"asks"`
+type BinanceBook struct {
+	LastUpdateId int        `json:"lastUpdateId"`
+	Bids         [][]string `json:"bids"`
+	Asks         [][]string `json:"asks"`
 }
 
-func (book GateioBook) BookMapper() models.OrderBook {
+func (book BinanceBook) BookMapper() models.OrderBook {
 	var newBids, newAsks []models.ValueBook
 
 	for _, bid := range book.Bids {
@@ -36,8 +35,8 @@ func (book GateioBook) BookMapper() models.OrderBook {
 	}
 
 	return models.OrderBook{
-		Exchange:     models.GATEIO,
-		LastUpdateId: book.Update,
+		Exchange:     models.BINANCE,
+		LastUpdateId: book.LastUpdateId,
 		Bids:         newBids,
 		Asks:         newAsks,
 	}

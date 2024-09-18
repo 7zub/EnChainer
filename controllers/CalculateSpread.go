@@ -9,7 +9,8 @@ import (
 )
 
 func Calc__TaskManDev(pair models.TradingPair) models.Result { //TODO
-	UrlCreator(ReqCreator(pair))
+	//UrlCreator(ReqCreator(pair))
+	main1()
 
 	return models.Result{"test", "em"}
 }

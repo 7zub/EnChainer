@@ -2,50 +2,40 @@ package controllers
 
 import (
 	"awesomeProject/models"
-	"awesomeProject/models/exchange"
 	"awesomeProject/models/exchange/exchangeReq"
+	"encoding/json"
 	"fmt"
+	"log"
+	"net/http"
+	"reflect"
 )
 
-func createStruct1() []exchange.IGetReq1 {
-	return []exchange.IGetReq1{
-		exchange.ExchangeBinance{
-			Requests: struct{ BookReq models.Request }{BookReq: exchangeReq.BinanceBookParams{}.GetParams()},
-		},
+func start1() {
+	r := []models.IParams{
+		exchangeReq.BinanceBookParams{},
+		//exchangeReq.GateioBookParams{},
+	}
+
+	for _, i := range r {
+		f := i.GetParams("NEO")
+		println(f.Params)
 	}
 }
 
-func main1() {
-	structs := createStruct1()
+func UrlCreator(request models.Request) http.Request {
+	fields := reflect.TypeOf(request.Params)
+	values := reflect.ValueOf(request.Params)
 
-	// Вызов метода Get для каждой структуры
-	for _, obj := range structs {
-		callGetMethod(obj)
-	}
-}
-
-func callGetMethod(g exchange.IGetReq1) {
-	fmt.Println(g.GetReq1())
-}
-
-/*
-func (req models.Request) UrlCreator {
-	//fields := reflect.TypeOf(req.Params)
-	//values := reflect.ValueOf(req.Params)
-
-	rq, err := http.NewRequest("GET", "https://api.binance.com/api/v3/depth", nil)
+	rq, err := http.NewRequest("GET", request.Url, nil)
 	if err != nil {
 		panic(err)
 	}
 
-	//for i := 0; i < fields.NumField(); i++ {
-	//	rq.URL.Query().Add(fields.Field(i).Name, "test")
-	//}
+	for i := 0; i < fields.NumField(); i++ {
+		rq.URL.Query().Add(fields.Field(i).Name, values.Field(1).String())
+	}
 
-	q := rq.URL.Query()
-	q.Add("symbol", "SOLUSDT")
-	//q.Add("param2", "value2")
-	rq.URL.RawQuery = q.Encode()
+	rq.URL.RawQuery = rq.URL.Query().Encode()
 
 	fmt.Printf("Полный URL: %s\n", rq.URL.String())
 	client := http.Client{}
@@ -56,4 +46,6 @@ func (req models.Request) UrlCreator {
 	var result map[string]interface{}
 	json.NewDecoder(resp.Body).Decode(&result)
 	log.Println(result)
-}*/
+
+	return *rq
+}

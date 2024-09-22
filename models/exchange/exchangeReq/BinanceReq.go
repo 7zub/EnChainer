@@ -10,10 +10,10 @@ type BinanceBookParams struct {
 	Limit  int
 }
 
-func (BinanceBookParams) GetParams() models.Request {
+func (BinanceBookParams) GetParams(ccy string) models.Request {
 	return models.Request{
 		Url:      "https://api.binance.com/api/v3/depth?",
-		Params:   BinanceBookParams{Symbol: "NEO", Limit: 5},
+		Params:   BinanceBookParams{Symbol: ccy, Limit: 5},
 		Response: exchangeRes.BinanceBook{},
 	}
 }

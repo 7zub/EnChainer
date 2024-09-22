@@ -43,19 +43,19 @@ func ApiGetBook(currency string) exchangeResp2.BinanceBook {
 	return exchangeResp2.BinanceBook{}
 }
 
-func ApiGetBook1(currency string) exchangeResp2.GateioBook {
-	resp, err := http.Get("https://api.gateio.ws/api/v4/spot/order_book?currency_pair=" + currency)
+func ApiGetBook1(rq *models.Request) {
+	UrlCreator(*rq)
 
-	if err != nil {
-		fmt.Println(models.Result{"ERR", "Не удалось подключиться к хосту"})
-	} else {
-		body, err := io.ReadAll(resp.Body)
+	//resp, err := http.Get()
+	/*
 		if err != nil {
-			log.Fatalln(err)
-		}
-		var tp exchangeResp2.GateioBook
-		json.Unmarshal(body, &tp)
-		return tp
-	}
-	return exchangeResp2.GateioBook{}
+			fmt.Println(models.Result{"ERR", "Не удалось подключиться к хосту"})
+		} else {
+			body, err := io.ReadAll(resp.Body)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			var tp exchangeResp2.GateioBook
+			json.Unmarshal(body, &tp)
+		}*/
 }

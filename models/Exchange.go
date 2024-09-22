@@ -5,6 +5,3 @@ const (
 	GATEIO  = 2
 	BYBIT   = 3
 )
-
-type Binance struct {
-}

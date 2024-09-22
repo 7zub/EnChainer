@@ -10,7 +10,7 @@ import (
 
 func Calc__TaskManDev(pair models.TradingPair) models.Result { //TODO
 	//UrlCreator(ReqCreator(pair))
-	main1()
+	start1()
 
 	return models.Result{"test", "em"}
 }
@@ -18,7 +18,6 @@ func Calc__TaskManDev(pair models.TradingPair) models.Result { //TODO
 func CalculateSpread(pair models.TradingPair) models.Result {
 	pair.OrderBook = append(pair.OrderBook, ApiGetBook("SOLUSDT").BookMapper()) // TODO
 	pair.OrderBook = append(pair.OrderBook, ApiGetBook(pair.Currency).BookMapper())
-	pair.OrderBook = append(pair.OrderBook, ApiGetBook1("NEO_USDT").BookMapper())
 
 	jsonBytes, err := json.Marshal(&pair)
 	file, err := os.Create("export.json")

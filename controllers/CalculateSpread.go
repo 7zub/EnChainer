@@ -2,21 +2,28 @@ package controllers
 
 import (
 	"awesomeProject/models"
+	"awesomeProject/models/exchange/exchangeReq"
 	"encoding/json"
 	"fmt"
 	"math"
 	"os"
 )
 
-func Calc__TaskManDev(pair models.TradingPair) models.Result { //TODO
-	//UrlCreator(ReqCreator(pair))
-	start1()
+func CalculateSpread(pair models.TradingPair) models.Result {
+	RqList := []models.IParams{
+		exchangeReq.BinanceBookParams{},
+		//exchangeReq.GateioBookParams{},
+	}
 
-	return models.Result{"test", "em"}
+	for _, r := range RqList {
+		r.GetParams(pair.Currency).SendRequest()
+	}
+
+	return models.Result{"OK", "Мониторинг пары запущен"}
 }
 
-func CalculateSpread(pair models.TradingPair) models.Result {
-	pair.OrderBook = append(pair.OrderBook, ApiGetBook("SOLUSDT").BookMapper()) // TODO
+func CalculateSpread_old(pair models.TradingPair) models.Result {
+	pair.OrderBook = append(pair.OrderBook, ApiGetBook("SOLUSDT").BookMapper())
 	pair.OrderBook = append(pair.OrderBook, ApiGetBook(pair.Currency).BookMapper())
 
 	jsonBytes, err := json.Marshal(&pair)

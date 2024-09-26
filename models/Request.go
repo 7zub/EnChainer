@@ -10,7 +10,7 @@ import (
 )
 
 type IParams interface {
-	GetParams(ccy string) Request
+	GetParams(ccy string) *Request
 }
 
 type Request struct {
@@ -20,11 +20,11 @@ type Request struct {
 	Response interface{}
 }
 
-func (r Request) SendRequest() {
-	r.UrlCreator()
+func (r *Request) SendRequest() {
+	r.UrlExec(r.UrlBuild())
 }
 
-func (r Request) UrlCreator() {
+func (r *Request) UrlBuild() *http.Request {
 	fields := reflect.TypeOf(r.Params)
 	values := reflect.ValueOf(r.Params)
 
@@ -36,21 +36,22 @@ func (r Request) UrlCreator() {
 	q := rq.URL.Query()
 
 	for i := 0; i < fields.NumField(); i++ {
-		fmt.Println(fields.Field(i).Name)
-		fmt.Println(fmt.Sprintf("%v", values.Field(i)))
-		//fmt.Println(values.FieldByIndex([]int{i}).String())
 		q.Add(strings.ToLower(fields.Field(i).Name), fmt.Sprintf("%v", values.Field(i)))
 	}
 
 	rq.URL.RawQuery = q.Encode()
-
 	fmt.Printf("Полный URL: %s\n", rq.URL.String())
+
+	return rq
+}
+
+func (r *Request) UrlExec(rq *http.Request) {
 	client := http.Client{}
 	resp, err := client.Do(rq)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	var result map[string]interface{}
-	json.NewDecoder(resp.Body).Decode(&result)
-	log.Println(result)
+
+	json.NewDecoder(resp.Body).Decode(&r.Response)
+	fmt.Println(r.Response)
 }

@@ -12,7 +12,7 @@ type GateioBook struct {
 	Asks    [][]string `json:"asks"`
 }
 
-func (book GateioBook) BookMapper() models.OrderBook {
+func (book GateioBook) Mapper() models.OrderBook {
 	var newBids, newAsks []models.ValueBook
 
 	for _, bid := range book.Bids {

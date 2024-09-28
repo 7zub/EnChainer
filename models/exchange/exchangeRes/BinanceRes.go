@@ -11,7 +11,7 @@ type BinanceBook struct {
 	Asks         [][]string `json:"asks"`
 }
 
-func (book BinanceBook) BookMapper() models.OrderBook {
+func (book BinanceBook) Mapper() models.OrderBook {
 	var newBids, newAsks []models.ValueBook
 
 	for _, bid := range book.Bids {

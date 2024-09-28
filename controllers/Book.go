@@ -3,11 +3,10 @@ package controllers
 import (
 	"awesomeProject/models"
 	"encoding/json"
-	"io"
-	"log"
 	"net/http"
 	"slices"
 	"strconv"
+	"time"
 )
 
 var TradingPair = []models.TradingPair{}
@@ -21,20 +20,7 @@ func Book(w http.ResponseWriter, r *http.Request) {
 	i, res := SearchPair(params.Get("id"))
 
 	if i != -1 {
-		resp, err := http.Get("https://api.binance.com/api/v3/depth?symbol=" + TradingPair[i].Currency + "&limit=10")
-
-		if err != nil {
-			json.NewEncoder(w).Encode(models.Result{"ERR", "Не удалось подключиться к хосту"})
-		} else {
-			body, err := io.ReadAll(resp.Body)
-			if err != nil {
-				log.Fatalln(err)
-			}
-			var tp models.OrderBook
-			json.Unmarshal(body, &tp)
-			TradingPair[i].OrderBook = append(TradingPair[i].OrderBook, tp)
-			json.NewEncoder(w).Encode(&TradingPair[i])
-		}
+		//go req.GetParams(pair.Ccy).SendRequest()
 	} else {
 		json.NewEncoder(w).Encode(res)
 	}
@@ -45,11 +31,15 @@ func AddPair(w http.ResponseWriter, r *http.Request) {
 	Id := 1 //rand.Intn(10000)
 
 	TradingPair = append(TradingPair, models.TradingPair{
-		Id:       Id,
-		Name:     params.Get("name"),
-		Desc:     params.Get("desc"),
-		Currency: params.Get("currency"),
+		Id:   Id,
+		Name: params.Get("name"),
+		Desc: params.Get("desc"),
+		Ccy: models.Ccy{
+			Currency:  params.Get("currency"),
+			Currency2: "USDT",
+		},
 		Status:   models.Off,
+		SessTime: 5 * time.Second,
 	})
 
 	json.NewEncoder(w).Encode(models.Result{"OK", "Добавлена пара: " + params.Get("currency")})
@@ -80,7 +70,7 @@ func OnPair(w http.ResponseWriter, r *http.Request) {
 
 	if i != -1 {
 		TradingPair[i].Status = models.On
-		json.NewEncoder(w).Encode(CalculateSpread(TradingPair[i]))
+		json.NewEncoder(w).Encode(BooksPair(TradingPair[i]))
 	} else {
 		json.NewEncoder(w).Encode(res)
 	}

@@ -10,7 +10,7 @@ import (
 )
 
 type IParams interface {
-	GetParams(ccy string) *Request
+	GetParams(ccy Ccy) *Request
 }
 
 type Request struct {

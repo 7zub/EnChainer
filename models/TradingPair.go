@@ -1,12 +1,20 @@
 package models
 
+import "time"
+
 type TradingPair struct {
 	Id        int
 	Name      string
 	Desc      string
-	Currency  string
+	Ccy       Ccy
 	Status    int
+	SessTime  time.Duration
 	OrderBook []OrderBook
+}
+
+type Ccy struct {
+	Currency  string
+	Currency2 string
 }
 
 type OrderBook struct {

@@ -4,9 +4,9 @@ import (
 	"awesomeProject/_dev"
 	"awesomeProject/views"
 	"github.com/gorilla/mux"
+	"log"
+	"net/http"
 )
-import "log"
-import "net/http"
 
 func handleRequests() {
 	myRouter := mux.NewRouter().StrictSlash(true)

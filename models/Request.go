@@ -16,8 +16,8 @@ type IParams interface {
 type Request struct {
 	Exchange int
 	Url      string
-	Params   interface{}
-	Response interface{}
+	Params   IParams
+	Response IResponse
 }
 
 func (r *Request) SendRequest() {
@@ -51,7 +51,5 @@ func (r *Request) UrlExec(rq *http.Request) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-
-	json.NewDecoder(resp.Body).Decode(&r.Response)
-	fmt.Println(r.Response)
+	json.NewDecoder(resp.Body).Decode(r.Response)
 }

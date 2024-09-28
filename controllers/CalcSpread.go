@@ -9,25 +9,26 @@ import (
 	"os"
 )
 
-func CalculateSpread(pair models.TradingPair) models.Result {
+func BooksPair(pair models.TradingPair) models.Result {
 	RqList := []models.IParams{
 		exchangeReq.BinanceBookParams{},
-		//exchangeReq.GateioBookParams{},
+		exchangeReq.GateioBookParams{},
 	}
 
-	for _, r := range RqList {
-		r.GetParams(pair.Currency).SendRequest()
+	for _, req := range RqList {
+		go TaskCreate(&pair, req)
+		//go req.GetParams(pair.Ccy).SendRequest()
 	}
 
 	return models.Result{"OK", "Мониторинг пары запущен"}
 }
 
-func CalculateSpread_old(pair models.TradingPair) models.Result {
-	pair.OrderBook = append(pair.OrderBook, ApiGetBook("SOLUSDT").BookMapper())
-	pair.OrderBook = append(pair.OrderBook, ApiGetBook(pair.Currency).BookMapper())
+func CalcSpread(pair models.TradingPair) models.Result {
+	pair.OrderBook = append(pair.OrderBook, ApiGetBook("SOLUSDT").Mapper())
+	//pair.OrderBook = append(pair.OrderBook, ApiGetBook(pair.Currency).Mapper())
 
 	jsonBytes, err := json.Marshal(&pair)
-	file, err := os.Create("export.json")
+	file, err := os.Create("files/export.json")
 
 	if err != nil {
 		fmt.Println("Unable to create file:", err)
@@ -44,7 +45,7 @@ func CalculateSpread_old(pair models.TradingPair) models.Result {
 
 				task := models.TradeTask{
 					TaskId:       1,
-					Currency:     pair.Currency,
+					Currency:     pair.Ccy.Currency,
 					ExchangeBuy:  order.Exchange,
 					ExchangeSell: orderOther.Exchange,
 					PriceBuy:     order.Asks[0].Price,

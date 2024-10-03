@@ -1,4 +1,4 @@
-package controllers
+package controls
 
 import (
 	"awesomeProject/models"
@@ -11,19 +11,8 @@ import (
 
 var TradingPair = []models.TradingPair{}
 
-func Monitor(w http.ResponseWriter) {
+func BookControl(w http.ResponseWriter) {
 	json.NewEncoder(w).Encode(TradingPair)
-}
-
-func Book(w http.ResponseWriter, r *http.Request) {
-	params := r.URL.Query()
-	i, res := SearchPair(params.Get("id"))
-
-	if i != -1 {
-		//go req.GetParams(pair.Ccy).SendRequest()
-	} else {
-		json.NewEncoder(w).Encode(res)
-	}
 }
 
 func AddPair(w http.ResponseWriter, r *http.Request) {
@@ -39,7 +28,7 @@ func AddPair(w http.ResponseWriter, r *http.Request) {
 			Currency2: "USDT",
 		},
 		Status:   models.Off,
-		SessTime: 5 * time.Second,
+		SessTime: 3 * time.Second,
 	})
 
 	json.NewEncoder(w).Encode(models.Result{"OK", "Добавлена пара: " + params.Get("currency")})

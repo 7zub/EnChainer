@@ -14,6 +14,6 @@ func (BinanceBookParams) GetParams(ccy models.Ccy) *models.Request {
 	return &models.Request{
 		Url:      "https://api.binance.com/api/v3/depth?",
 		Params:   BinanceBookParams{Symbol: ccy.Currency + ccy.Currency2, Limit: 5},
-		Response: exchangeRes.BinanceBook{},
+		Response: &exchangeRes.BinanceBook{},
 	}
 }

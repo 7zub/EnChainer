@@ -1,4 +1,4 @@
-package controllers
+package controls
 
 import (
 	"github.com/gorilla/websocket"

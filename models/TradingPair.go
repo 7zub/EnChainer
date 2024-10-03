@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"sort"
+	"time"
+)
 
 type TradingPair struct {
 	Id        int
@@ -33,3 +36,13 @@ const (
 	Off = 0
 	On  = 1
 )
+
+func SortOrderBooks(orderBooks *[]OrderBook) {
+	sort.Slice(*orderBooks, func(i, j int) bool {
+		if len((*orderBooks)[i].Bids) > 0 && len((*orderBooks)[j].Bids) > 0 {
+			return (*orderBooks)[i].Bids[0].Price > (*orderBooks)[j].Bids[0].Price
+		} else {
+			return false
+		}
+	})
+}

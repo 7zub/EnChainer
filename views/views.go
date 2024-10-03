@@ -1,34 +1,34 @@
 package views
 
 import (
-	"awesomeProject/controllers"
+	"awesomeProject/controls"
 	"net/http"
 )
 
-func Monitor(w http.ResponseWriter, rr *http.Request) {
-	controllers.Monitor(w)
-}
-
-func GetOrderBook(w http.ResponseWriter, rr *http.Request) {
-	controllers.Book(w, rr)
+func BookControl(w http.ResponseWriter, rr *http.Request) {
+	controls.BookControl(w)
 }
 
 func AddPair(w http.ResponseWriter, rr *http.Request) {
-	controllers.AddPair(w, rr)
+	controls.AddPair(w, rr)
 }
 
 func DeletePair(w http.ResponseWriter, rr *http.Request) {
-	controllers.DeletePair(w, rr)
+	controls.DeletePair(w, rr)
 }
 
 func OnPair(w http.ResponseWriter, rr *http.Request) {
-	controllers.OnPair(w, rr)
+	controls.OnPair(w, rr)
 }
 
 func OffPair(w http.ResponseWriter, rr *http.Request) {
-	controllers.OffPair(w, rr)
+	controls.OffPair(w, rr)
 }
 
 func Ws(w http.ResponseWriter, rr *http.Request) {
-	controllers.Ws()
+	controls.Ws()
+}
+
+func TradeTaskControl(w http.ResponseWriter, rr *http.Request) {
+	controls.TradeTaskControl(w)
 }

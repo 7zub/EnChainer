@@ -20,14 +20,13 @@ func handleRequests() {
 	myRouter.HandleFunc("/hotels/export", _dev.ExportHotel)
 	myRouter.HandleFunc("/kafka", _dev.Kafkatest)
 
-	myRouter.HandleFunc("/monitor", views.Monitor)
-	myRouter.HandleFunc("/book", views.GetOrderBook)
+	myRouter.HandleFunc("/book", views.BookControl)
 	myRouter.HandleFunc("/addpair", views.AddPair)
 	myRouter.HandleFunc("/deletepair", views.DeletePair)
 	myRouter.HandleFunc("/onpair", views.OnPair)
 	myRouter.HandleFunc("/offpair", views.OffPair)
-
-	myRouter.HandleFunc("/ws", views.Ws)
+	//myRouter.HandleFunc("/ws", views.Ws)
+	myRouter.HandleFunc("/trade", views.TradeTaskControl)
 
 	log.Fatal(http.ListenAndServe(":10", myRouter))
 }

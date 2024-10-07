@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"slices"
-	"strconv"
 	"time"
 )
 
@@ -17,36 +16,40 @@ func BookControl(w http.ResponseWriter) {
 
 func AddPair(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
-	Id := 1 //rand.Intn(10000)
 
-	TradingPair = append(TradingPair, models.TradingPair{
-		Id:   Id,
-		Name: params.Get("name"),
-		Desc: params.Get("desc"),
+	tp := models.TradingPair{
+		PairId: "P_" + params.Get("currency"),
+		Name:   params.Get("name"),
+		Desc:   params.Get("desc"),
 		Ccy: models.Ccy{
 			Currency:  params.Get("currency"),
 			Currency2: "USDT",
 		},
-		Status:   models.Off,
-		SessTime: 3 * time.Second,
-	})
+		Status:     models.Off,
+		SessTime:   2 * time.Second,
+		CreateDate: time.Now(),
+	}
+
+	TradingPair = append(TradingPair, tp)
+	db1(&tp)
+	//db1(tp)
 
 	json.NewEncoder(w).Encode(models.Result{"OK", "Добавлена пара: " + params.Get("currency")})
 }
 
 func DeletePair(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
-	var delid int
+	var delid string
 
 	for i, pair := range TradingPair {
-		if strconv.Itoa(pair.Id) == params.Get("id") {
+		if pair.PairId == params.Get("id") {
 			TradingPair = slices.Delete(TradingPair, i, i+1)
-			delid = pair.Id
+			delid = pair.PairId
 			break
 		}
 	}
 
-	if delid > 0 {
+	if delid != "" {
 		json.NewEncoder(w).Encode(models.Result{"OK", "Пара удалена"})
 	} else {
 		json.NewEncoder(w).Encode(models.Result{"ERR", "Пары не существует"})
@@ -76,11 +79,9 @@ func OffPair(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(res)
 }
 
-func SearchPair(id string) (int, models.Result) {
-	cid, _ := strconv.Atoi(id)
-
+func SearchPair(pairid string) (int, models.Result) {
 	for i, pair := range TradingPair {
-		if cid == pair.Id {
+		if pairid == pair.PairId {
 			return i, models.Result{Status: "OK"}
 		}
 	}

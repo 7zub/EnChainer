@@ -1,5 +1,17 @@
 # curl -i http://httpbin.org/ip
-GET http://localhost:10/addpair?currency=CKBUSDC&desc=test&name=og
+GET http://localhost:10/addpair?currency=ORN&desc=test&name=pair1
 ###
-GET http://localhost:10/onpair?id=1
+GET http://localhost:10/onpair?pairid=P_ORN
+###
+GET http://localhost:10/addpair?currency=CHR&desc=test&name=pair2
+###
+GET http://localhost:10/onpair?id=P_CHR
+###
+GET http://localhost:10/addpair?currency=ENJ&desc=test&name=pair3
+###
+GET http://localhost:10/onpair?id=P_ENJ
+###
+GET http://localhost:10/addpair?currency=PORTO&desc=test&name=pair4
+###
+GET http://localhost:10/onpair?id=P_PORTO
 ###

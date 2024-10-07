@@ -40,9 +40,10 @@ func TaskCreate(pair *models.TradingPair, reqList []models.IParams) {
 
 				TradeTask = append(TradeTask, task)
 				fmt.Printf("%#v\n", task)
-
-				pair.OrderBook = []models.OrderBook{}
-				//ticker.Stop()
+				pair.Desc = "Проверка 2"
+				db1(*&pair)
+				//pair.OrderBook = []models.OrderBook{}
+				ticker.Stop()
 			}
 
 			duration := time.Since(start)

@@ -19,20 +19,17 @@ func AddPair(w http.ResponseWriter, r *http.Request) {
 
 	tp := models.TradingPair{
 		PairId: "P_" + params.Get("currency"),
-		Name:   params.Get("name"),
-		Desc:   params.Get("desc"),
+		Title:  params.Get("title"),
 		Ccy: models.Ccy{
 			Currency:  params.Get("currency"),
 			Currency2: "USDT",
 		},
-		Status:     models.Off,
-		SessTime:   2 * time.Second,
-		CreateDate: time.Now(),
+		Status:   models.Off,
+		SessTime: 2 * time.Second,
 	}
 
 	TradingPair = append(TradingPair, tp)
-	db1(&tp)
-	//db1(tp)
+	SaveBookDb(&TradingPair[len(TradingPair)-1])
 
 	json.NewEncoder(w).Encode(models.Result{"OK", "Добавлена пара: " + params.Get("currency")})
 }
@@ -62,7 +59,7 @@ func OnPair(w http.ResponseWriter, r *http.Request) {
 
 	if i != -1 {
 		TradingPair[i].Status = models.On
-		json.NewEncoder(w).Encode(BooksPair(TradingPair[i]))
+		json.NewEncoder(w).Encode(BooksPair(&TradingPair[i]))
 	} else {
 		json.NewEncoder(w).Encode(res)
 	}

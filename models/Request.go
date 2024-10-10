@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"reflect"
 	"strings"
+	"time"
 )
 
 type IParams interface {
@@ -18,6 +19,7 @@ type Request struct {
 	Url      string
 	Params   IParams
 	Response IResponse
+	ReqDate  time.Time
 }
 
 func (r *Request) SendRequest() {
@@ -46,6 +48,7 @@ func (r *Request) UrlBuild() *http.Request {
 }
 
 func (r *Request) UrlExec(rq *http.Request) {
+	r.ReqDate = time.Now()
 	client := http.Client{}
 	resp, err := client.Do(rq)
 	if err != nil {

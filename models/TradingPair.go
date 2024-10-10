@@ -11,13 +11,13 @@ import (
 type TradingPair struct {
 	Id         uint `gorm:"primaryKey"`
 	PairId     string
-	Name       string
-	Desc       string
+	Title      string
 	Ccy        Ccy `gorm:"embedded"`
 	Status     int
 	SessTime   time.Duration
-	CreateDate time.Time
-	OrderBook  []OrderBook `gorm:"foreignKey:TpID;constraint:OnDelete:CASCADE;"`
+	CreateDate time.Time   `gorm:"type:timestamp;autoCreateTime"`
+	UpdateDate time.Time   `gorm:"type:timestamp;autoUpdateTime"`
+	OrderBook  []OrderBook `gorm:"foreignKey:TpId;constraint:OnDelete:CASCADE;"`
 }
 
 type Ccy struct {
@@ -26,12 +26,13 @@ type Ccy struct {
 }
 
 type OrderBook struct {
-	Id           uint `gorm:"primaryKey"`
-	TpID         uint
-	Exchange     int
-	LastUpdateId int
-	Bids         JsonValueBook `gorm:"type:jsonb"` //`gorm:"-"` //`gorm:"foreignKey:OrderBookID;constraint:OnDelete:CASCADE;"`
-	Asks         JsonValueBook `gorm:"type:jsonb"` //`gorm:"type:jsonb"` //`gorm:"foreignKey:OrderBookID"`
+	Id       uint `gorm:"primaryKey"`
+	TpId     uint
+	Exchange string
+	ReqDate  time.Time     `gorm:"type:timestamp"`
+	ResDate  time.Time     `gorm:"type:timestamp;autoCreateTime"`
+	Bids     JsonValueBook `gorm:"type:jsonb"`
+	Asks     JsonValueBook `gorm:"type:jsonb"`
 }
 
 type JsonValueBook []ValueBook
@@ -42,11 +43,12 @@ type ValueBook struct {
 }
 
 const (
-	Off = 0
-	On  = 1
+	Off     = 0
+	On      = 1
+	Warning = 2
+	Error   = 3
 )
 
-// Scan для JSONValueBook для поддержки jsonb
 func (v *JsonValueBook) Scan(value interface{}) error {
 	bytes, ok := value.([]byte)
 	if !ok {
@@ -55,7 +57,6 @@ func (v *JsonValueBook) Scan(value interface{}) error {
 	return json.Unmarshal(bytes, v)
 }
 
-// Value для JSONValueBook для поддержки jsonb
 func (v JsonValueBook) Value() (driver.Value, error) {
 	return json.Marshal(v)
 }

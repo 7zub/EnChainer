@@ -2,7 +2,6 @@ package controls
 
 import (
 	"awesomeProject/models"
-	"fmt"
 	"math/rand"
 	"time"
 )
@@ -14,8 +13,6 @@ func TaskCreate(pair *models.TradingPair, reqList []models.IParams) {
 	for {
 		select {
 		case <-ticker.C:
-			start := time.Now()
-
 			if len(pair.OrderBook) > 0 {
 				models.SortOrderBooks(&pair.OrderBook)
 
@@ -39,22 +36,19 @@ func TaskCreate(pair *models.TradingPair, reqList []models.IParams) {
 				}
 
 				TradeTask = append(TradeTask, task)
-				fmt.Printf("%#v\n", task)
-				pair.Desc = "Проверка 2"
-				db1(*&pair)
+				SaveBookDb(*&pair)
 				//pair.OrderBook = []models.OrderBook{}
-				ticker.Stop()
+				//ticker.Stop()
 			}
-
-			duration := time.Since(start)
-			fmt.Printf("Время выполнения: %v\n. Ожидание следующего интервала...\n\n", duration)
 
 			for _, req := range reqList {
 				go func(rr models.IParams) {
 					r := rr.GetParams(pair.Ccy)
 					r.SendRequest()
-
-					pair.OrderBook = append(pair.OrderBook, r.Response.Mapper())
+					// todo "сделать принудительное завершение горудин по истечению таймера + try"
+					newbook := r.Response.Mapper()
+					newbook.ReqDate = r.ReqDate
+					pair.OrderBook = append(pair.OrderBook, newbook)
 				}(req)
 			}
 

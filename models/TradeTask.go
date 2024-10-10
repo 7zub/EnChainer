@@ -9,7 +9,7 @@ type TradeTask struct {
 }
 
 type Operation struct {
-	Exchange int
+	Exchange string
 	Price    float64
 	Volume   *float64
 }

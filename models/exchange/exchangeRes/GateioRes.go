@@ -7,7 +7,6 @@ import (
 
 type GateioBook struct {
 	Current int        `json:"current"`
-	Update  int        `json:"update"`
 	Bids    [][]string `json:"bids"`
 	Asks    [][]string `json:"asks"`
 }
@@ -36,9 +35,8 @@ func (book GateioBook) Mapper() models.OrderBook {
 	}
 
 	return models.OrderBook{
-		Exchange:     models.GATEIO,
-		LastUpdateId: book.Update,
-		Bids:         newBids,
-		Asks:         newAsks,
+		Exchange: models.GATEIO,
+		Bids:     newBids,
+		Asks:     newAsks,
 	}
 }

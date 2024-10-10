@@ -6,9 +6,8 @@ import (
 )
 
 type BinanceBook struct {
-	LastUpdateId int        `json:"lastUpdateId"`
-	Bids         [][]string `json:"bids"`
-	Asks         [][]string `json:"asks"`
+	Bids [][]string `json:"bids"`
+	Asks [][]string `json:"asks"`
 }
 
 func (book BinanceBook) Mapper() models.OrderBook {
@@ -35,9 +34,8 @@ func (book BinanceBook) Mapper() models.OrderBook {
 	}
 
 	return models.OrderBook{
-		Exchange:     models.BINANCE,
-		LastUpdateId: book.LastUpdateId,
-		Bids:         newBids,
-		Asks:         newAsks,
+		Exchange: models.BINANCE,
+		Bids:     newBids,
+		Asks:     newAsks,
 	}
 }

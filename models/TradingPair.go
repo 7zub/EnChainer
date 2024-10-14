@@ -29,10 +29,10 @@ type OrderBook struct {
 	Id       uint `gorm:"primaryKey"`
 	TpId     uint
 	Exchange string
-	ReqDate  time.Time     `gorm:"type:timestamp"`
-	ResDate  time.Time     `gorm:"type:timestamp;autoCreateTime"`
 	Bids     JsonValueBook `gorm:"type:jsonb"`
 	Asks     JsonValueBook `gorm:"type:jsonb"`
+	ReqDate  time.Time     `gorm:"type:timestamp"`
+	ResDate  time.Time     `gorm:"type:timestamp;autoCreateTime"`
 }
 
 type JsonValueBook []ValueBook

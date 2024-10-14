@@ -16,7 +16,6 @@ func BookControl(w http.ResponseWriter) {
 
 func AddPair(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
-
 	tp := models.TradingPair{
 		PairId: "P_" + params.Get("currency"),
 		Title:  params.Get("title"),
@@ -36,30 +35,29 @@ func AddPair(w http.ResponseWriter, r *http.Request) {
 
 func DeletePair(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
-	var delid string
-
-	for i, pair := range TradingPair {
-		if pair.PairId == params.Get("id") {
+	if i, res := SearchPair(params.Get("id")); i != -1 {
+		if TradingPair[i].Status == models.Off {
+			DeleteBookDb(&TradingPair[i])
 			TradingPair = slices.Delete(TradingPair, i, i+1)
-			delid = pair.PairId
-			break
-		}
-	}
 
-	if delid != "" {
-		json.NewEncoder(w).Encode(models.Result{"OK", "Пара удалена"})
+			json.NewEncoder(w).Encode(models.Result{"OK", "Пара удалена"})
+		} else {
+			json.NewEncoder(w).Encode(models.Result{"ERR", "Пара должна быть остановлена"})
+		}
 	} else {
-		json.NewEncoder(w).Encode(models.Result{"ERR", "Пары не существует"})
+		json.NewEncoder(w).Encode(res)
 	}
 }
 
 func OnPair(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
-	i, res := SearchPair(params.Get("id"))
-
-	if i != -1 {
-		TradingPair[i].Status = models.On
-		json.NewEncoder(w).Encode(BooksPair(&TradingPair[i]))
+	if i, res := SearchPair(params.Get("id")); i != -1 {
+		if TradingPair[i].Status != models.On {
+			TradingPair[i].Status = models.On
+			json.NewEncoder(w).Encode(BooksPair(&TradingPair[i]))
+		} else {
+			json.NewEncoder(w).Encode(models.Result{"ERR", "Пара уже запущена"})
+		}
 	} else {
 		json.NewEncoder(w).Encode(res)
 	}
@@ -67,13 +65,13 @@ func OnPair(w http.ResponseWriter, r *http.Request) {
 
 func OffPair(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
-	i, res := SearchPair(params.Get("id"))
-
-	if i != -1 {
+	if i, res := SearchPair(params.Get("id")); i != -1 {
 		TradingPair[i].Status = models.Off
+		TaskStop(TradingPair[i].PairId)
+		json.NewEncoder(w).Encode(models.Result{"OK", "Пара остановлена"})
+	} else {
+		json.NewEncoder(w).Encode(res)
 	}
-
-	json.NewEncoder(w).Encode(res)
 }
 
 func SearchPair(pairid string) (int, models.Result) {

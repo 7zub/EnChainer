@@ -30,10 +30,17 @@ func TaskTicker(pair *models.TradingPair, reqList []models.IParams) {
 	for {
 		select {
 		case <-ticker.C:
+			if pair.StopCh != nil {
+				close(pair.StopCh)
+			}
+			pair.StopCh = make(chan struct{})
 			TaskCreate(pair, reqList)
 
 		case <-stop:
 			fmt.Println("Остановлен")
+			if pair.StopCh != nil {
+				close(pair.StopCh)
+			}
 			return
 		}
 	}
@@ -64,7 +71,7 @@ func TaskCreate(pair *models.TradingPair, reqList []models.IParams) {
 
 		TradeTask = append(TradeTask, task)
 		go func() {
-			SaveBookDb(*&pair)
+			SaveBookDb(pair)
 			SaveTradeDb(&task)
 			pair.OrderBook = []models.OrderBook{}
 		}()
@@ -72,13 +79,38 @@ func TaskCreate(pair *models.TradingPair, reqList []models.IParams) {
 
 	for _, req := range reqList {
 		go func(rr models.IParams) {
-			r := rr.GetParams(pair.Ccy)
-			r.SendRequest()
-			// todo "сделать принудительное завершение горудин по истечению таймера + try"
-			newbook := r.Response.Mapper()
-			newbook.ReqDate = r.ReqDate
-			pair.OrderBook = append(pair.OrderBook, newbook)
+			done := make(chan struct{})
+			go func() {
+				r := rr.GetParams(pair.Ccy)
+				r.SendRequest()
+				go SaveReqDb(r)
+				newbook := r.Response.Mapper()
+				newbook.ReqDate = r.ReqDate
+				//newbook.ReqId = r.ReqId
+				pair.OrderBook = append(pair.OrderBook, newbook)
+				close(done)
+			}()
+
+			select {
+			case <-pair.StopCh:
+				fmt.Println("Горутина остановлена по сигналу")
+				return
+			case <-done:
+				fmt.Println("Операция завершена")
+			case <-time.After(10 * time.Second):
+				// Если операция зависла и не завершилась за 10 секунд
+				fmt.Println("Операция прервана по тайм-ауту")
+				return
+			}
 		}(req)
+
+		//for {
+		//	select {
+		//	case <-pair.StopCh:
+		//		fmt.Println("Горутина остановлена по сигналу")
+		//		return
+		//	}
+		//}
 	}
 }
 

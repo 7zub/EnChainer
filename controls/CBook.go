@@ -16,6 +16,7 @@ func BookControl(w http.ResponseWriter) {
 
 func AddPair(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
+
 	tp := models.TradingPair{
 		PairId: "P_" + params.Get("currency"),
 		Title:  params.Get("title"),
@@ -24,13 +25,18 @@ func AddPair(w http.ResponseWriter, r *http.Request) {
 			Currency2: "USDT",
 		},
 		Status:   models.Off,
-		SessTime: 2 * time.Second,
+		SessTime: 3 * time.Second,
 	}
 
-	TradingPair = append(TradingPair, tp)
-	SaveBookDb(&TradingPair[len(TradingPair)-1])
+	if i, _ := SearchPair(params.Get("id")); i == -1 {
 
-	json.NewEncoder(w).Encode(models.Result{"OK", "Добавлена пара: " + params.Get("currency")})
+		TradingPair = append(TradingPair, tp)
+		SaveBookDb(&TradingPair[len(TradingPair)-1])
+
+		json.NewEncoder(w).Encode(models.Result{"OK", "Пара " + params.Get("currency") + " добавлена"})
+	} else {
+		json.NewEncoder(w).Encode(models.Result{"ERR", "Пара " + params.Get("currency") + " уже существует"})
+	}
 }
 
 func DeletePair(w http.ResponseWriter, r *http.Request) {
@@ -80,5 +86,5 @@ func SearchPair(pairid string) (int, models.Result) {
 			return i, models.Result{Status: "OK"}
 		}
 	}
-	return -1, models.Result{"ERR", "Пары не существует"}
+	return -1, models.Result{"ERR", "Пары " + pairid + " не существует"}
 }

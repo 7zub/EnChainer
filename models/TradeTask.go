@@ -1,15 +1,15 @@
 package models
 
 type TradeTask struct {
-	TaskId   int       `gorm:"primaryKey"`
-	Currency Ccy       `gorm:"embedded"`
-	Buy      Operation `gorm:"embedded"`
-	Sell     Operation `gorm:"embedded"`
+	TaskId   int `gorm:"primaryKey"`
+	Currency Ccy `gorm:"embedded"`
 	Profit   float64
+	Buy      Operation `gorm:"embedded;embeddedPrefix:buy_"`
+	Sell     Operation `gorm:"embedded;embeddedPrefix:sell_"`
 }
 
 type Operation struct {
-	Exchange string   `gorm:"column:exchange"`
-	Price    float64  `gorm:"column:price"`
-	Volume   *float64 `gorm:"column:volume"`
+	Exchange string
+	Price    float64
+	Volume   *float64
 }

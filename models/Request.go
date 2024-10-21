@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"reflect"
 	"strings"
@@ -15,11 +16,11 @@ type IParams interface {
 }
 
 type Request struct {
-	Exchange int
+	ReqId    string `gorm:"primaryKey"`
 	Url      string
-	Params   IParams
-	Response IResponse
-	ReqDate  time.Time
+	Params   IParams   `gorm:"-"`
+	Response IResponse `gorm:"-"`
+	ReqDate  time.Time `gorm:"type:timestamp"`
 }
 
 func (r *Request) SendRequest() {
@@ -42,13 +43,22 @@ func (r *Request) UrlBuild() *http.Request {
 	}
 
 	rq.URL.RawQuery = q.Encode()
+	log.Printf("Полный URL: %s\n", rq.URL.String())
 	fmt.Printf("Полный URL: %s\n", rq.URL.String())
-
 	return rq
 }
 
 func (r *Request) UrlExec(rq *http.Request) {
 	r.ReqDate = time.Now()
+	r.Url = rq.URL.String()
+	r.ReqId = fmt.Sprintf("B-%02d%02d%02d%02d%03d%03d",
+		r.ReqDate.Day(),
+		r.ReqDate.Hour(),
+		r.ReqDate.Minute(),
+		r.ReqDate.Second(),
+		r.ReqDate.Nanosecond()/1e6,
+		rand.Intn(1000),
+	)
 	client := http.Client{}
 	resp, err := client.Do(rq)
 	if err != nil {

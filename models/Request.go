@@ -39,7 +39,10 @@ func (r *Request) UrlBuild() *http.Request {
 	q := rq.URL.Query()
 
 	for i := 0; i < fields.NumField(); i++ {
-		q.Add(strings.ToLower(fields.Field(i).Name), fmt.Sprintf("%v", values.Field(i)))
+		q.Add(
+			strings.ToLower(fields.Field(i).Name),
+			fmt.Sprintf("%v", values.Field(i)),
+		)
 	}
 
 	rq.URL.RawQuery = q.Encode()

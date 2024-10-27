@@ -14,6 +14,7 @@ func BooksPair(pair *models.TradingPair) models.Result {
 	RqList := []models.IParams{
 		exchangeReq.BinanceBookParams{},
 		exchangeReq.GateioBookParams{},
+		exchangeReq.HuobiBookParams{},
 	}
 
 	go TaskTicker(pair, RqList)
@@ -86,7 +87,7 @@ func TaskCreate(pair *models.TradingPair, reqList []models.IParams) {
 				go SaveReqDb(r)
 				newbook := r.Response.Mapper()
 				newbook.ReqDate = r.ReqDate
-				//newbook.ReqId = r.ReqId
+				newbook.ReqId = r.ReqId
 				pair.OrderBook = append(pair.OrderBook, newbook)
 				close(done)
 			}()
@@ -96,21 +97,12 @@ func TaskCreate(pair *models.TradingPair, reqList []models.IParams) {
 				fmt.Println("Горутина остановлена по сигналу")
 				return
 			case <-done:
-				fmt.Println("Операция завершена")
+				fmt.Println("Операция завершена сама")
 			case <-time.After(10 * time.Second):
-				// Если операция зависла и не завершилась за 10 секунд
-				fmt.Println("Операция прервана по тайм-ауту")
+				fmt.Println("Операция прервана по тайм-ауту") // можно убрать
 				return
 			}
 		}(req)
-
-		//for {
-		//	select {
-		//	case <-pair.StopCh:
-		//		fmt.Println("Горутина остановлена по сигналу")
-		//		return
-		//	}
-		//}
 	}
 }
 

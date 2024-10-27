@@ -34,7 +34,7 @@ type OrderBook struct {
 	Asks     JsonValueBook `gorm:"type:jsonb"`
 	ReqDate  time.Time     `gorm:"type:timestamp"`
 	ResDate  time.Time     `gorm:"type:timestamp;autoCreateTime"`
-	//Request  Request       `gorm:"foreignKey:ReqId;references:ReqId"`
+	ReqId    string
 }
 
 type JsonValueBook []ValueBook

@@ -8,7 +8,7 @@ GET http://localhost:10/addpair?currency=ENJ&title=Pair1
 ###
 GET http://localhost:10/onpair?id=P_ENJ
 ###
-GET http://localhost:10/addpair?currency=PORTO&title=Pair1
+GET http://localhost:10/addpair?currency=FLOW&title=Pair1
 ###
-GET http://localhost:10/onpair?id=P_PORTO
+GET http://localhost:10/onpair?id=P_FLOW
 ###

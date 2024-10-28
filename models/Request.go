@@ -65,7 +65,18 @@ func (r *Request) UrlExec(rq *http.Request) {
 	client := http.Client{}
 	resp, err := client.Do(rq)
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
+		return
 	}
-	json.NewDecoder(resp.Body).Decode(r.Response)
+
+	if resp.StatusCode != http.StatusOK {
+		log.Printf("Unexpected status code: %d\n", resp.StatusCode)
+		return
+	}
+
+	err = json.NewDecoder(resp.Body).Decode(r.Response)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 }

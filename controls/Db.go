@@ -30,8 +30,6 @@ func SaveBookDb(pair *models.TradingPair) {
 
 	if result.Error != nil {
 		log.Println("Error creating order book:", result.Error)
-	} else {
-		log.Printf("OrderBook created successfully with ID: %d\n", pair.Ccy.Currency)
 	}
 }
 
@@ -40,8 +38,6 @@ func DeleteBookDb(pair *models.TradingPair) {
 
 	if result.Error != nil {
 		log.Println("Error creating order book:", result.Error)
-	} else {
-		log.Printf("OrderBook created successfully with ID: %d\n", pair.Ccy)
 	}
 }
 
@@ -50,8 +46,6 @@ func SaveTradeDb(task *models.TradeTask) {
 
 	if result.Error != nil {
 		log.Println("Error creating task:", result.Error)
-	} else {
-		log.Printf("Task created successfully with ID: %d\n", task.TaskId)
 	}
 }
 
@@ -60,7 +54,5 @@ func SaveReqDb(req *models.Request) {
 
 	if result.Error != nil {
 		log.Println("Error creating request:", result.Error)
-	} else {
-		log.Printf("Request created successfully with ID: %d\n", req.ReqId)
 	}
 }

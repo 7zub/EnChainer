@@ -67,7 +67,7 @@ func TaskCreate(pair *models.TradingPair, reqList []models.IParams) {
 				Price:    pair.OrderBook[0].Bids[0].Price,
 				Volume:   nil,
 			},
-			Profit: pair.OrderBook[0].Bids[0].Price/pair.OrderBook[0].Asks[0].Price - 1,
+			Profit: pair.OrderBook[0].Bids[0].Price/pair.OrderBook[len(pair.OrderBook)-1].Asks[0].Price - 1,
 		}
 
 		TradeTask = append(TradeTask, task)

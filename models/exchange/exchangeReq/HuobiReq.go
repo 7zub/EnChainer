@@ -7,15 +7,15 @@ import (
 )
 
 type HuobiBookParams struct {
-	Symbol string
-	Depth  int
-	Type   string
+	Ccy   string `url:"symbol"`
+	Limit int    `url:"depth"`
+	Type  string `url:"type"`
 }
 
 func (HuobiBookParams) GetParams(ccy models.Ccy) *models.Request {
 	return &models.Request{
 		Url:      "https://api.huobi.pro/market/depth?",
-		Params:   HuobiBookParams{Symbol: strings.ToLower(ccy.Currency + ccy.Currency2), Depth: 5, Type: "step0"},
+		Params:   HuobiBookParams{Ccy: strings.ToLower(ccy.Currency + ccy.Currency2), Limit: 5, Type: "step0"},
 		Response: &exchangeRes.HuobiBook{},
 	}
 }

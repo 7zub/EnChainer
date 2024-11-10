@@ -3,18 +3,18 @@ package controls
 import (
 	"awesomeProject/models"
 	"awesomeProject/models/exchange/exchangeReq"
+	"context"
 	"fmt"
 	"math/rand"
 	"time"
 )
-
-var pairMap = make(map[string]chan bool)
 
 func BooksPair(pair *models.TradingPair) models.Result {
 	RqList := []models.IParams{
 		exchangeReq.BinanceBookParams{},
 		exchangeReq.GateioBookParams{},
 		exchangeReq.HuobiBookParams{},
+		//exchangeReq.OkxBookParams{},
 	}
 
 	go TaskTicker(pair, RqList)
@@ -23,25 +23,17 @@ func BooksPair(pair *models.TradingPair) models.Result {
 }
 
 func TaskTicker(pair *models.TradingPair, reqList []models.IParams) {
-	stop := make(chan bool)
-	pairMap[pair.PairId] = stop
+	pair.StopCh = make(chan struct{})
 	ticker := time.NewTicker(pair.SessTime)
 	defer ticker.Stop()
 
 	for {
 		select {
 		case <-ticker.C:
-			if pair.StopCh != nil {
-				close(pair.StopCh)
-			}
-			pair.StopCh = make(chan struct{})
 			TaskCreate(pair, reqList)
 
-		case <-stop:
-			fmt.Println("Остановлен")
-			if pair.StopCh != nil {
-				close(pair.StopCh)
-			}
+		case <-pair.StopCh:
+			fmt.Println("Остановлена пара TaskTicker")
 			return
 		}
 	}
@@ -67,7 +59,7 @@ func TaskCreate(pair *models.TradingPair, reqList []models.IParams) {
 				Price:    pair.OrderBook[0].Bids[0].Price,
 				Volume:   nil,
 			},
-			Profit: pair.OrderBook[0].Bids[0].Price/pair.OrderBook[len(pair.OrderBook)-1].Asks[0].Price - 1,
+			Profit: (pair.OrderBook[0].Bids[0].Price/pair.OrderBook[len(pair.OrderBook)-1].Asks[0].Price - 1) * 100,
 		}
 
 		TradeTask = append(TradeTask, task)
@@ -80,38 +72,34 @@ func TaskCreate(pair *models.TradingPair, reqList []models.IParams) {
 
 	for _, req := range reqList {
 		go func(rr models.IParams) {
-			done := make(chan struct{})
-			go func() {
-				r := rr.GetParams(pair.Ccy)
-				r.SendRequest()
-				go SaveReqDb(r)
-				newbook := r.Response.Mapper()
-				newbook.ReqDate = r.ReqDate
-				newbook.ReqId = r.ReqId
-				pair.OrderBook = append(pair.OrderBook, newbook)
-				close(done)
-			}()
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
 
-			select {
-			case <-pair.StopCh:
-				fmt.Println("Горутина остановлена по сигналу")
+			rq := rr.GetParams(pair.Ccy)
+			rq.DescRequest()
+			go SaveReqDb(rq)
+			rq.SendRequest()
+			rs := rq.Response.Mapper()
+
+			if isDone(ctx) {
+				fmt.Println("isDone()")
 				return
-			case <-done:
-				fmt.Println("Операция завершена сама")
-			case <-time.After(10 * time.Second):
-				fmt.Println("Операция прервана по тайм-ауту") // можно убрать
-				return
+			}
+
+			if rs.BookExist() {
+				rs.ReqDate = rq.ReqDate
+				rs.ReqId = rq.ReqId
+				pair.OrderBook = append(pair.OrderBook, rs)
 			}
 		}(req)
 	}
 }
 
-func TaskStop(pair string) {
-	if quit, exists := pairMap[pair]; exists {
-		close(quit)
-		delete(pairMap, pair)
-		fmt.Printf("Горутина для торговой пары %s остановлена\n", pair)
-	} else {
-		fmt.Printf("Горутина для торговой пары %s не найдена\n", pair)
+func isDone(ctx context.Context) bool {
+	select {
+	case <-ctx.Done():
+		return true
+	default:
+		return false
 	}
 }

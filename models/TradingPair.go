@@ -4,9 +4,14 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
+	"log"
 	"sort"
 	"time"
 )
+
+type IResponse interface {
+	Mapper() OrderBook
+}
 
 type TradingPair struct {
 	Id         uint `gorm:"primaryKey"`
@@ -71,4 +76,20 @@ func SortOrderBooks(orderBooks *[]OrderBook) {
 			return false
 		}
 	})
+}
+
+func (book OrderBook) BookExist() bool {
+	if len(book.Bids) > 0 && len(book.Asks) > 0 {
+		return true
+	}
+	log.Printf("Некорректный результат запроса %s", book.ReqId)
+	return false
+}
+
+func ProfitBid(orderBooks *[]OrderBook) {
+
+}
+
+func ProfitAsk(orderBooks *[]OrderBook) {
+
 }

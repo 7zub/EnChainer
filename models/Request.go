@@ -7,7 +7,6 @@ import (
 	"math/rand"
 	"net/http"
 	"reflect"
-	"strings"
 	"time"
 )
 
@@ -27,6 +26,18 @@ func (r *Request) SendRequest() {
 	r.UrlExec(r.UrlBuild())
 }
 
+func (r *Request) DescRequest() {
+	r.ReqDate = time.Now()
+	r.ReqId = fmt.Sprintf("B-%02d%02d%02d%02d%03d%03d",
+		r.ReqDate.Day(),
+		r.ReqDate.Hour(),
+		r.ReqDate.Minute(),
+		r.ReqDate.Second(),
+		r.ReqDate.Nanosecond()/1e6,
+		rand.Intn(1000),
+	)
+}
+
 func (r *Request) UrlBuild() *http.Request {
 	fields := reflect.TypeOf(r.Params)
 	values := reflect.ValueOf(r.Params)
@@ -40,7 +51,7 @@ func (r *Request) UrlBuild() *http.Request {
 
 	for i := 0; i < fields.NumField(); i++ {
 		q.Add(
-			strings.ToLower(fields.Field(i).Name),
+			fields.Field(i).Tag.Get("url"),
 			fmt.Sprintf("%v", values.Field(i)),
 		)
 	}
@@ -52,16 +63,7 @@ func (r *Request) UrlBuild() *http.Request {
 }
 
 func (r *Request) UrlExec(rq *http.Request) {
-	r.ReqDate = time.Now()
 	r.Url = rq.URL.String()
-	r.ReqId = fmt.Sprintf("B-%02d%02d%02d%02d%03d%03d",
-		r.ReqDate.Day(),
-		r.ReqDate.Hour(),
-		r.ReqDate.Minute(),
-		r.ReqDate.Second(),
-		r.ReqDate.Nanosecond()/1e6,
-		rand.Intn(1000),
-	)
 	client := http.Client{}
 	resp, err := client.Do(rq)
 	if err != nil {
@@ -70,7 +72,7 @@ func (r *Request) UrlExec(rq *http.Request) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		log.Printf("Unexpected status code: %d\n", resp.StatusCode)
+		log.Printf("Неверный код ответа: %d\n", resp.StatusCode)
 		return
 	}
 

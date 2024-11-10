@@ -25,7 +25,7 @@ func AddPair(w http.ResponseWriter, r *http.Request) {
 			Currency2: "USDT",
 		},
 		Status:   models.Off,
-		SessTime: 3 * time.Second,
+		SessTime: 2000 * time.Millisecond,
 	}
 
 	if i, _ := SearchPair(params.Get("id")); i == -1 {
@@ -73,7 +73,7 @@ func OffPair(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 	if i, res := SearchPair(params.Get("id")); i != -1 {
 		TradingPair[i].Status = models.Off
-		TaskStop(TradingPair[i].PairId)
+		close(TradingPair[i].StopCh)
 		json.NewEncoder(w).Encode(models.Result{"OK", "Пара остановлена"})
 	} else {
 		json.NewEncoder(w).Encode(res)

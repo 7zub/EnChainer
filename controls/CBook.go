@@ -8,17 +8,18 @@ import (
 	"time"
 )
 
-var TradingPair = []models.TradingPair{}
+var TradePair = []models.TradePair{}
 
 func BookControl(w http.ResponseWriter) {
-	json.NewEncoder(w).Encode(TradingPair)
+	json.NewEncoder(w).Encode(TradePair)
 }
 
 func AddPair(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
+	pairid := "P_" + params.Get("currency")
 
-	tp := models.TradingPair{
-		PairId: "P_" + params.Get("currency"),
+	tp := models.TradePair{
+		PairId: pairid,
 		Title:  params.Get("title"),
 		Ccy: models.Ccy{
 			Currency:  params.Get("currency"),
@@ -28,10 +29,9 @@ func AddPair(w http.ResponseWriter, r *http.Request) {
 		SessTime: 2000 * time.Millisecond,
 	}
 
-	if i, _ := SearchPair(params.Get("id")); i == -1 {
-
-		TradingPair = append(TradingPair, tp)
-		SaveBookDb(&TradingPair[len(TradingPair)-1])
+	if i, _ := SearchPair(pairid); i == -1 {
+		TradePair = append(TradePair, tp)
+		SaveBookDb(&TradePair[len(TradePair)-1])
 
 		json.NewEncoder(w).Encode(models.Result{"OK", "Пара " + params.Get("currency") + " добавлена"})
 	} else {
@@ -42,9 +42,9 @@ func AddPair(w http.ResponseWriter, r *http.Request) {
 func DeletePair(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 	if i, res := SearchPair(params.Get("id")); i != -1 {
-		if TradingPair[i].Status == models.Off {
-			DeleteBookDb(&TradingPair[i])
-			TradingPair = slices.Delete(TradingPair, i, i+1)
+		if TradePair[i].Status == models.Off {
+			DeleteBookDb(&TradePair[i])
+			TradePair = slices.Delete(TradePair, i, i+1)
 
 			json.NewEncoder(w).Encode(models.Result{"OK", "Пара удалена"})
 		} else {
@@ -58,9 +58,9 @@ func DeletePair(w http.ResponseWriter, r *http.Request) {
 func OnPair(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 	if i, res := SearchPair(params.Get("id")); i != -1 {
-		if TradingPair[i].Status != models.On {
-			TradingPair[i].Status = models.On
-			json.NewEncoder(w).Encode(BooksPair(&TradingPair[i]))
+		if TradePair[i].Status != models.On {
+			TradePair[i].Status = models.On
+			json.NewEncoder(w).Encode(BooksPair(&TradePair[i]))
 		} else {
 			json.NewEncoder(w).Encode(models.Result{"ERR", "Пара уже запущена"})
 		}
@@ -72,8 +72,8 @@ func OnPair(w http.ResponseWriter, r *http.Request) {
 func OffPair(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 	if i, res := SearchPair(params.Get("id")); i != -1 {
-		TradingPair[i].Status = models.Off
-		close(TradingPair[i].StopCh)
+		TradePair[i].Status = models.Off
+		close(TradePair[i].StopCh)
 		json.NewEncoder(w).Encode(models.Result{"OK", "Пара остановлена"})
 	} else {
 		json.NewEncoder(w).Encode(res)
@@ -81,7 +81,7 @@ func OffPair(w http.ResponseWriter, r *http.Request) {
 }
 
 func SearchPair(pairid string) (int, models.Result) {
-	for i, pair := range TradingPair {
+	for i, pair := range TradePair {
 		if pairid == pair.PairId {
 			return i, models.Result{Status: "OK"}
 		}

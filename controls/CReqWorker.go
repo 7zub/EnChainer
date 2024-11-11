@@ -5,16 +5,17 @@ import (
 	"awesomeProject/models/exchange/exchangeReq"
 	"context"
 	"fmt"
+	"log"
 	"math/rand"
 	"time"
 )
 
-func BooksPair(pair *models.TradingPair) models.Result {
+func BooksPair(pair *models.TradePair) models.Result {
 	RqList := []models.IParams{
 		exchangeReq.BinanceBookParams{},
 		exchangeReq.GateioBookParams{},
 		exchangeReq.HuobiBookParams{},
-		//exchangeReq.OkxBookParams{},
+		exchangeReq.OkxBookParams{},
 	}
 
 	go TaskTicker(pair, RqList)
@@ -22,7 +23,7 @@ func BooksPair(pair *models.TradingPair) models.Result {
 	return models.Result{"OK", "Мониторинг пары запущен"}
 }
 
-func TaskTicker(pair *models.TradingPair, reqList []models.IParams) {
+func TaskTicker(pair *models.TradePair, reqList []models.IParams) {
 	pair.StopCh = make(chan struct{})
 	ticker := time.NewTicker(pair.SessTime)
 	defer ticker.Stop()
@@ -33,31 +34,31 @@ func TaskTicker(pair *models.TradingPair, reqList []models.IParams) {
 			TaskCreate(pair, reqList)
 
 		case <-pair.StopCh:
-			fmt.Println("Остановлена пара TaskTicker")
+			fmt.Println("Остановлена пара " + pair.Ccy.Currency)
 			return
 		}
 	}
 }
 
-func TaskCreate(pair *models.TradingPair, reqList []models.IParams) {
+func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 	if len(pair.OrderBook) > 0 {
 		models.SortOrderBooks(&pair.OrderBook)
 
 		task := models.TradeTask{
 			TaskId: rand.Intn(1000),
-			Currency: models.Ccy{
+			Ccy: models.Ccy{
 				Currency:  pair.Ccy.Currency,
 				Currency2: pair.Ccy.Currency2,
 			},
 			Buy: models.Operation{
-				Exchange: pair.OrderBook[len(pair.OrderBook)-1].Exchange,
-				Price:    pair.OrderBook[len(pair.OrderBook)-1].Asks[0].Price,
-				Volume:   nil,
+				Ex:     pair.OrderBook[len(pair.OrderBook)-1].Exchange,
+				Price:  pair.OrderBook[len(pair.OrderBook)-1].Asks[0].Price,
+				Volume: nil,
 			},
 			Sell: models.Operation{
-				Exchange: pair.OrderBook[0].Exchange,
-				Price:    pair.OrderBook[0].Bids[0].Price,
-				Volume:   nil,
+				Ex:     pair.OrderBook[0].Exchange,
+				Price:  pair.OrderBook[0].Bids[0].Price,
+				Volume: nil,
 			},
 			Profit: (pair.OrderBook[0].Bids[0].Price/pair.OrderBook[len(pair.OrderBook)-1].Asks[0].Price - 1) * 100,
 		}
@@ -74,11 +75,12 @@ func TaskCreate(pair *models.TradingPair, reqList []models.IParams) {
 		go func(rr models.IParams) {
 			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 			defer cancel()
+			defer except()
 
 			rq := rr.GetParams(pair.Ccy)
 			rq.DescRequest()
-			go SaveReqDb(rq)
 			rq.SendRequest()
+			go SaveReqDb(rq)
 			rs := rq.Response.Mapper()
 
 			if isDone(ctx) {
@@ -101,5 +103,11 @@ func isDone(ctx context.Context) bool {
 		return true
 	default:
 		return false
+	}
+}
+
+func except() {
+	if r := recover(); r != nil {
+		log.Println("Паника: ", r)
 	}
 }

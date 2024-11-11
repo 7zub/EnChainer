@@ -1,14 +1,20 @@
 # curl -i http://httpbin.org/ip
+@app = http://localhost:10
+
+GET {{app}}/addpair?currency=FLOW&title=Pair1
 ###
-GET http://localhost:10/addpair?currency=CHR&title=Pair1
+GET {{app}}/onpair?id=P_FLOW
 ###
-GET http://localhost:10/onpair?id=P_CHR
+GET {{app}}/addpair?currency=CHR&title=Pair1
 ###
-GET http://localhost:10/addpair?currency=ENJ&title=Pair1
+GET {{app}}/onpair?id=P_CHR
 ###
-GET http://localhost:10/onpair?id=P_ENJ
+GET {{app}}/offpair?id=P_CHR
 ###
-GET http://localhost:10/addpair?currency=FLOW&title=Pair1
+GET {{app}}/addpair?currency=ENJ&title=Pair1
 ###
-GET http://localhost:10/onpair?id=P_FLOW
+GET {{app}}/onpair?id=P_ENJ
 ###
+GET {{app}}/addpair?currency=NEIRO&title=Pair6
+###
+GET {{app}}/onpair?id=P_NEIRO

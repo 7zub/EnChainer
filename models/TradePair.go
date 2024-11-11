@@ -13,7 +13,7 @@ type IResponse interface {
 	Mapper() OrderBook
 }
 
-type TradingPair struct {
+type TradePair struct {
 	Id         uint `gorm:"primaryKey"`
 	PairId     string
 	Title      string

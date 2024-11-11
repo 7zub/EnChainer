@@ -15,9 +15,9 @@ func CreateDb() {
 	if err != nil {
 		panic("failed to connect to database")
 	} else {
-		d.Migrator().DropTable(&models.Request{}, &models.TradingPair{}, &models.OrderBook{}, &models.TradeTask{})
+		d.Migrator().DropTable(&models.Request{}, &models.TradePair{}, &models.OrderBook{}, &models.TradeTask{})
 
-		err := d.AutoMigrate(&models.Request{}, &models.TradingPair{}, &models.OrderBook{}, &models.TradeTask{})
+		err := d.AutoMigrate(&models.Request{}, &models.TradePair{}, &models.OrderBook{}, &models.TradeTask{})
 		if err != nil {
 			panic("failed to migrate database")
 		}
@@ -25,7 +25,7 @@ func CreateDb() {
 	}
 }
 
-func SaveBookDb(pair *models.TradingPair) {
+func SaveBookDb(pair *models.TradePair) {
 	result := db.Save(&pair)
 
 	if result.Error != nil {
@@ -33,7 +33,7 @@ func SaveBookDb(pair *models.TradingPair) {
 	}
 }
 
-func DeleteBookDb(pair *models.TradingPair) {
+func DeleteBookDb(pair *models.TradePair) {
 	result := db.Delete(&pair)
 
 	if result.Error != nil {

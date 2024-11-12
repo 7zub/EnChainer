@@ -5,4 +5,6 @@ const (
 	GATEIO  = "GATEIO"
 	HUOBI   = "HUOBI"
 	OKX     = "OKX"
+	MEXC    = "MEXC"
+	BYBIT   = "BYBIT"
 )

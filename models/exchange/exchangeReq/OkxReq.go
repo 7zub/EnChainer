@@ -12,7 +12,7 @@ type OkxBookParams struct {
 
 func (OkxBookParams) GetParams(ccy models.Ccy) *models.Request {
 	return &models.Request{
-		Url:      "https://www.okx.com/api/v5/market/books?",
+		Url:      "https://www.okx.com/api/v5/market/books",
 		Params:   OkxBookParams{Ccy: ccy.Currency + "-" + ccy.Currency2, Limit: 5},
 		Response: &exchangeRes.OkxBook{},
 	}

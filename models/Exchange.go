@@ -7,4 +7,5 @@ const (
 	OKX     = "OKX"
 	MEXC    = "MEXC"
 	BYBIT   = "BYBIT"
+	KUCOIN  = "KUCOIN"
 )

@@ -18,6 +18,7 @@ func BooksPair(pair *models.TradePair) models.Result {
 		exchangeReq.OkxBookParams{},
 		exchangeReq.MexcBookParams{},
 		exchangeReq.BybitBookParams{},
+		exchangeReq.KucoinBookParams{},
 	}
 
 	go TaskTicker(pair, RqList)

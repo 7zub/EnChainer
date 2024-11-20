@@ -3,6 +3,7 @@ package models
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"math/rand"
 	"net/http"
@@ -15,11 +16,14 @@ type IParams interface {
 }
 
 type Request struct {
-	ReqId    string `gorm:"primaryKey"`
-	Url      string
-	Params   IParams   `gorm:"-"`
-	Response IResponse `gorm:"-"`
-	ReqDate  time.Time `gorm:"type:timestamp"`
+	ReqId       string `gorm:"primaryKey"`
+	Url         string
+	Params      IParams   `gorm:"-"`
+	Response    IResponse `gorm:"-"`
+	ResponseRaw string
+	Code        int
+	ReqDate     time.Time `gorm:"type:timestamp"`
+	Log         Result    `gorm:"-"`
 }
 
 func (r *Request) SendRequest() {
@@ -57,8 +61,7 @@ func (r *Request) UrlBuild() *http.Request {
 	}
 
 	rq.URL.RawQuery = q.Encode()
-	log.Printf("Полный URL: %s\n", rq.URL.String())
-	fmt.Printf("Полный URL: %s\n", rq.URL.String())
+	r.Log = Result{Status: INFO, Message: fmt.Sprintf("Полный URL: %s\n", rq.URL.String())}
 	return rq
 }
 
@@ -66,19 +69,23 @@ func (r *Request) UrlExec(rq *http.Request) {
 	r.Url = rq.URL.String()
 	client := http.Client{}
 	resp, err := client.Do(rq)
+	r.Code = -1
+
 	if err != nil {
+		r.ResponseRaw = err.Error()
 		log.Println(err)
 		return
 	}
 
-	if resp.StatusCode != http.StatusOK {
-		log.Printf("Неверный код ответа: %d\n", resp.StatusCode)
-		return
-	}
-
-	err = json.NewDecoder(resp.Body).Decode(r.Response)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Println(err)
 		return
 	}
+	err = json.Unmarshal(body, r.Response)
+	if err != nil {
+		log.Println(err)
+	}
+	r.ResponseRaw = string(body)
+	r.Code = resp.StatusCode
 }

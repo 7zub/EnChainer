@@ -78,16 +78,18 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 		go func(rr models.IParams) {
 			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 			defer cancel()
-			defer except()
+			defer exceptTask()
 
 			rq := rr.GetParams(pair.Ccy)
 			rq.DescRequest()
+			go SaveReqDb(rq)
 			rq.SendRequest()
+			ToLog(*rq)
 			go SaveReqDb(rq)
 			rs := rq.Response.Mapper()
 
 			if isDone(ctx) {
-				fmt.Println("isDone()")
+				log.Println("isDone()")
 				return
 			}
 
@@ -95,6 +97,9 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 				rs.ReqDate = rq.ReqDate
 				rs.ReqId = rq.ReqId
 				pair.OrderBook = append(pair.OrderBook, rs)
+			} else {
+				rq.Log = models.Result{Status: models.ERR, Message: "Некорректный результат запроса"}
+				ToLog(*rq)
 			}
 		}(req)
 	}
@@ -106,11 +111,5 @@ func isDone(ctx context.Context) bool {
 		return true
 	default:
 		return false
-	}
-}
-
-func except() {
-	if r := recover(); r != nil {
-		log.Println("Паника: ", r)
 	}
 }

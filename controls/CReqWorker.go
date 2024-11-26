@@ -5,12 +5,10 @@ import (
 	"awesomeProject/models/exchange/exchangeReq"
 	"context"
 	"fmt"
-	"log"
-	"math/rand"
 	"time"
 )
 
-func BooksPair(pair *models.TradePair) models.Result {
+func BooksPair(pair *models.TradePair) {
 	RqList := []models.IParams{
 		exchangeReq.BinanceBookParams{},
 		exchangeReq.GateioBookParams{},
@@ -20,10 +18,7 @@ func BooksPair(pair *models.TradePair) models.Result {
 		exchangeReq.BybitBookParams{},
 		exchangeReq.KucoinBookParams{},
 	}
-
 	go TaskTicker(pair, RqList)
-
-	return models.Result{"OK", "Мониторинг пары запущен"}
 }
 
 func TaskTicker(pair *models.TradePair, reqList []models.IParams) {
@@ -48,7 +43,6 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 		models.SortOrderBooks(&pair.OrderBook)
 
 		task := models.TradeTask{
-			TaskId: rand.Intn(1000),
 			Ccy: models.Ccy{
 				Currency:  pair.Ccy.Currency,
 				Currency2: pair.Ccy.Currency2,
@@ -76,7 +70,7 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 
 	for _, req := range reqList {
 		go func(rr models.IParams) {
-			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			ctx, cancel := context.WithTimeout(context.Background(), pair.SessTime-100)
 			defer cancel()
 			defer exceptTask()
 
@@ -89,7 +83,8 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 			rs := rq.Response.Mapper()
 
 			if isDone(ctx) {
-				log.Println("isDone()")
+				rq.Log = models.Result{Status: models.WAR, Message: "Задержка запроса: " + rq.Url}
+				ToLog(*rq)
 				return
 			}
 
@@ -98,7 +93,7 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 				rs.ReqId = rq.ReqId
 				pair.OrderBook = append(pair.OrderBook, rs)
 			} else {
-				rq.Log = models.Result{Status: models.ERR, Message: "Некорректный результат запроса"}
+				rq.Log = models.Result{Status: models.WAR, Message: "Некорректный результат запроса"}
 				ToLog(*rq)
 			}
 		}(req)

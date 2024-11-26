@@ -7,14 +7,6 @@ import (
 	"runtime"
 )
 
-type Any struct {
-	value interface{}
-}
-
-func (v Any) Str() string {
-	return fmt.Sprintf("%v", v.value)
-}
-
 func ToLog(ifc interface{}) {
 	pc, _, _, _ := runtime.Caller(1)
 	funcName := runtime.FuncForPC(pc).Name()

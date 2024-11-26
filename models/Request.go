@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"math/rand"
 	"net/http"
 	"reflect"
@@ -61,7 +60,6 @@ func (r *Request) UrlBuild() *http.Request {
 	}
 
 	rq.URL.RawQuery = q.Encode()
-	r.Log = Result{Status: INFO, Message: fmt.Sprintf("Полный URL: %s\n", rq.URL.String())}
 	return rq
 }
 
@@ -70,21 +68,22 @@ func (r *Request) UrlExec(rq *http.Request) {
 	client := http.Client{}
 	resp, err := client.Do(rq)
 	r.Code = -1
-
+	r.Log = Result{Status: INFO, Message: fmt.Sprintf("Запрос: %s", rq.URL.String())}
 	if err != nil {
 		r.ResponseRaw = err.Error()
-		log.Println(err)
+		r.Log = Result{Status: ERR, Message: fmt.Sprintf("Ошибка выполнения запроса %s: %s", r.ReqId, err)}
 		return
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Println(err)
+		r.Log = Result{Status: ERR, Message: fmt.Sprintf("Ошибка чтения ответа на %s: %s", r.ReqId, err)}
 		return
 	}
+
 	err = json.Unmarshal(body, r.Response)
 	if err != nil {
-		log.Println(err)
+		r.Log = Result{Status: ERR, Message: fmt.Sprintf("Ошибка десериализации %s: %s", r.ReqId, err)}
 	}
 	r.ResponseRaw = string(body)
 	r.Code = resp.StatusCode

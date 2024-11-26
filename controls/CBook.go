@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"slices"
+	"strconv"
 	"time"
 )
 
@@ -17,6 +18,11 @@ func BookControl(w http.ResponseWriter) {
 func AddPair(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 	pairid := "P_" + params.Get("currency")
+	sessTime, _ := strconv.ParseInt(params.Get("time"), 10, 32)
+	if sessTime < 500 || sessTime > 100000 {
+		json.NewEncoder(w).Encode(models.Result{"ERR", "Некорректный интервал: " + params.Get("time")})
+		return
+	}
 
 	tp := models.TradePair{
 		PairId: pairid,
@@ -26,7 +32,7 @@ func AddPair(w http.ResponseWriter, r *http.Request) {
 			Currency2: "USDT",
 		},
 		Status:   models.Off,
-		SessTime: 2000 * time.Millisecond,
+		SessTime: time.Duration(sessTime) * time.Millisecond,
 	}
 
 	if i, _ := SearchPair(pairid); i == -1 {
@@ -60,7 +66,8 @@ func OnPair(w http.ResponseWriter, r *http.Request) {
 	if i, res := SearchPair(params.Get("id")); i != -1 {
 		if TradePair[i].Status != models.On {
 			TradePair[i].Status = models.On
-			json.NewEncoder(w).Encode(BooksPair(&TradePair[i]))
+			BooksPair(&TradePair[i])
+			json.NewEncoder(w).Encode(models.Result{"OK", "Мониторинг пары запущен"})
 		} else {
 			json.NewEncoder(w).Encode(models.Result{"ERR", "Пара уже запущена"})
 		}

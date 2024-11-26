@@ -20,24 +20,26 @@ type OkxBookData struct {
 func (book OkxBook) Mapper() models.OrderBook {
 	var newBids, newAsks []models.ValueBook
 
-	for _, bid := range book.Data[0].Bids {
-		price, _ := strconv.ParseFloat(bid[0], 64)
-		volume, _ := strconv.ParseFloat(bid[1], 64)
+	if len(book.Data) > 0 {
+		for _, bid := range book.Data[0].Bids {
+			price, _ := strconv.ParseFloat(bid[0], 64)
+			volume, _ := strconv.ParseFloat(bid[1], 64)
 
-		newBids = append(newBids, models.ValueBook{
-			Price:  price,
-			Volume: volume,
-		})
-	}
+			newBids = append(newBids, models.ValueBook{
+				Price:  price,
+				Volume: volume,
+			})
+		}
 
-	for _, ask := range book.Data[0].Asks {
-		price, _ := strconv.ParseFloat(ask[0], 64)
-		volume, _ := strconv.ParseFloat(ask[1], 64)
+		for _, ask := range book.Data[0].Asks {
+			price, _ := strconv.ParseFloat(ask[0], 64)
+			volume, _ := strconv.ParseFloat(ask[1], 64)
 
-		newAsks = append(newAsks, models.ValueBook{
-			Price:  price,
-			Volume: volume,
-		})
+			newAsks = append(newAsks, models.ValueBook{
+				Price:  price,
+				Volume: volume,
+			})
+		}
 	}
 
 	return models.OrderBook{

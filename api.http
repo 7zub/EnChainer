@@ -1,20 +1,44 @@
 # curl -i http://httpbin.org/ip
 @app = http://localhost:10
 
-GET {{app}}/addpair?currency=FLOW&title=Pair1
+GET {{app}}/addpair?currency=FLOW&time=про&title=Pair1
 ###
 GET {{app}}/onpair?id=P_FLOW
 ###
-GET {{app}}/addpair?currency=CHR&title=Pair1
+GET {{app}}/addpair?currency=CHR&time=2000&title=Pair1
 ###
 GET {{app}}/onpair?id=P_CHR
 ###
-GET {{app}}/offpair?id=P_CHR
+#GET {{app}}/offpair?id=P_CHR
 ###
-GET {{app}}/addpair?currency=ENJ&title=Pair1
+GET {{app}}/addpair?currency=ENJ&time=2000&title=Pair1
 ###
 GET {{app}}/onpair?id=P_ENJ
 ###
-GET {{app}}/addpair?currency=NEIRO&title=Pair6
+#GET {{app}}/addpair?currency=NEIRO&title=Pair6
 ###
-GET {{app}}/onpair?id=P_NEIRO
+#GET {{app}}/onpair?id=P_NEIRO
+###
+GET {{app}}/addpair?currency=FLM&time=2000&title=Pair corr
+###
+GET {{app}}/onpair?id=P_FLM
+###
+GET {{app}}/addpair?currency=CORE&time=2000&title=Pair6
+###
+GET {{app}}/onpair?id=P_CORE
+###
+GET {{app}}/addpair?currency=CSPR&time=2000&title=Pair6
+###
+GET {{app}}/onpair?id=P_CSPR
+###
+GET {{app}}/addpair?currency=XLM&time=2000&title=Pair6
+###
+GET {{app}}/onpair?id=P_XLM
+###
+GET {{app}}/addpair?currency=RDNT&time=1000&title=Check RDNT
+###
+GET {{app}}/onpair?id=P_RDNT
+###
+GET {{app}}/addpair?currency=OOE&time=1000&title=Test OOE
+###
+GET {{app}}/onpair?id=P_OOE

@@ -29,16 +29,23 @@ func (r *Request) SendRequest() {
 	r.UrlExec(r.UrlBuild())
 }
 
-func (r *Request) DescRequest() {
-	r.ReqDate = time.Now()
-	r.ReqId = fmt.Sprintf("B-%02d%02d%02d%02d%03d%03d",
-		r.ReqDate.Day(),
-		r.ReqDate.Hour(),
-		r.ReqDate.Minute(),
-		r.ReqDate.Second(),
-		r.ReqDate.Nanosecond()/1e6,
+func (r *Request) DescRequest(date time.Time, rid string) {
+	r.ReqDate = date
+	r.ReqId = rid
+}
+
+func GenDescRequest() (time.Time, string) {
+	reqDate := time.Now()
+	reqId := fmt.Sprintf("B-%02d%02d%02d%02d%03d%03d",
+		reqDate.Day(),
+		reqDate.Hour(),
+		reqDate.Minute(),
+		reqDate.Second(),
+		reqDate.Nanosecond()/1e6,
 		rand.Intn(1000),
 	)
+
+	return reqDate, reqId
 }
 
 func (r *Request) UrlBuild() *http.Request {

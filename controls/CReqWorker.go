@@ -71,11 +71,12 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 	for _, req := range reqList {
 		go func(rr models.IParams) {
 			ctx, cancel := context.WithTimeout(context.Background(), pair.SessTime-100)
+			date, rid := models.GenDescRequest()
 			defer cancel()
-			defer exceptTask()
+			defer exceptTask(rid)
 
 			rq := rr.GetParams(pair.Ccy)
-			rq.DescRequest()
+			rq.DescRequest(date, rid)
 			go SaveReqDb(rq)
 			rq.SendRequest()
 			ToLog(*rq)

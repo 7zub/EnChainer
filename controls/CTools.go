@@ -19,8 +19,8 @@ func ToLog(ifc interface{}) {
 	}
 }
 
-func exceptTask() {
+func exceptTask(ex string) {
 	if r := recover(); r != nil {
-		ToLog(fmt.Sprintf("Паника: %s", r))
+		ToLog(fmt.Sprintf("Паника в запросе %s: %s", ex, r))
 	}
 }

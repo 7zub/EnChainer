@@ -1,8 +1,8 @@
 package main
 
 import (
-	"awesomeProject/_dev"
-	"awesomeProject/views"
+	"enchainer/_dev"
+	"enchainer/views"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"

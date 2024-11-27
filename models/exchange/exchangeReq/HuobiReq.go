@@ -1,8 +1,8 @@
 package exchangeReq
 
 import (
-	"awesomeProject/models"
-	"awesomeProject/models/exchange/exchangeRes"
+	"enchainer/models"
+	"enchainer/models/exchange/exchangeRes"
 	"strings"
 )
 

@@ -1,7 +1,7 @@
 package controls
 
 import (
-	"awesomeProject/models"
+	"enchainer/models"
 	"fmt"
 	"log"
 	"runtime"

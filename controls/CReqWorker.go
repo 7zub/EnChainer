@@ -1,9 +1,9 @@
 package controls
 
 import (
-	"awesomeProject/models"
-	"awesomeProject/models/exchange/exchangeReq"
 	"context"
+	"enchainer/models"
+	"enchainer/models/exchange/exchangeReq"
 	"fmt"
 	"time"
 )

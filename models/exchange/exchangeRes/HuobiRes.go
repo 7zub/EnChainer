@@ -1,7 +1,7 @@
 package exchangeRes
 
 import (
-	"awesomeProject/models"
+	"enchainer/models"
 )
 
 type HuobiBook struct {

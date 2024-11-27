@@ -1,7 +1,7 @@
 package views
 
 import (
-	"awesomeProject/controls"
+	"enchainer/controls"
 	"net/http"
 )
 

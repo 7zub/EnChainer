@@ -2,7 +2,7 @@
 package main
 
 import (
-	"awesomeProject/controls"
+	"enchainer/controls"
 	"log"
 	"os"
 )
@@ -18,5 +18,6 @@ func logOn() {
 	if err != nil {
 		log.Fatal("Failed to open log file:", err)
 	}
+	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
 	log.SetOutput(file)
 }

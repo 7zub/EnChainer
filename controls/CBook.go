@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-var TradePair = []models.TradePair{}
+var TradePair []models.TradePair
 
 func BookControl(w http.ResponseWriter) {
 	json.NewEncoder(w).Encode(TradePair)

@@ -15,7 +15,7 @@ func CreateDb() {
 	if err != nil {
 		panic("Не удалось подключиться к БД")
 	} else {
-		d.Migrator().DropTable(&models.Request{}, &models.TradePair{}, &models.OrderBook{}, &models.TradeTask{})
+		d.Migrator().DropTable(&models.Request{} /*&models.TradePair{},*/, &models.OrderBook{}, &models.TradeTask{})
 
 		err := d.AutoMigrate(&models.Request{}, &models.TradePair{}, &models.OrderBook{}, &models.TradeTask{})
 		if err != nil {
@@ -26,10 +26,17 @@ func CreateDb() {
 }
 
 func SaveBookDb(pair *models.TradePair) {
-	result := db.Save(&pair)
+	result := db.Save(pair)
 
 	if result.Error != nil {
 		ToLog(fmt.Sprintf("Ошибка БД order book: %s", result.Error))
+	}
+}
+
+func LoadBookDb(pairs *[]models.TradePair) {
+	result := db.Find(pairs)
+	if result.Error != nil {
+		ToLog(fmt.Sprintf("Ошибка БД load book: %s", result.Error))
 	}
 }
 

@@ -1,8 +1,8 @@
-// main.go
 package main
 
 import (
 	"enchainer/controls"
+	"enchainer/models"
 	"log"
 	"os"
 )
@@ -10,6 +10,12 @@ import (
 func main() {
 	logOn()
 	controls.CreateDb()
+	controls.LoadBookDb(&controls.TradePair)
+	for i, pair := range controls.TradePair {
+		if pair.Status == models.On {
+			controls.BooksPair(&controls.TradePair[i])
+		}
+	}
 	handleRequests()
 }
 

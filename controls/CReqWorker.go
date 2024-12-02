@@ -84,7 +84,7 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 			rs := rq.Response.Mapper()
 
 			if isDone(ctx) {
-				rq.Log = models.Result{Status: models.WAR, Message: "Задержка запроса: " + rq.Url}
+				rq.Log = models.Result{Status: models.WAR, Message: "Задержка запроса " + rq.ReqId + ": " + rq.Url}
 				ToLog(*rq)
 				return
 			}
@@ -94,7 +94,7 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 				rs.ReqId = rq.ReqId
 				pair.OrderBook = append(pair.OrderBook, rs)
 			} else {
-				rq.Log = models.Result{Status: models.WAR, Message: "Некорректный результат запроса"}
+				rq.Log = models.Result{Status: models.WAR, Message: "Некорректный результат запроса " + rq.ReqId}
 				ToLog(*rq)
 			}
 		}(req)

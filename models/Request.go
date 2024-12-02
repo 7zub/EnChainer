@@ -75,7 +75,7 @@ func (r *Request) UrlExec(rq *http.Request) {
 	client := http.Client{}
 	resp, err := client.Do(rq)
 	r.Code = -1
-	r.Log = Result{Status: INFO, Message: fmt.Sprintf("Запрос: %s", rq.URL.String())}
+	r.Log = Result{Status: INFO, Message: fmt.Sprintf("Запрос %s: %s", r.ReqId, rq.URL.String())}
 	if err != nil {
 		r.ResponseRaw = err.Error()
 		r.Log = Result{Status: ERR, Message: fmt.Sprintf("Ошибка выполнения запроса %s: %s", r.ReqId, err)}

@@ -1,16 +1,16 @@
-package exchangeRes
+package BookRes
 
 import (
 	"enchainer/models"
 	"strconv"
 )
 
-type MexcBook struct {
+type BinanceBook struct {
 	Bids [][]string `json:"bids"`
 	Asks [][]string `json:"asks"`
 }
 
-func (book MexcBook) Mapper() models.OrderBook {
+func (book BinanceBook) Mapper() any {
 	var newBids, newAsks []models.ValueBook
 
 	for _, bid := range book.Bids {
@@ -34,7 +34,7 @@ func (book MexcBook) Mapper() models.OrderBook {
 	}
 
 	return models.OrderBook{
-		Exchange: models.MEXC,
+		Exchange: models.BINANCE,
 		Bids:     newBids,
 		Asks:     newAsks,
 	}

@@ -3,25 +3,25 @@ package controls
 import (
 	"context"
 	"enchainer/models"
-	"enchainer/models/exchange/exchangeReq"
+	"enchainer/models/exchange/exchangeReq/BookReq"
 	"fmt"
 	"time"
 )
 
 func BooksPair(pair *models.TradePair) {
-	RqList := []models.IParams{
-		exchangeReq.BinanceBookParams{},
-		exchangeReq.GateioBookParams{},
-		exchangeReq.HuobiBookParams{},
-		exchangeReq.OkxBookParams{},
-		exchangeReq.MexcBookParams{},
-		exchangeReq.BybitBookParams{},
-		exchangeReq.KucoinBookParams{},
+	RqList := []models.IParams[models.Ccy]{
+		BookReq.BinanceBookParams{},
+		BookReq.GateioBookParams{},
+		BookReq.HuobiBookParams{},
+		BookReq.OkxBookParams{},
+		BookReq.MexcBookParams{},
+		BookReq.BybitBookParams{},
+		BookReq.KucoinBookParams{},
 	}
 	go TaskTicker(pair, RqList)
 }
 
-func TaskTicker(pair *models.TradePair, reqList []models.IParams) {
+func TaskTicker(pair *models.TradePair, reqList []models.IParams[models.Ccy]) {
 	pair.StopCh = make(chan struct{})
 	ticker := time.NewTicker(pair.SessTime)
 	defer ticker.Stop()
@@ -38,7 +38,7 @@ func TaskTicker(pair *models.TradePair, reqList []models.IParams) {
 	}
 }
 
-func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
+func TaskCreate(pair *models.TradePair, reqList []models.IParams[models.Ccy]) {
 	if len(pair.OrderBook) > 0 {
 		models.SortOrderBooks(&pair.OrderBook)
 
@@ -50,14 +50,14 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 			Buy: models.Operation{
 				Ex:     pair.OrderBook[len(pair.OrderBook)-1].Exchange,
 				Price:  pair.OrderBook[len(pair.OrderBook)-1].Asks[0].Price,
-				Volume: nil,
+				Volume: pair.OrderBook[len(pair.OrderBook)-1].Asks[0].Volume,
 			},
 			Sell: models.Operation{
 				Ex:     pair.OrderBook[0].Exchange,
 				Price:  pair.OrderBook[0].Bids[0].Price,
-				Volume: nil,
+				Volume: pair.OrderBook[0].Bids[0].Volume,
 			},
-			Profit: (pair.OrderBook[0].Bids[0].Price/pair.OrderBook[len(pair.OrderBook)-1].Asks[0].Price - 1) * 100,
+			Spread: (pair.OrderBook[0].Bids[0].Price/pair.OrderBook[len(pair.OrderBook)-1].Asks[0].Price - 1) * 100,
 		}
 
 		TradeTask = append(TradeTask, task)
@@ -69,7 +69,7 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 	}
 
 	for _, req := range reqList {
-		go func(rr models.IParams) {
+		go func(rr models.IParams[models.Ccy]) {
 			ctx, cancel := context.WithTimeout(context.Background(), pair.SessTime-100)
 			date, rid := models.GenDescRequest()
 			defer cancel()
@@ -77,11 +77,10 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 
 			rq := rr.GetParams(pair.Ccy)
 			rq.DescRequest(date, rid)
-			go SaveReqDb(rq)
 			rq.SendRequest()
 			ToLog(*rq)
 			go SaveReqDb(rq)
-			rs := rq.Response.Mapper()
+			rs := rq.Response.Mapper().(models.OrderBook)
 
 			if isDone(ctx) {
 				rq.Log = models.Result{Status: models.WAR, Message: "Задержка запроса " + rq.ReqId + ": " + rq.Url}

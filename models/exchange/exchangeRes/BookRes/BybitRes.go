@@ -1,20 +1,25 @@
-package exchangeRes
+package BookRes
 
 import (
 	"enchainer/models"
 	"strconv"
 )
 
-type GateioBook struct {
-	Current int        `json:"current"`
-	Bids    [][]string `json:"bids"`
-	Asks    [][]string `json:"asks"`
+type BybitBook struct {
+	RetCode int             `json:"retCode"`
+	RetMsg  string          `json:"retMsg"`
+	Result  BybitBookResult `json:"result"`
 }
 
-func (book GateioBook) Mapper() models.OrderBook {
+type BybitBookResult struct {
+	Bids [][]string `json:"b"`
+	Asks [][]string `json:"a"`
+}
+
+func (book BybitBook) Mapper() any {
 	var newBids, newAsks []models.ValueBook
 
-	for _, bid := range book.Bids {
+	for _, bid := range book.Result.Bids {
 		price, _ := strconv.ParseFloat(bid[0], 64)
 		volume, _ := strconv.ParseFloat(bid[1], 64)
 
@@ -24,7 +29,7 @@ func (book GateioBook) Mapper() models.OrderBook {
 		})
 	}
 
-	for _, ask := range book.Asks {
+	for _, ask := range book.Result.Asks {
 		price, _ := strconv.ParseFloat(ask[0], 64)
 		volume, _ := strconv.ParseFloat(ask[1], 64)
 
@@ -35,7 +40,7 @@ func (book GateioBook) Mapper() models.OrderBook {
 	}
 
 	return models.OrderBook{
-		Exchange: models.GATEIO,
+		Exchange: models.BYBIT,
 		Bids:     newBids,
 		Asks:     newAsks,
 	}

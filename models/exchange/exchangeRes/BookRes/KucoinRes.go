@@ -1,4 +1,4 @@
-package exchangeRes
+package BookRes
 
 import (
 	"enchainer/models"
@@ -16,7 +16,7 @@ type KucoinBookData struct {
 	Asks [][]string `json:"asks"`
 }
 
-func (book KucoinBook) Mapper() models.OrderBook {
+func (book KucoinBook) Mapper() any {
 	var newBids, newAsks []models.ValueBook
 
 	for _, bid := range book.Data.Bids {

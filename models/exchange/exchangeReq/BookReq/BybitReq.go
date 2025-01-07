@@ -1,8 +1,8 @@
-package exchangeReq
+package BookReq
 
 import (
 	"enchainer/models"
-	"enchainer/models/exchange/exchangeRes"
+	"enchainer/models/exchange/exchangeRes/BookRes"
 )
 
 type BybitBookParams struct {
@@ -15,6 +15,6 @@ func (BybitBookParams) GetParams(ccy models.Ccy) *models.Request {
 	return &models.Request{
 		Url:      "https://api.bybit.com/v5/market/orderbook",
 		Params:   BybitBookParams{Ccy: ccy.Currency + ccy.Currency2, Category: "linear", Limit: 5},
-		Response: &exchangeRes.BybitBook{},
+		Response: &BookRes.BybitBook{},
 	}
 }

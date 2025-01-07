@@ -1,4 +1,4 @@
-package exchangeRes
+package BookRes
 
 import (
 	"enchainer/models"
@@ -17,7 +17,7 @@ type OkxBookData struct {
 	Asks [][]string `json:"asks"`
 }
 
-func (book OkxBook) Mapper() models.OrderBook {
+func (book OkxBook) Mapper() any {
 	var newBids, newAsks []models.ValueBook
 
 	if len(book.Data) > 0 {

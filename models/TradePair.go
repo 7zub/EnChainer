@@ -8,8 +8,8 @@ import (
 	"time"
 )
 
-type IResponse interface {
-	Mapper() OrderBook
+type IResponse[T any] interface {
+	Mapper() T
 }
 
 type TradePair struct {
@@ -26,8 +26,8 @@ type TradePair struct {
 }
 
 type Ccy struct {
-	Currency  string `gorm:"column:currency"`
-	Currency2 string `gorm:"column:currency2"`
+	Currency  string `gorm:"column:ccy"`
+	Currency2 string `gorm:"column:ccy2"`
 }
 
 type OrderBook struct {

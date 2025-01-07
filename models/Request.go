@@ -10,15 +10,16 @@ import (
 	"time"
 )
 
-type IParams interface {
+type IParams[T any] interface {
 	GetParams(ccy Ccy) *Request
 }
 
 type Request struct {
 	ReqId       string `gorm:"primaryKey"`
+	ReqType     string
 	Url         string
-	Params      IParams   `gorm:"-"`
-	Response    IResponse `gorm:"-"`
+	Params      IParams[any]   `gorm:"-"`
+	Response    IResponse[any] `gorm:"-"`
 	ResponseRaw string
 	Code        int
 	ReqDate     time.Time `gorm:"type:timestamp"`
@@ -32,17 +33,17 @@ func (r *Request) SendRequest() {
 func (r *Request) DescRequest(date time.Time, rid string) {
 	r.ReqDate = date
 	r.ReqId = rid
+	r.ReqType = "Book"
 }
 
 func GenDescRequest() (time.Time, string) {
 	reqDate := time.Now()
-	reqId := fmt.Sprintf("B-%02d%02d%02d%02d%03d%03d",
+	reqId := fmt.Sprintf("B-%02d/%02d%02d%02d-%d",
 		reqDate.Day(),
 		reqDate.Hour(),
 		reqDate.Minute(),
 		reqDate.Second(),
-		reqDate.Nanosecond()/1e6,
-		rand.Intn(1000),
+		rand.Intn(int(time.Now().Unix())),
 	)
 
 	return reqDate, reqId

@@ -1,16 +1,17 @@
-package exchangeRes
+package BookRes
 
 import (
 	"enchainer/models"
 	"strconv"
 )
 
-type BinanceBook struct {
-	Bids [][]string `json:"bids"`
-	Asks [][]string `json:"asks"`
+type GateioBook struct {
+	Current int        `json:"current"`
+	Bids    [][]string `json:"bids"`
+	Asks    [][]string `json:"asks"`
 }
 
-func (book BinanceBook) Mapper() models.OrderBook {
+func (book GateioBook) Mapper() any {
 	var newBids, newAsks []models.ValueBook
 
 	for _, bid := range book.Bids {
@@ -34,7 +35,7 @@ func (book BinanceBook) Mapper() models.OrderBook {
 	}
 
 	return models.OrderBook{
-		Exchange: models.BINANCE,
+		Exchange: models.GATEIO,
 		Bids:     newBids,
 		Asks:     newAsks,
 	}

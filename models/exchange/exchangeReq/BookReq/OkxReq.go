@@ -1,8 +1,8 @@
-package exchangeReq
+package BookReq
 
 import (
 	"enchainer/models"
-	"enchainer/models/exchange/exchangeRes"
+	"enchainer/models/exchange/exchangeRes/BookRes"
 )
 
 type OkxBookParams struct {
@@ -14,6 +14,6 @@ func (OkxBookParams) GetParams(ccy models.Ccy) *models.Request {
 	return &models.Request{
 		Url:      "https://www.okx.com/api/v5/market/books",
 		Params:   OkxBookParams{Ccy: ccy.Currency + "-" + ccy.Currency2, Limit: 5},
-		Response: &exchangeRes.OkxBook{},
+		Response: &BookRes.OkxBook{},
 	}
 }

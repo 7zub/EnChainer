@@ -1,4 +1,4 @@
-package exchangeRes
+package BookRes
 
 import (
 	"enchainer/models"
@@ -18,7 +18,7 @@ type HuobiBookTick struct {
 	Asks    [][]float64 `json:"asks"`
 }
 
-func (book HuobiBook) Mapper() models.OrderBook {
+func (book HuobiBook) Mapper() any {
 	var newBids, newAsks []models.ValueBook
 
 	for _, bid := range book.Tick.Bids {

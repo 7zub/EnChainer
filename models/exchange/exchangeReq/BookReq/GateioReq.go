@@ -1,8 +1,8 @@
-package exchangeReq
+package BookReq
 
 import (
 	"enchainer/models"
-	"enchainer/models/exchange/exchangeRes"
+	"enchainer/models/exchange/exchangeRes/BookRes"
 )
 
 type GateioBookParams struct {
@@ -13,6 +13,6 @@ func (GateioBookParams) GetParams(ccy models.Ccy) *models.Request {
 	return &models.Request{
 		Url:      "https://api.gateio.ws/api/v4/spot/order_book",
 		Params:   GateioBookParams{Ccy: ccy.Currency + "_" + ccy.Currency2},
-		Response: &exchangeRes.GateioBook{},
+		Response: &BookRes.GateioBook{},
 	}
 }

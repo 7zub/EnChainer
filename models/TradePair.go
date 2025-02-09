@@ -8,8 +8,8 @@ import (
 	"time"
 )
 
-type IResponse[T any] interface {
-	Mapper() T
+type IResponse interface {
+	Mapper() any
 }
 
 type TradePair struct {

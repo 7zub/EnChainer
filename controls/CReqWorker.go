@@ -9,19 +9,19 @@ import (
 )
 
 func BooksPair(pair *models.TradePair) {
-	RqList := []models.IParams[models.Ccy]{
+	RqList := []models.IParams{
 		BookReq.BinanceBookParams{},
-		BookReq.GateioBookParams{},
-		BookReq.HuobiBookParams{},
-		BookReq.OkxBookParams{},
-		BookReq.MexcBookParams{},
+		//BookReq.GateioBookParams{},
+		//BookReq.HuobiBookParams{},
+		//BookReq.OkxBookParams{},
+		//BookReq.MexcBookParams{},
 		BookReq.BybitBookParams{},
-		BookReq.KucoinBookParams{},
+		//BookReq.KucoinBookParams{},
 	}
 	go TaskTicker(pair, RqList)
 }
 
-func TaskTicker(pair *models.TradePair, reqList []models.IParams[models.Ccy]) {
+func TaskTicker(pair *models.TradePair, reqList []models.IParams) {
 	pair.StopCh = make(chan struct{})
 	ticker := time.NewTicker(pair.SessTime)
 	defer ticker.Stop()
@@ -38,7 +38,7 @@ func TaskTicker(pair *models.TradePair, reqList []models.IParams[models.Ccy]) {
 	}
 }
 
-func TaskCreate(pair *models.TradePair, reqList []models.IParams[models.Ccy]) {
+func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 	if len(pair.OrderBook) > 0 {
 		models.SortOrderBooks(&pair.OrderBook)
 
@@ -69,7 +69,7 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams[models.Ccy]) {
 	}
 
 	for _, req := range reqList {
-		go func(rr models.IParams[models.Ccy]) {
+		go func(rr models.IParams) {
 			ctx, cancel := context.WithTimeout(context.Background(), pair.SessTime-100)
 			date, rid := models.GenDescRequest()
 			defer cancel()

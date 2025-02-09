@@ -1,6 +1,9 @@
 package models
 
 import (
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -10,16 +13,17 @@ import (
 	"time"
 )
 
-type IParams[T any] interface {
-	GetParams(ccy Ccy) *Request
+type IParams interface {
+	GetParams(t any) *Request
 }
 
 type Request struct {
 	ReqId       string `gorm:"primaryKey"`
 	ReqType     string
 	Url         string
-	Params      IParams[any]   `gorm:"-"`
-	Response    IResponse[any] `gorm:"-"`
+	Head        http.Header `gorm:"-"`
+	Params      IParams     `gorm:"-"`
+	Response    IResponse   `gorm:"-"`
 	ResponseRaw string
 	Code        int
 	ReqDate     time.Time `gorm:"type:timestamp"`
@@ -33,12 +37,11 @@ func (r *Request) SendRequest() {
 func (r *Request) DescRequest(date time.Time, rid string) {
 	r.ReqDate = date
 	r.ReqId = rid
-	r.ReqType = "Book"
 }
 
 func GenDescRequest() (time.Time, string) {
 	reqDate := time.Now()
-	reqId := fmt.Sprintf("B-%02d/%02d%02d%02d-%d",
+	reqId := fmt.Sprintf("%02d/%02d%02d%02d-%d",
 		reqDate.Day(),
 		reqDate.Hour(),
 		reqDate.Minute(),
@@ -67,6 +70,16 @@ func (r *Request) UrlBuild() *http.Request {
 		)
 	}
 
+	fmt.Println(Conf.SecretKey)
+
+	switch r.ReqType {
+	case "Trade", "Balance":
+		rq.Method = "POST"
+		rq.Header = r.Head
+		signature := sign(q.Encode(), Conf.SecretKey)
+		q.Add("signature", signature)
+	}
+
 	rq.URL.RawQuery = q.Encode()
 	return rq
 }
@@ -84,6 +97,7 @@ func (r *Request) UrlExec(rq *http.Request) {
 	}
 
 	body, err := io.ReadAll(resp.Body)
+
 	if err != nil {
 		r.Log = Result{Status: ERR, Message: fmt.Sprintf("Ошибка чтения ответа на %s: %s", r.ReqId, err)}
 		return
@@ -95,4 +109,10 @@ func (r *Request) UrlExec(rq *http.Request) {
 	}
 	r.ResponseRaw = string(body)
 	r.Code = resp.StatusCode
+}
+
+func sign(data, secret string) string {
+	mac := hmac.New(sha256.New, []byte(secret))
+	mac.Write([]byte(data))
+	return hex.EncodeToString(mac.Sum(nil))
 }

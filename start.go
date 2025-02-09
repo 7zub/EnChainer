@@ -7,15 +7,19 @@ import (
 	"os"
 )
 
+var ccc models.Config
+
 func main() {
 	logOn()
+	models.Load()
 	controls.CreateDb()
 	controls.LoadBookDb(&controls.TradePair)
-	for i, pair := range controls.TradePair {
-		if pair.Status == models.On {
-			controls.BooksPair(&controls.TradePair[i])
-		}
-	}
+	//for i, pair := range controls.TradePair {
+	//	if pair.Status == models.On {
+	//		controls.BooksPair(&controls.TradePair[i])
+	//	}
+	//}
+	controls.Trade()
 	handleRequests()
 }
 

@@ -10,10 +10,12 @@ type BinanceBookParams struct {
 	Limit int    `url:"limit"`
 }
 
-func (BinanceBookParams) GetParams(ccy models.Ccy) *models.Request {
+func (BinanceBookParams) GetParams(ccy any) *models.Request {
+	c := ccy.(models.Ccy)
+
 	return &models.Request{
 		Url:      "https://api.binance.com/api/v3/depth",
-		Params:   BinanceBookParams{Ccy: ccy.Currency + ccy.Currency2, Limit: 5},
+		Params:   BinanceBookParams{Ccy: c.Currency + c.Currency2, Limit: 5},
 		Response: &BookRes.BinanceBook{},
 	}
 }

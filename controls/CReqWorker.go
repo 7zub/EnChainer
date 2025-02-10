@@ -11,12 +11,12 @@ import (
 func BooksPair(pair *models.TradePair) {
 	RqList := []models.IParams{
 		BookReq.BinanceBookParams{},
-		//BookReq.GateioBookParams{},
-		//BookReq.HuobiBookParams{},
-		//BookReq.OkxBookParams{},
-		//BookReq.MexcBookParams{},
+		BookReq.GateioBookParams{},
+		BookReq.HuobiBookParams{},
+		BookReq.OkxBookParams{},
+		BookReq.MexcBookParams{},
 		BookReq.BybitBookParams{},
-		//BookReq.KucoinBookParams{},
+		BookReq.KucoinBookParams{},
 	}
 	go TaskTicker(pair, RqList)
 }

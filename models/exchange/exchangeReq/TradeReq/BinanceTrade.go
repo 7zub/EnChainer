@@ -1,6 +1,7 @@
 package TradeReq
 
 import (
+	"crypto/sha256"
 	"enchainer/models"
 	"enchainer/models/exchange/exchangeRes/BookRes"
 	"net/http"
@@ -22,8 +23,9 @@ func (BinanceTradeParams) GetParams(task any) *models.Request {
 	t := task.(models.TradeTask)
 
 	return &models.Request{
-		Url:     "https://api.binance.com/api/v3/order",
-		ReqType: "Trade",
+		Url:      "https://api.binance.com/api/v3/order",
+		ReqType:  "Trade",
+		SignType: sha256.New,
 		Head: http.Header{
 			"X-MBX-APIKEY": []string{models.Conf.ApiKey},
 		},

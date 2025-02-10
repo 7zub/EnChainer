@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"hash"
 	"io"
 	"math/rand"
 	"net/http"
@@ -20,6 +21,7 @@ type IParams interface {
 type Request struct {
 	ReqId       string `gorm:"primaryKey"`
 	ReqType     string
+	SignType    func() hash.Hash `gorm:"-"`
 	Url         string
 	Head        http.Header `gorm:"-"`
 	Params      IParams     `gorm:"-"`
@@ -69,8 +71,6 @@ func (r *Request) UrlBuild() *http.Request {
 			fmt.Sprintf("%v", values.Field(i)),
 		)
 	}
-
-	fmt.Println(Conf.SecretKey)
 
 	switch r.ReqType {
 	case "Trade", "Balance":

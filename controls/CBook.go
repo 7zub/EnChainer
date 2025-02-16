@@ -40,7 +40,7 @@ func AddPair(w http.ResponseWriter, r *http.Request) {
 		TradePair = append(TradePair, tp)
 		SaveBookDb(&TradePair[len(TradePair)-1])
 
-		json.NewEncoder(w).Encode(models.Result{Status: "OK", Message: "Пара " + params.Get("currency") + " добавлена"})
+		json.NewEncoder(w).Encode(models.Result{Status: models.OK, Message: "Пара " + params.Get("currency") + " добавлена"})
 	} else {
 		json.NewEncoder(w).Encode(models.Result{Status: "ERR", Message: "Пара " + params.Get("currency") + " уже существует"})
 	}
@@ -53,7 +53,7 @@ func DeletePair(w http.ResponseWriter, r *http.Request) {
 			DeleteBookDb(&TradePair[i])
 			TradePair = slices.Delete(TradePair, i, i+1)
 
-			json.NewEncoder(w).Encode(models.Result{Status: "OK", Message: "Пара удалена"})
+			json.NewEncoder(w).Encode(models.Result{Status: models.OK, Message: "Пара удалена"})
 		} else {
 			json.NewEncoder(w).Encode(models.Result{Status: "ERR", Message: "Пара должна быть остановлена"})
 		}
@@ -69,7 +69,7 @@ func OnPair(w http.ResponseWriter, r *http.Request) {
 			TradePair[i].Status = models.On
 			SaveBookDb(&TradePair[i])
 			BooksPair(&TradePair[i])
-			json.NewEncoder(w).Encode(models.Result{Status: "OK", Message: "Мониторинг пары запущен"})
+			json.NewEncoder(w).Encode(models.Result{Status: models.OK, Message: "Мониторинг пары запущен"})
 		} else {
 			json.NewEncoder(w).Encode(models.Result{Status: "ERR", Message: "Пара уже запущена"})
 		}
@@ -83,7 +83,7 @@ func OffPair(w http.ResponseWriter, r *http.Request) {
 	if i, res := SearchPair(params.Get("id")); i != -1 {
 		TradePair[i].Status = models.Off
 		close(TradePair[i].StopCh)
-		json.NewEncoder(w).Encode(models.Result{Status: "OK", Message: "Пара остановлена"})
+		json.NewEncoder(w).Encode(models.Result{Status: models.OK, Message: "Пара остановлена"})
 	} else {
 		json.NewEncoder(w).Encode(res)
 	}
@@ -92,7 +92,7 @@ func OffPair(w http.ResponseWriter, r *http.Request) {
 func SearchPair(pairid string) (int, models.Result) {
 	for i, pair := range TradePair {
 		if pairid == pair.PairId {
-			return i, models.Result{Status: "OK"}
+			return i, models.Result{Status: models.OK}
 		}
 	}
 	return -1, models.Result{Status: "ERR", Message: "Пары " + pairid + " не существует"}

@@ -1,13 +1,16 @@
 package models
 
 type Result struct {
-	Status string
+	Status Status
 	//Source  string
 	Message string
 }
 
+type Status string
+
 const (
-	INFO = "INFO"
-	WAR  = "WAR"
-	ERR  = "ERR"
+	OK   Status = "OK"
+	INFO Status = "INFO"
+	WAR  Status = "WAR"
+	ERR  Status = "ERR"
 )

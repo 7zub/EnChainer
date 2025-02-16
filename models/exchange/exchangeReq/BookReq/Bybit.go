@@ -11,10 +11,12 @@ type BybitBookParams struct {
 	Category string `url:"category"`
 }
 
-func (BybitBookParams) GetParams(ccy models.Ccy) *models.Request {
+func (BybitBookParams) GetParams(ccy any) *models.Request {
+	c := ccy.(models.Ccy)
+
 	return &models.Request{
 		Url:      "https://api.bybit.com/v5/market/orderbook",
-		Params:   BybitBookParams{Ccy: ccy.Currency + ccy.Currency2, Category: "linear", Limit: 5},
+		Params:   BybitBookParams{Ccy: c.Currency + c.Currency2, Category: "linear", Limit: 5},
 		Response: &BookRes.BybitBook{},
 	}
 }

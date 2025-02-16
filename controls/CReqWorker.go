@@ -89,8 +89,6 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 			}
 
 			if rs.BookExist() {
-				rs.ReqDate = rq.ReqDate
-				rs.ReqId = rq.ReqId
 				pair.OrderBook = append(pair.OrderBook, rs)
 			} else {
 				rq.Log = models.Result{Status: models.WAR, Message: "Некорректный результат запроса " + rq.ReqId}

@@ -12,10 +12,12 @@ type HuobiBookParams struct {
 	Type  string `url:"type"`
 }
 
-func (HuobiBookParams) GetParams(ccy models.Ccy) *models.Request {
+func (HuobiBookParams) GetParams(ccy any) *models.Request {
+	c := ccy.(models.Ccy)
+
 	return &models.Request{
 		Url:      "https://api.huobi.pro/market/depth",
-		Params:   HuobiBookParams{Ccy: strings.ToLower(ccy.Currency + ccy.Currency2), Limit: 5, Type: "step0"},
+		Params:   HuobiBookParams{Ccy: strings.ToLower(c.Currency + c.Currency2), Limit: 5, Type: "step0"},
 		Response: &BookRes.HuobiBook{},
 	}
 }

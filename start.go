@@ -11,7 +11,7 @@ var ccc models.Config
 
 func main() {
 	logOn()
-	models.Load()
+	controls.Load()
 	controls.CreateDb()
 	controls.LoadBookDb(&controls.TradePair)
 	//for i, pair := range controls.TradePair {

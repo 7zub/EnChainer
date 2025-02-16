@@ -9,10 +9,12 @@ type GateioBookParams struct {
 	Ccy string `url:"currency_pair"`
 }
 
-func (GateioBookParams) GetParams(ccy models.Ccy) *models.Request {
+func (GateioBookParams) GetParams(ccy any) *models.Request {
+	c := ccy.(models.Ccy)
+
 	return &models.Request{
 		Url:      "https://api.gateio.ws/api/v4/spot/order_book",
-		Params:   GateioBookParams{Ccy: ccy.Currency + "_" + ccy.Currency2},
+		Params:   GateioBookParams{Ccy: c.Currency + "_" + c.Currency2},
 		Response: &BookRes.GateioBook{},
 	}
 }

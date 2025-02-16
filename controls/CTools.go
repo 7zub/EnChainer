@@ -3,7 +3,9 @@ package controls
 import (
 	"enchainer/models"
 	"fmt"
+	"gopkg.in/yaml.v3"
 	"log"
+	"os"
 	"runtime"
 )
 
@@ -22,5 +24,18 @@ func ToLog(ifc interface{}) {
 func exceptTask(ex string) {
 	if r := recover(); r != nil {
 		ToLog(fmt.Sprintf("Паника в запросе %s: %s", ex, r))
+	}
+}
+
+func Load() {
+	data, err := os.ReadFile("config.yaml")
+	if err != nil {
+		ToLog(err)
+		panic("Ошибка загрузки конфигурации")
+	}
+
+	if err := yaml.Unmarshal(data, &models.Conf); err != nil {
+		ToLog(err)
+		panic("Ошибка десериализации конфигурации")
 	}
 }

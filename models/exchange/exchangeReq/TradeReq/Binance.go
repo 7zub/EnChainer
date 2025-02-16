@@ -3,7 +3,7 @@ package TradeReq
 import (
 	"crypto/sha256"
 	"enchainer/models"
-	"enchainer/models/exchange/exchangeRes/BookRes"
+	"enchainer/models/exchange/exchangeRes/TradeRes"
 	"net/http"
 	"strings"
 	"time"
@@ -38,6 +38,6 @@ func (BinanceTradeParams) GetParams(task any) *models.Request {
 			Live:   "GTC",
 			Time:   time.Now().UnixMilli(),
 		},
-		Response: &BookRes.BinanceBook{},
+		Response: &TradeRes.BinanceTrade{},
 	}
 }

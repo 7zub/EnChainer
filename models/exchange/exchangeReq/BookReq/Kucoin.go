@@ -9,10 +9,12 @@ type KucoinBookParams struct {
 	Ccy string `url:"symbol"`
 }
 
-func (KucoinBookParams) GetParams(ccy models.Ccy) *models.Request {
+func (KucoinBookParams) GetParams(ccy any) *models.Request {
+	c := ccy.(models.Ccy)
+
 	return &models.Request{
 		Url:      "https://api.kucoin.com/api/v1/market/orderbook/level2_20",
-		Params:   KucoinBookParams{Ccy: ccy.Currency + "-" + ccy.Currency2},
+		Params:   KucoinBookParams{Ccy: c.Currency + "-" + c.Currency2},
 		Response: &BookRes.KucoinBook{},
 	}
 }

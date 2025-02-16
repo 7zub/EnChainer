@@ -10,10 +10,12 @@ type MexcBookParams struct {
 	Limit int    `url:"limit"`
 }
 
-func (MexcBookParams) GetParams(ccy models.Ccy) *models.Request {
+func (MexcBookParams) GetParams(ccy any) *models.Request {
+	c := ccy.(models.Ccy)
+
 	return &models.Request{
 		Url:      "https://api.mexc.com/api/v3/depth",
-		Params:   MexcBookParams{Ccy: ccy.Currency + ccy.Currency2, Limit: 5},
+		Params:   MexcBookParams{Ccy: c.Currency + c.Currency2, Limit: 5},
 		Response: &BookRes.MexcBook{},
 	}
 }

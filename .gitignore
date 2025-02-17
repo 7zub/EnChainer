@@ -2,4 +2,4 @@
 export.json
 _dev
 app.log
-config.yaml
+rsc/config.yaml

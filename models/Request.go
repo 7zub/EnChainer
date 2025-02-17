@@ -2,7 +2,6 @@ package models
 
 import (
 	"crypto/hmac"
-	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -21,6 +20,7 @@ type IParams interface {
 type Request struct {
 	ReqId       string `gorm:"primaryKey"`
 	ReqType     string
+	Sign        string           `gorm:"-"`
 	SignType    func() hash.Hash `gorm:"-"`
 	Url         string
 	Head        http.Header `gorm:"-"`
@@ -76,7 +76,7 @@ func (r *Request) UrlBuild() *http.Request {
 	case "Trade", "Balance":
 		rq.Method = "POST"
 		rq.Header = r.Head
-		signature := sign(q.Encode(), Conf.SecretKey)
+		signature := sign(q.Encode(), r.Sign, r.SignType)
 		q.Add("signature", signature)
 	}
 
@@ -111,8 +111,8 @@ func (r *Request) UrlExec(rq *http.Request) {
 	r.Code = resp.StatusCode
 }
 
-func sign(data, secret string) string {
-	mac := hmac.New(sha256.New, []byte(secret))
+func sign(data, secret string, hash func() hash.Hash) string {
+	mac := hmac.New(hash, []byte(secret))
 	mac.Write([]byte(data))
 	return hex.EncodeToString(mac.Sum(nil))
 }

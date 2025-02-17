@@ -25,9 +25,10 @@ func (BinanceTradeParams) GetParams(task any) *models.Request {
 	return &models.Request{
 		Url:      "https://api.binance.com/api/v3/order",
 		ReqType:  "Trade",
+		Sign:     models.Conf.Exchanges[t.Buy.Ex].SecretKey,
 		SignType: sha256.New,
 		Head: http.Header{
-			"X-MBX-APIKEY": []string{models.Conf.ApiKey},
+			"X-MBX-APIKEY": []string{models.Conf.Exchanges[t.Buy.Ex].ApiKey},
 		},
 		Params: BinanceTradeParams{
 			Ccy:    t.Ccy.Currency + t.Ccy.Currency2,

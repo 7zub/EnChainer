@@ -1,14 +1,13 @@
-package main
+package web
 
 import (
 	"enchainer/_dev"
-	"enchainer/views"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 )
 
-func handleRequests() {
+func HandleRequests() {
 	myRouter := mux.NewRouter().StrictSlash(true)
 
 	myRouter.HandleFunc("/", _dev.HomePage)
@@ -20,13 +19,13 @@ func handleRequests() {
 	myRouter.HandleFunc("/hotels/export", _dev.ExportHotel)
 	myRouter.HandleFunc("/kafka", _dev.Kafkatest)
 
-	myRouter.HandleFunc("/book", views.BookControl)
-	myRouter.HandleFunc("/addpair", views.AddPair)
-	myRouter.HandleFunc("/deletepair", views.DeletePair)
-	myRouter.HandleFunc("/onpair", views.OnPair)
-	myRouter.HandleFunc("/offpair", views.OffPair)
+	myRouter.HandleFunc("/book", BookControl)
+	myRouter.HandleFunc("/addpair", AddPair)
+	myRouter.HandleFunc("/deletepair", DeletePair)
+	myRouter.HandleFunc("/onpair", OnPair)
+	myRouter.HandleFunc("/offpair", OffPair)
 	//myRouter.HandleFunc("/ws", views.Ws)
-	myRouter.HandleFunc("/trade", views.TradeTaskControl)
+	myRouter.HandleFunc("/trade", TradeTaskControl)
 
 	log.Fatal(http.ListenAndServe(":10", myRouter))
 }

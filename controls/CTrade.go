@@ -26,8 +26,8 @@ func Trade() {
 		},
 		Spread: 0,
 		Buy: models.Operation{
-			Ex:     "BC",
-			Price:  77,
+			Ex:     models.BINANCE,
+			Price:  76,
 			Volume: 0.1,
 		},
 		Sell: models.Operation{

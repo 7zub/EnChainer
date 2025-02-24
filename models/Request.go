@@ -7,11 +7,12 @@ import (
 	"fmt"
 	"hash"
 	"io"
-	"math/rand"
 	"net/http"
 	"reflect"
 	"time"
 )
+
+var reqIdCount int
 
 type IParams interface {
 	GetParams(t any) *Request
@@ -43,14 +44,8 @@ func (r *Request) DescRequest(date time.Time, rid string) {
 
 func GenDescRequest() (time.Time, string) {
 	reqDate := time.Now()
-	reqId := fmt.Sprintf("%02d/%02d%02d%02d-%d",
-		reqDate.Day(),
-		reqDate.Hour(),
-		reqDate.Minute(),
-		reqDate.Second(),
-		rand.Intn(int(time.Now().Unix())),
-	)
-
+	reqIdCount = reqIdCount + 1
+	reqId := fmt.Sprintf("%07d", reqIdCount)
 	return reqDate, reqId
 }
 

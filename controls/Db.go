@@ -39,7 +39,7 @@ func CreateDb() {
 	}
 }
 
-func SaveBookDb(pair *models.TradePair) {
+func SaveBookDb(pair models.TradePair) {
 	result := db.Save(pair)
 
 	if result.Error != nil {

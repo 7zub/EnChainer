@@ -4,11 +4,10 @@ import (
 	"context"
 	"enchainer/models"
 	"enchainer/models/exchange/exchangeReq/BookReq"
-	"fmt"
 	"time"
 )
 
-func BooksPair(pair *models.TradePair) {
+func StartPair(pair *models.TradePair) {
 	RqList := []models.IParams{
 		BookReq.BinanceBookParams{},
 		BookReq.GateioBookParams{},
@@ -32,7 +31,7 @@ func TaskTicker(pair *models.TradePair, reqList []models.IParams) {
 			TaskCreate(pair, reqList)
 
 		case <-pair.StopCh:
-			fmt.Println("Остановлена пара " + pair.Ccy.Currency)
+			ToLog("Остановлена пара " + pair.Ccy.Currency)
 			return
 		}
 	}
@@ -61,11 +60,9 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 		}
 
 		TradeTask = append(TradeTask, task)
-		go func() {
-			SaveBookDb(pair)
-			SaveTradeDb(&task)
-			pair.OrderBook = []models.OrderBook{}
-		}()
+		go SaveBookDb(*pair)
+		go SaveTradeDb(&task)
+		pair.OrderBook = []models.OrderBook{}
 	}
 
 	for _, req := range reqList {
@@ -89,6 +86,7 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 			}
 
 			if rs.BookExist() {
+				rs.ReqId = rq.ReqId
 				pair.OrderBook = append(pair.OrderBook, rs)
 			} else {
 				rq.Log = models.Result{Status: models.WAR, Message: "Некорректный результат запроса " + rq.ReqId}

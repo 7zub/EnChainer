@@ -14,6 +14,7 @@ func (GateioBookParams) GetParams(ccy any) *models.Request {
 
 	return &models.Request{
 		Url:      "https://api.gateio.ws/api/v4/spot/order_book",
+		ReqType:  "Book",
 		Params:   GateioBookParams{Ccy: c.Currency + "_" + c.Currency2},
 		Response: &BookRes.GateioBook{},
 	}

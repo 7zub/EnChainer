@@ -3,6 +3,7 @@ package main
 import (
 	"enchainer/controls"
 	"enchainer/models"
+	"enchainer/web"
 	"log"
 	"os"
 )
@@ -14,13 +15,13 @@ func main() {
 	controls.Load()
 	controls.CreateDb()
 	controls.LoadBookDb(&controls.TradePair)
-	//for i, pair := range controls.TradePair {
-	//	if pair.Status == models.On {
-	//		controls.BooksPair(&controls.TradePair[i])
-	//	}
-	//}
+	for i, pair := range controls.TradePair {
+		if pair.Status == models.On {
+			controls.StartPair(&controls.TradePair[i])
+		}
+	}
 	controls.Trade()
-	handleRequests()
+	web.HandleRequests()
 }
 
 func logOn() {

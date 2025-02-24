@@ -14,6 +14,7 @@ func (KucoinBookParams) GetParams(ccy any) *models.Request {
 
 	return &models.Request{
 		Url:      "https://api.kucoin.com/api/v1/market/orderbook/level2_20",
+		ReqType:  "Book",
 		Params:   KucoinBookParams{Ccy: c.Currency + "-" + c.Currency2},
 		Response: &BookRes.KucoinBook{},
 	}

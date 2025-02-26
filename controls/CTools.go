@@ -27,7 +27,7 @@ func exceptTask(ex string) {
 	}
 }
 
-func Load() {
+func LoadConf() {
 	data, err := os.ReadFile("rsc/config.yaml")
 	if err != nil {
 		ToLog(err)

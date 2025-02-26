@@ -2,24 +2,21 @@ package main
 
 import (
 	"enchainer/controls"
-	"enchainer/models"
 	"enchainer/web"
 	"log"
 	"os"
 )
 
-var ccc models.Config
-
 func main() {
 	logOn()
-	controls.Load()
+	controls.LoadConf()
 	controls.CreateDb()
-	controls.LoadBookDb(&controls.TradePair)
-	for i, pair := range controls.TradePair {
-		if pair.Status == models.On {
-			controls.StartPair(&controls.TradePair[i])
-		}
-	}
+	//controls.LoadBookDb(&controls.TradePair)
+	//for i, pair := range controls.TradePair {
+	//	if pair.Status == models.On {
+	//		controls.StartPair(&controls.TradePair[i])
+	//	}
+	//}
 	controls.Trade()
 	web.HandleRequests()
 }

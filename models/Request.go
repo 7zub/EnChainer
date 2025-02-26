@@ -21,12 +21,10 @@ type IParams interface {
 type Request struct {
 	ReqId       string `gorm:"primaryKey"`
 	ReqType     string
-	Sign        string           `gorm:"-"`
-	SignType    func() hash.Hash `gorm:"-"`
+	SignWay     func(r *http.Request) `gorm:"-"`
 	Url         string
-	Head        http.Header `gorm:"-"`
-	Params      IParams     `gorm:"-"`
-	Response    IResponse   `gorm:"-"`
+	Params      IParams   `gorm:"-"`
+	Response    IResponse `gorm:"-"`
 	ResponseRaw string
 	Code        int
 	ReqDate     time.Time `gorm:"type:timestamp"`
@@ -57,25 +55,27 @@ func (r *Request) UrlBuild() *http.Request {
 	if err != nil {
 		panic(err)
 	}
-
 	q := rq.URL.Query()
 
 	for i := 0; i < fields.NumField(); i++ {
-		q.Add(
-			fields.Field(i).Tag.Get("url"),
-			fmt.Sprintf("%v", values.Field(i)),
-		)
+		tag := fields.Field(i).Tag.Get("url")
+
+		if tag != "-" {
+			q.Add(tag, fmt.Sprintf("%v", values.Field(i)))
+		}
 	}
+	rq.URL.RawQuery = q.Encode()
 
 	switch r.ReqType {
 	case "Trade", "Balance":
 		rq.Method = "POST"
-		rq.Header = r.Head
-		signature := sign(q.Encode(), r.Sign, r.SignType)
-		q.Add("signature", signature)
+		//rq.Header = r.Head
+		r.SignWay(rq)
+		//signature := sign(q.Encode(), r.Sign, r.SignType)
+		//q.Add("signature", signature)
 	}
 
-	rq.URL.RawQuery = q.Encode()
+	rq.URL.RawQuery = rq.URL.Query().Encode()
 	return rq
 }
 
@@ -106,7 +106,7 @@ func (r *Request) UrlExec(rq *http.Request) {
 	r.Code = resp.StatusCode
 }
 
-func sign(data, secret string, hash func() hash.Hash) string {
+func Sign(data, secret string, hash func() hash.Hash) string {
 	mac := hmac.New(hash, []byte(secret))
 	mac.Write([]byte(data))
 	return hex.EncodeToString(mac.Sum(nil))

@@ -10,20 +10,21 @@ import (
 )
 
 type BinanceTradeParams struct {
-	Ccy    string  `url:"symbol"`
-	Side   string  `url:"side"`
-	Type   string  `url:"type"`
-	Volume float64 `url:"quantity"`
-	Price  float64 `url:"price"`
-	Live   string  `url:"timeInForce"`
-	Time   int64   `url:"timestamp"`
+	Ccy        string  `url:"symbol"`
+	Side       string  `url:"side"`
+	Type       string  `url:"type"`
+	Volume     float64 `url:"quantity"`
+	Price      float64 `url:"price"`
+	Live       string  `url:"timeInForce"`
+	Time       int64   `url:"timestamp"`
+	AutoBorrow string  `url:"sideEffectType"`
 }
 
 func (BinanceTradeParams) GetParams(task any) *models.Request {
 	t := task.(models.TradeTask)
 
 	return &models.Request{
-		Url:     "https://api.binance.com/api/v3/order",
+		Url:     "https://api.binance.com/sapi/v1/margin/order",
 		ReqType: "Trade",
 		SignWay: func(rq *http.Request) {
 			rq.Header.Add("X-MBX-APIKEY", models.Conf.Exchanges[t.Buy.Ex].ApiKey)
@@ -33,13 +34,14 @@ func (BinanceTradeParams) GetParams(task any) *models.Request {
 			rq.URL.RawQuery = q.Encode()
 		},
 		Params: BinanceTradeParams{
-			Ccy:    t.Ccy.Currency + t.Ccy.Currency2,
-			Side:   strings.ToUpper(string(t.Stage)),
-			Type:   "LIMIT",
-			Volume: t.Buy.Volume,
-			Price:  t.Buy.Price,
-			Live:   "GTC",
-			Time:   time.Now().UnixMilli(),
+			Ccy:        t.Ccy.Currency + t.Ccy.Currency2,
+			Side:       strings.ToUpper(string(t.Stage)),
+			Type:       "LIMIT",
+			Volume:     t.Buy.Volume,
+			Price:      t.Buy.Price,
+			Live:       "GTC",
+			Time:       time.Now().UnixMilli(),
+			AutoBorrow: "AUTO_BORROW_REPAY",
 		},
 		Response: &TradeRes.BinanceTrade{},
 	}

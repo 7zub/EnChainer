@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"hash"
 	"io"
+	"math/rand"
 	"net/http"
 	"reflect"
 	"time"
@@ -43,7 +44,7 @@ func (r *Request) DescRequest(date time.Time, rid string) {
 func GenDescRequest() (time.Time, string) {
 	reqDate := time.Now()
 	reqIdCount = reqIdCount + 1
-	reqId := fmt.Sprintf("%07d", reqIdCount)
+	reqId := fmt.Sprintf("%07d-%04d", reqIdCount, rand.Intn(10000))
 	return reqDate, reqId
 }
 
@@ -69,10 +70,7 @@ func (r *Request) UrlBuild() *http.Request {
 	switch r.ReqType {
 	case "Trade", "Balance":
 		rq.Method = "POST"
-		//rq.Header = r.Head
 		r.SignWay(rq)
-		//signature := sign(q.Encode(), r.Sign, r.SignType)
-		//q.Add("signature", signature)
 	}
 
 	rq.URL.RawQuery = rq.URL.Query().Encode()

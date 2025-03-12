@@ -60,9 +60,11 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 		}
 
 		TradeTask = append(TradeTask, task)
-		go SaveBookDb(*pair)
+		go func() {
+			SaveBookDb(pair)
+			pair.OrderBook = []models.OrderBook{}
+		}()
 		go SaveTradeDb(&task)
-		pair.OrderBook = []models.OrderBook{}
 	}
 
 	for _, req := range reqList {

@@ -16,12 +16,15 @@ import (
 )
 
 type GateioTradeParams struct {
-	Ccy    string  `url:"-" json:"currency_pair"`
-	Side   string  `url:"-" json:"side"`
-	Type   string  `url:"-" json:"type"`
-	Volume float64 `url:"-" json:"amount"`
-	Price  float64 `url:"-" json:"price"`
-	Live   string  `url:"-" json:"time_in_force"`
+	Ccy       string  `url:"-" json:"currency_pair"`
+	Side      string  `url:"-" json:"side"`
+	Type      string  `url:"-" json:"type"`
+	Volume    float64 `url:"-" json:"amount"`
+	Price     float64 `url:"-" json:"price"`
+	Live      string  `url:"-" json:"time_in_force"`
+	Account   string  `url:"-" json:"account"`
+	Margin    string  `url:"-" json:"auto_borrow"`
+	AutoRepay string  `url:"-" json:"auto_repay"`
 }
 
 func (GateioTradeParams) GetParams(task any) *models.Request {
@@ -34,12 +37,14 @@ func (GateioTradeParams) GetParams(task any) *models.Request {
 		SignWay: func(rq *http.Request) {
 
 			jsonBody, _ := json.Marshal(GateioTradeParams{
-				Ccy:    t.Ccy.Currency + "_" + t.Ccy.Currency2,
-				Side:   strings.ToLower(string(t.Stage)),
-				Type:   "limit",
-				Volume: t.Buy.Volume,
-				Price:  t.Buy.Price,
-				Live:   "gtc",
+				Ccy:     t.Ccy.Currency + "_" + t.Ccy.Currency2,
+				Side:    strings.ToLower(string(t.Stage)),
+				Type:    "limit",
+				Volume:  t.Buy.Volume,
+				Price:   t.Buy.Price,
+				Live:    "gtc",
+				Account: "unified",
+				Margin:  "true",
 			})
 
 			hash := sha512.Sum512(jsonBody)

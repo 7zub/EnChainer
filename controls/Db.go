@@ -10,8 +10,6 @@ import (
 var db = gorm.DB{}
 
 func CreateDb() {
-	//dsn := "host={localhost} user=postgres password=Lost4096## dbname=postgres port=5432 search_path=ex sslmode=disable"
-
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%d search_path=%s sslmode=%s",
 		models.Conf.Db.Host,
@@ -39,11 +37,11 @@ func CreateDb() {
 	}
 }
 
-func SaveBookDb(pair models.TradePair) {
+func SaveBookDb(pair *models.TradePair) {
 	result := db.Save(pair)
 
 	if result.Error != nil {
-		ToLog(fmt.Sprintf("Ошибка БД order book: %s", result.Error))
+		ToLog(fmt.Sprintf("Ошибка БД order book: %s, %s", result.Error, pair.PairId))
 	}
 }
 

@@ -5,11 +5,11 @@ import (
 )
 
 type MexcTrade struct {
-	OrderId int64 `json:"orderId"`
+	OrderId string `json:"orderId"`
 }
 
 func (book MexcTrade) Mapper() any {
-	if book.OrderId > 0 {
+	if len(book.OrderId) > 1 {
 		return models.Result{
 			Status: models.OK,
 		}

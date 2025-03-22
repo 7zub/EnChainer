@@ -21,24 +21,24 @@ type BinanceTradeParams struct {
 }
 
 func (BinanceTradeParams) GetParams(task any) *models.Request {
-	t := task.(models.TradeTask)
+	t := task.(models.OperationTask)
 
 	return &models.Request{
 		Url:     "https://api.binance.com/sapi/v1/margin/order",
 		ReqType: "Trade",
 		SignWay: func(rq *http.Request) {
-			rq.Header.Add("X-MBX-APIKEY", models.Conf.Exchanges[t.Buy.Ex].ApiKey)
+			rq.Header.Add("X-MBX-APIKEY", models.Conf.Exchanges[string(t.Ex)].ApiKey)
 			q := rq.URL.Query()
-			sign := models.Sign(rq.URL.Query().Encode(), models.Conf.Exchanges[t.Buy.Ex].SecretKey, sha256.New)
+			sign := models.Sign(rq.URL.Query().Encode(), models.Conf.Exchanges[string(t.Ex)].SecretKey, sha256.New)
 			q.Add("signature", sign)
 			rq.URL.RawQuery = q.Encode()
 		},
 		Params: BinanceTradeParams{
-			Ccy:        t.Ccy.Currency + t.Ccy.Currency2,
-			Side:       strings.ToUpper(string(t.Stage)),
+			Ccy:        t.Currency + t.Currency2,
+			Side:       strings.ToUpper(string(t.Side)),
 			Type:       "LIMIT",
-			Volume:     t.Buy.Volume,
-			Price:      t.Buy.Price,
+			Volume:     t.Volume,
+			Price:      t.Price,
 			Live:       "GTC",
 			Time:       time.Now().UnixMilli(),
 			AutoBorrow: "AUTO_BORROW_REPAY",

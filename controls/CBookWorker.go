@@ -11,11 +11,11 @@ func StartPair(pair *models.TradePair) {
 	RqList := []models.IParams{
 		BookReq.BinanceBookParams{},
 		BookReq.GateioBookParams{},
-		BookReq.HuobiBookParams{},
-		BookReq.OkxBookParams{},
+		//BookReq.HuobiBookParams{},
+		//BookReq.OkxBookParams{},
 		BookReq.MexcBookParams{},
 		BookReq.BybitBookParams{},
-		BookReq.KucoinBookParams{},
+		//BookReq.KucoinBookParams{},
 	}
 	go TaskTicker(pair, RqList)
 }
@@ -38,7 +38,7 @@ func TaskTicker(pair *models.TradePair, reqList []models.IParams) {
 }
 
 func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
-	if len(pair.OrderBook) > 0 {
+	if len(pair.OrderBook) > 1 {
 		models.SortOrderBooks(&pair.OrderBook)
 
 		task := models.TradeTask{
@@ -50,21 +50,30 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 				Ex:     pair.OrderBook[len(pair.OrderBook)-1].Exchange,
 				Price:  pair.OrderBook[len(pair.OrderBook)-1].Asks[0].Price,
 				Volume: pair.OrderBook[len(pair.OrderBook)-1].Asks[0].Volume,
+				Side:   models.Buy,
 			},
 			Sell: models.Operation{
 				Ex:     pair.OrderBook[0].Exchange,
 				Price:  pair.OrderBook[0].Bids[0].Price,
 				Volume: pair.OrderBook[0].Bids[0].Volume,
+				Side:   models.Sell,
 			},
 			Spread: (pair.OrderBook[0].Bids[0].Price/pair.OrderBook[len(pair.OrderBook)-1].Asks[0].Price - 1) * 100,
+			Stage:  models.Creation,
+			Status: models.Done,
 		}
 
 		TradeTask = append(TradeTask, task)
+		go SaveTradeTaskDb(&task)
+		//go TradeTaskHandler(&task)
+
+	}
+
+	if len(pair.OrderBook) > 0 {
 		go func() {
 			SaveBookDb(pair)
 			pair.OrderBook = []models.OrderBook{}
 		}()
-		go SaveTradeDb(&task)
 	}
 
 	for _, req := range reqList {

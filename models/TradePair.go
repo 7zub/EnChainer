@@ -33,7 +33,7 @@ type Ccy struct {
 type OrderBook struct {
 	Id       uint `gorm:"primaryKey"`
 	TpId     uint
-	Exchange string
+	Exchange Exchange
 	Bids     JsonValueBook `gorm:"type:jsonb"`
 	Asks     JsonValueBook `gorm:"type:jsonb"`
 	ReqId    string        `gorm:"unique"`

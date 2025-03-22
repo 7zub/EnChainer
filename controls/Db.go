@@ -60,7 +60,7 @@ func DeleteBookDb(pair *models.TradePair) {
 	}
 }
 
-func SaveTradeDb(task *models.TradeTask) {
+func SaveTradeTaskDb(task *models.TradeTask) {
 	result := db.Save(&task)
 
 	if result.Error != nil {

@@ -3,11 +3,11 @@ package models
 var Conf Config
 
 type Config struct {
-	Exchanges map[string]Exchange `yaml:"api"`
+	Exchanges map[string]ExchangeConf `yaml:"api"`
 	Db        Db
 }
 
-type Exchange struct {
+type ExchangeConf struct {
 	Url       string `yaml:"Url"`
 	ApiKey    string `yaml:"ApiKey"`
 	SecretKey string `yaml:"SecretKey"`

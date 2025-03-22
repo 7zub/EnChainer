@@ -28,7 +28,7 @@ type GateioTradeParams struct {
 }
 
 func (GateioTradeParams) GetParams(task any) *models.Request {
-	t := task.(models.TradeTask)
+	t := task.(models.OperationTask)
 	endpoint := "/api/v4/spot/orders"
 
 	return &models.Request{
@@ -37,11 +37,11 @@ func (GateioTradeParams) GetParams(task any) *models.Request {
 		SignWay: func(rq *http.Request) {
 
 			jsonBody, _ := json.Marshal(GateioTradeParams{
-				Ccy:     t.Ccy.Currency + "_" + t.Ccy.Currency2,
-				Side:    strings.ToLower(string(t.Stage)),
+				Ccy:     t.Currency + "_" + t.Currency2,
+				Side:    strings.ToLower(string(t.Side)),
 				Type:    "limit",
-				Volume:  t.Buy.Volume,
-				Price:   t.Buy.Price,
+				Volume:  t.Volume,
+				Price:   t.Price,
 				Live:    "gtc",
 				Account: "unified",
 				Margin:  "true",
@@ -51,12 +51,12 @@ func (GateioTradeParams) GetParams(task any) *models.Request {
 			encBody := hex.EncodeToString(hash[:])
 			timestamp := strconv.FormatInt(time.Now().Unix(), 10)
 			payload := fmt.Sprintf("POST\n%s\n\n%s\n%s", endpoint, encBody, timestamp)
-			sign := models.Sign(payload, models.Conf.Exchanges[t.Buy.Ex].SecretKey, sha512.New)
+			sign := models.Sign(payload, models.Conf.Exchanges[string(t.Ex)].SecretKey, sha512.New)
 
 			rq.Body = io.NopCloser(bytes.NewBuffer(jsonBody))
 			rq.Header.Add("Accept", "application/json")
 			rq.Header.Add("Content-Type", "application/json")
-			rq.Header.Add("KEY", models.Conf.Exchanges[t.Buy.Ex].ApiKey)
+			rq.Header.Add("KEY", models.Conf.Exchanges[string(t.Ex)].ApiKey)
 			rq.Header.Add("SIGN", sign)
 			rq.Header.Add("Timestamp", timestamp)
 		},

@@ -89,6 +89,11 @@ func (r *Request) UrlExec(rq *http.Request) {
 		return
 	}
 
+	if resp.StatusCode == 429 {
+		r.Log = Result{Status: ERR, Message: fmt.Sprintf("Превышен лимит запросов к api %s", r.ReqId)}
+		return
+	}
+
 	body, err := io.ReadAll(resp.Body)
 
 	if err != nil {

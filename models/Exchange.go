@@ -1,11 +1,13 @@
 package models
 
+type Exchange string
+
 const (
-	BINANCE = "BINANCE"
-	GATEIO  = "GATEIO"
-	HUOBI   = "HUOBI"
-	OKX     = "OKX"
-	MEXC    = "MEXC"
-	BYBIT   = "BYBIT"
-	KUCOIN  = "KUCOIN"
+	BINANCE Exchange = "BINANCE"
+	GATEIO  Exchange = "GATEIO"
+	HUOBI   Exchange = "HUOBI"
+	OKX     Exchange = "OKX"
+	MEXC    Exchange = "MEXC"
+	BYBIT   Exchange = "BYBIT"
+	KUCOIN  Exchange = "KUCOIN"
 )

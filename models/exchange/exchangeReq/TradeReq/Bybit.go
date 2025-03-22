@@ -26,7 +26,7 @@ type BybitTradeParams struct {
 }
 
 func (BybitTradeParams) GetParams(task any) *models.Request {
-	t := task.(models.TradeTask)
+	t := task.(models.OperationTask)
 
 	return &models.Request{
 		Url:     "https://api.bybit.com/v5/order/create",
@@ -34,22 +34,22 @@ func (BybitTradeParams) GetParams(task any) *models.Request {
 		SignWay: func(rq *http.Request) {
 
 			jsonBody, _ := json.Marshal(BybitTradeParams{
-				Ccy:     t.Ccy.Currency + t.Ccy.Currency2,
-				Side:    strings.ToUpper(string(t.Stage[0])) + string(t.Stage[1:]),
+				Ccy:     t.Currency + t.Currency2,
+				Side:    strings.ToUpper(string(t.Side[0])) + string(t.Side[1:]),
 				Type:    "Limit",
-				Volume:  fmt.Sprintf("%g", t.Buy.Volume),
-				Price:   fmt.Sprintf("%g", t.Buy.Price),
+				Volume:  fmt.Sprintf("%g", t.Volume),
+				Price:   fmt.Sprintf("%g", t.Price),
 				Live:    "GTC",
 				Account: "spot",
 				Margin:  1,
 			})
 
 			timestamp := strconv.FormatInt(time.Now().UnixMilli(), 10)
-			sign := models.Sign(timestamp+models.Conf.Exchanges[t.Buy.Ex].ApiKey+string(jsonBody[:]), models.Conf.Exchanges[t.Buy.Ex].SecretKey, sha256.New)
+			sign := models.Sign(timestamp+models.Conf.Exchanges[string(t.Ex)].ApiKey+string(jsonBody[:]), models.Conf.Exchanges[string(t.Ex)].SecretKey, sha256.New)
 
 			rq.Body = io.NopCloser(bytes.NewBuffer(jsonBody))
 			rq.Header.Set("Content-Type", "application/json")
-			rq.Header.Set("X-BAPI-API-KEY", models.Conf.Exchanges[t.Buy.Ex].ApiKey)
+			rq.Header.Set("X-BAPI-API-KEY", models.Conf.Exchanges[string(t.Ex)].ApiKey)
 			rq.Header.Set("X-BAPI-SIGN", sign)
 			rq.Header.Set("X-BAPI-TIMESTAMP", timestamp)
 		},

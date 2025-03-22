@@ -11,26 +11,41 @@ type TradeTask struct {
 	CreateDate time.Time `gorm:"type:timestamp;autoCreateTime"`
 	Stage      StageTask
 	Status     StatusTask
+	Message    string
 }
 
 type Operation struct {
-	Ex     string
+	Ex     Exchange
 	Price  float64
 	Volume float64
+	Side   Side `gorm:"-"`
+}
+
+type OperationTask struct {
+	Ccy
+	Operation
 }
 
 type StageTask string
 
 const (
-	Buy  StageTask = "buy"
-	Sell StageTask = "sell"
+	Creation   StageTask = "creation"
+	Validation StageTask = "validation"
+	Trade      StageTask = "trade"
 )
 
 type StatusTask string
 
 const (
-	New      StatusTask = "new"
 	Done     StatusTask = "done"
+	Stop     StatusTask = "stop"
 	Progress StatusTask = "progress"
 	Err      StatusTask = "error"
+)
+
+type Side string
+
+const (
+	Buy  Side = "buy"
+	Sell Side = "sell"
 )

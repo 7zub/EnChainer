@@ -5,11 +5,11 @@ import (
 )
 
 type BybitTrade struct {
-	OrderId int64 `json:"orderId"`
+	OrderId string `json:"orderId"`
 }
 
 func (book BybitTrade) Mapper() any {
-	if book.OrderId > 0 {
+	if len(book.OrderId) > 0 {
 		return models.Result{
 			Status: models.OK,
 		}

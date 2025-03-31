@@ -4,6 +4,7 @@ import (
 	"context"
 	"enchainer/models"
 	"enchainer/models/exchange/exchangeReq/BookReq"
+	"math/rand"
 	"time"
 )
 
@@ -42,6 +43,7 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 		models.SortOrderBooks(&pair.OrderBook)
 
 		task := models.TradeTask{
+			TaskId: rand.Intn(1000000),
 			Ccy: models.Ccy{
 				Currency:  pair.Ccy.Currency,
 				Currency2: pair.Ccy.Currency2,
@@ -65,7 +67,7 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 
 		TradeTask = append(TradeTask, task)
 		go SaveTradeTaskDb(&task)
-		//go TradeTaskHandler(&task)
+		//go TradeTaskHandler(&TradeTask[len(TradeTask)-1])
 
 	}
 

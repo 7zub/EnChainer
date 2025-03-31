@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+var cnt int = 0
+
 func TradeTaskHandler(task *models.TradeTask) {
 	if task.Stage == models.Creation && task.Status == models.Done {
 		TradeTaskValidation(task)
@@ -23,14 +25,21 @@ func TradeTaskHandler(task *models.TradeTask) {
 			Ccy:       task.Ccy,
 			Operation: task.Sell,
 		}
-		//CreateOrder(oprBuy)
-		//CreateOrder(oprSell)
 
-		if CreateOrder(oprBuy).Status == models.OK && CreateOrder(oprSell).Status == models.OK {
+		oprBuy.Operation.Volume = Round(3.2 / oprBuy.Operation.Price)
+		oprSell.Operation.Volume = Round(3.2 / oprSell.Operation.Price)
+
+		oBuy := CreateOrder(oprBuy).Status
+		oSell := CreateOrder(oprSell).Status
+
+		if oBuy == models.OK && oSell == models.OK {
 			task.Status = models.Done
 		} else {
 			task.Status = models.Err
+			task.Message = "Ошибка операции: покупка " + string(oBuy) + ", продажа " + string(oSell)
 		}
+
+		cnt += 1
 	}
 
 	SaveTradeTaskDb(task)
@@ -39,17 +48,27 @@ func TradeTaskHandler(task *models.TradeTask) {
 func TradeTaskValidation(task *models.TradeTask) {
 	task.Stage = models.Validation
 
+	if cnt > 3 {
+		task.Status = models.Stop
+		task.Message += "Превышен лимит открытых тасок; "
+	}
+
+	if SearchOpenTask(*task) > -1 {
+		task.Status = models.Stop
+		task.Message += "Таска на пару уже существует; "
+	}
+
 	if task.Spread < 0.5 {
 		task.Status = models.Stop
 		task.Message += "Низкий спред; "
 	}
 
-	if task.Buy.Price*task.Buy.Volume < 1 {
+	if task.Buy.Price*task.Buy.Volume < 3 {
 		task.Status = models.Stop
 		task.Message += fmt.Sprintf("Низкий объем на покупку: %g; ", task.Buy.Price*task.Buy.Volume)
 	}
 
-	if task.Sell.Price*task.Sell.Volume < 1 {
+	if task.Sell.Price*task.Sell.Volume < 3 {
 		task.Status = models.Stop
 		task.Message += fmt.Sprintf("Низкий объем на продажу: %g; ", task.Sell.Price*task.Sell.Volume)
 	}
@@ -115,5 +134,10 @@ func Trade() {
 		Stage:      models.Creation,
 		Status:     models.Done,
 	}
-	TradeTaskHandler(&task)
+
+	TradeTask = append(TradeTask, task)
+
+	TradeTaskHandler(&TradeTask[0])
+	fmt.Println(task.Stage)
+	//fmt.Println(TradeTask[0].Stage)
 }

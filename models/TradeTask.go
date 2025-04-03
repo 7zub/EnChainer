@@ -3,8 +3,8 @@ package models
 import "time"
 
 type TradeTask struct {
-	TaskId     int `gorm:"primaryKey"`
-	Ccy        Ccy `gorm:"embedded"`
+	TaskId     string `gorm:"primaryKey"`
+	Ccy        Ccy    `gorm:"embedded"`
 	Spread     float64
 	Buy        Operation `gorm:"embedded;embeddedPrefix:buy_"`
 	Sell       Operation `gorm:"embedded;embeddedPrefix:sell_"`

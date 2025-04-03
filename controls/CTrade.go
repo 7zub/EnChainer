@@ -9,9 +9,9 @@ import (
 
 var cnt int = 0
 
-func TradeTaskHandler(task *models.TradeTask) {
+func TradeTaskHandler(task models.TradeTask) {
 	if task.Stage == models.Creation && task.Status == models.Done {
-		TradeTaskValidation(task)
+		TradeTaskValidation(&task)
 	}
 
 	if task.Stage == models.Validation && task.Status == models.Done {
@@ -41,19 +41,19 @@ func TradeTaskHandler(task *models.TradeTask) {
 
 		cnt += 1
 	}
-
-	SaveTradeTaskDb(task)
+	TradeTask.Store(task.TaskId, task)
+	SaveTradeTaskDb(&task)
 }
 
 func TradeTaskValidation(task *models.TradeTask) {
 	task.Stage = models.Validation
 
-	if cnt > 3 {
+	if cnt > 2 {
 		task.Status = models.Stop
 		task.Message += "Превышен лимит открытых тасок; "
 	}
 
-	if SearchOpenTask(*task) > -1 {
+	if SearchOpenTask(*task) != "nil" {
 		task.Status = models.Stop
 		task.Message += "Таска на пару уже существует; "
 	}
@@ -112,7 +112,7 @@ func getTradeReq(ex models.Exchange) models.IParams {
 
 func Trade() {
 	task := models.TradeTask{
-		TaskId: 10,
+		TaskId: "10",
 		Ccy: models.Ccy{
 			Currency:  "SOL",
 			Currency2: "USDT",

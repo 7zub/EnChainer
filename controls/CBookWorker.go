@@ -4,7 +4,6 @@ import (
 	"context"
 	"enchainer/models"
 	"enchainer/models/exchange/exchangeReq/BookReq"
-	"math/rand"
 	"time"
 )
 
@@ -42,8 +41,9 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 	if len(pair.OrderBook) > 1 {
 		models.SortOrderBooks(&pair.OrderBook)
 
+		taskId := GenTaskId()
 		task := models.TradeTask{
-			TaskId: rand.Intn(1000000),
+			TaskId: taskId,
 			Ccy: models.Ccy{
 				Currency:  pair.Ccy.Currency,
 				Currency2: pair.Ccy.Currency2,
@@ -64,10 +64,11 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 			Stage:  models.Creation,
 			Status: models.Done,
 		}
-
-		TradeTask = append(TradeTask, task)
-		go SaveTradeTaskDb(&task)
-		//go TradeTaskHandler(&TradeTask[len(TradeTask)-1])
+		go func() {
+			TradeTask.Store(taskId, task)
+			SaveTradeTaskDb(&task)
+			TradeTaskHandler(LoadTask(taskId))
+		}()
 
 	}
 
@@ -101,7 +102,7 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 			if rs.BookExist() {
 				rs.ReqId = rq.ReqId
 				pair.OrderBook = append(pair.OrderBook, rs)
-			} else {
+			} else if rq.Log == (models.Result{}) {
 				rq.Log = models.Result{Status: models.WAR, Message: "Некорректный результат запроса " + rq.ReqId}
 				ToLog(*rq)
 			}

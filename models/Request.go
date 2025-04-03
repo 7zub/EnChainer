@@ -83,18 +83,21 @@ func (r *Request) UrlExec(rq *http.Request) {
 	resp, err := client.Do(rq)
 	r.Code = -1
 	r.Log = Result{Status: INFO, Message: fmt.Sprintf("Запрос %s: %s", r.ReqId, rq.URL.String())}
+
 	if err != nil {
 		r.ResponseRaw = err.Error()
 		r.Log = Result{Status: ERR, Message: fmt.Sprintf("Ошибка выполнения запроса %s: %s", r.ReqId, err)}
 		return
 	}
 
+	r.Code = resp.StatusCode
+	body, err := io.ReadAll(resp.Body)
+	r.ResponseRaw = string(body)
+
 	if resp.StatusCode == 429 {
 		r.Log = Result{Status: ERR, Message: fmt.Sprintf("Превышен лимит запросов к api %s", r.ReqId)}
 		return
 	}
-
-	body, err := io.ReadAll(resp.Body)
 
 	if err != nil {
 		r.Log = Result{Status: ERR, Message: fmt.Sprintf("Ошибка чтения ответа на %s: %s", r.ReqId, err)}
@@ -105,8 +108,6 @@ func (r *Request) UrlExec(rq *http.Request) {
 	if err != nil {
 		r.Log = Result{Status: ERR, Message: fmt.Sprintf("Ошибка десериализации %s: %s", r.ReqId, err)}
 	}
-	r.ResponseRaw = string(body)
-	r.Code = resp.StatusCode
 }
 
 func Sign(data, secret string, hash func() hash.Hash) string {

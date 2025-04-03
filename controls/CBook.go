@@ -33,7 +33,7 @@ func AddPair(w http.ResponseWriter, r *http.Request) {
 			Currency2: "USDT",
 		},
 		Status:   models.Off,
-		SessTime: time.Duration(sessTime+rand.Int63n(300)) * time.Millisecond,
+		SessTime: time.Duration(sessTime+rand.Int63n(700)) * time.Millisecond,
 	}
 
 	if i, _ := SearchPair(pairid); i == -1 {

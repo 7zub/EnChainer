@@ -80,6 +80,10 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 	}
 
 	for _, req := range reqList {
+		//if models.SearchReqBlock(pair.Ccy, req.G) != 0 {
+		//	return
+		//}
+
 		go func(rr models.IParams) {
 			ctx, cancel := context.WithTimeout(context.Background(), pair.SessTime-100)
 			date, rid := models.GenDescRequest()
@@ -102,9 +106,19 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 			if rs.BookExist() {
 				rs.ReqId = rq.ReqId
 				pair.OrderBook = append(pair.OrderBook, rs)
-			} else if rq.Log == (models.Result{}) {
-				rq.Log = models.Result{Status: models.WAR, Message: "Некорректный результат запроса " + rq.ReqId}
-				ToLog(*rq)
+			} else {
+				reqb := models.RequestBlock{
+					ReqId: rq.ReqId,
+					Ccy:   pair.Ccy,
+					Ex:    rs.Exchange,
+				}
+				ReqBlock.Store(rq.ReqId, reqb)
+				SaveReqBlockDb(&reqb)
+
+				if rq.Log.Status == models.INFO {
+					rq.Log = models.Result{Status: models.WAR, Message: "Некорректный результат запроса " + rq.ReqId}
+					ToLog(*rq)
+				}
 			}
 		}(req)
 	}

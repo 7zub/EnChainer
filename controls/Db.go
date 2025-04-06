@@ -26,9 +26,9 @@ func CreateDb() {
 		ToLog(err)
 		panic("Не удалось подключиться к БД")
 	} else {
-		d.Migrator().DropTable(&models.Request{} /*&models.TradePair{},*/, &models.OrderBook{}, &models.TradeTask{})
+		d.Migrator().DropTable(&models.Request{} /*&models.TradePair{},*/, &models.OrderBook{}, &models.TradeTask{}, &models.RequestBlock{})
 
-		err := d.AutoMigrate(&models.Request{}, &models.TradePair{}, &models.OrderBook{}, &models.TradeTask{})
+		err := d.AutoMigrate(&models.Request{}, &models.TradePair{}, &models.OrderBook{}, &models.TradeTask{}, &models.RequestBlock{})
 		if err != nil {
 			ToLog(err)
 			panic("Ошибка миграции БД")
@@ -68,10 +68,25 @@ func SaveTradeTaskDb(task *models.TradeTask) {
 	}
 }
 
+func LoadTradeTaskDb(task *models.TradeTask) {
+	result := db.Find(task)
+	if result.Error != nil {
+		ToLog(fmt.Sprintf("Ошибка БД load task: %s", result.Error))
+	}
+}
+
 func SaveReqDb(req *models.Request) {
 	result := db.Save(&req)
 
 	if result.Error != nil {
 		ToLog(fmt.Sprintf("Ошибка БД request: %s", result.Error))
+	}
+}
+
+func SaveReqBlockDb(reqb *models.RequestBlock) {
+	result := db.Save(&reqb)
+
+	if result.Error != nil {
+		ToLog(fmt.Sprintf("Ошибка БД RequestBlock: %s", result.Error))
 	}
 }

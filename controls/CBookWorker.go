@@ -80,9 +80,10 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 	}
 
 	for _, req := range reqList {
-		//if models.SearchReqBlock(pair.Ccy, req.G) != 0 {
-		//	return
-		//}
+		if SearchReqBlock(pair.Ccy, GetEx(req)) != "" {
+			ToLog(models.Result{Status: models.INFO, Message: "Запрос в блок-листе " + pair.Ccy.Currency + " - " + string(GetEx(req))})
+			return
+		}
 
 		go func(rr models.IParams) {
 			ctx, cancel := context.WithTimeout(context.Background(), pair.SessTime-100)

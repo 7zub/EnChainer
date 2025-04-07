@@ -7,12 +7,12 @@ import (
 
 var ReqBlock sync.Map
 
-func SearchReqBlock(ccy models.Ccy, ex models.Exchange) int {
-	var res int
+func SearchReqBlock(ccy models.Ccy, ex models.Exchange) string {
+	var res string
 	ReqBlock.Range(func(key, val any) bool {
 		b, _ := val.(models.RequestBlock)
 		if ccy == b.Ccy && ex == b.Ex {
-			res = b.Id
+			res = b.ReqId
 			return false
 		}
 		return true

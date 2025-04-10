@@ -33,12 +33,12 @@ func AddPair(w http.ResponseWriter, r *http.Request) {
 			Currency2: "USDT",
 		},
 		Status:   models.Off,
-		SessTime: time.Duration(sessTime+rand.Int63n(700)) * time.Millisecond,
+		SessTime: time.Duration(sessTime+rand.Int63n(1500)) * time.Millisecond,
 	}
 
 	if i, _ := SearchPair(pairid); i == -1 {
 		TradePair = append(TradePair, tp)
-		SaveBookDb(&TradePair[len(TradePair)-1])
+		SaveDb(&TradePair[len(TradePair)-1])
 
 		json.NewEncoder(w).Encode(models.Result{Status: models.OK, Message: "Пара " + params.Get("currency") + " добавлена"})
 	} else {
@@ -67,7 +67,7 @@ func OnPair(w http.ResponseWriter, r *http.Request) {
 	if i, res := SearchPair(params.Get("id")); i != -1 {
 		if TradePair[i].Status != models.On {
 			TradePair[i].Status = models.On
-			SaveBookDb(&TradePair[i])
+			SaveDb(&TradePair[i])
 			StartPair(&TradePair[i])
 			json.NewEncoder(w).Encode(models.Result{Status: models.OK, Message: "Мониторинг пары запущен"})
 		} else {
@@ -83,7 +83,7 @@ func OffPair(w http.ResponseWriter, r *http.Request) {
 	if i, res := SearchPair(params.Get("id")); i != -1 {
 		TradePair[i].Status = models.Off
 		close(TradePair[i].StopCh)
-		SaveBookDb(&TradePair[i])
+		SaveDb(&TradePair[i])
 		json.NewEncoder(w).Encode(models.Result{Status: models.OK, Message: "Пара остановлена"})
 	} else {
 		json.NewEncoder(w).Encode(res)

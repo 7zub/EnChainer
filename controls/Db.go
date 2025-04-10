@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/schema"
 )
 
 var db = gorm.DB{}
@@ -21,7 +22,11 @@ func CreateDb() {
 		models.Conf.Db.SslMode,
 	)
 
-	d, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	d, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		NamingStrategy: schema.NamingStrategy{
+			SingularTable: true,
+		}})
+
 	if err != nil {
 		ToLog(err)
 		panic("Не удалось подключиться к БД")
@@ -34,6 +39,14 @@ func CreateDb() {
 			panic("Ошибка миграции БД")
 		}
 		db = *d
+	}
+}
+
+func SaveDb(obj any) {
+	result := db.Save(obj)
+
+	if result.Error != nil {
+		ToLog(fmt.Sprintf("Ошибка БД %T: %s", obj, result.Error))
 	}
 }
 

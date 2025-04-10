@@ -2,12 +2,12 @@ package controls
 
 import (
 	"enchainer/models"
-	"enchainer/models/exchange/exchangeReq/TradeReq"
 	"fmt"
+	"reflect"
 	"time"
 )
 
-var cnt int = 0
+var cnt = 0
 
 func TradeTaskHandler(task models.TradeTask) {
 	if task.Stage == models.Creation && task.Status == models.Done {
@@ -26,8 +26,8 @@ func TradeTaskHandler(task models.TradeTask) {
 			Operation: task.Sell,
 		}
 
-		oprBuy.Operation.Volume = Round(3.2 / oprBuy.Operation.Price)
-		oprSell.Operation.Volume = Round(3.2 / oprSell.Operation.Price)
+		oprBuy.Operation.Volume = Round(5.2 / oprBuy.Operation.Price)
+		oprSell.Operation.Volume = Round(5.2 / oprSell.Operation.Price)
 
 		oBuy := CreateOrder(oprBuy).Status
 		oSell := CreateOrder(oprSell).Status
@@ -42,13 +42,13 @@ func TradeTaskHandler(task models.TradeTask) {
 		cnt += 1
 	}
 	TradeTask.Store(task.TaskId, task)
-	SaveTradeTaskDb(&task)
+	SaveDb(&task)
 }
 
 func TradeTaskValidation(task *models.TradeTask) {
 	task.Stage = models.Validation
 
-	if cnt > 2 {
+	if cnt >= 0 {
 		task.Status = models.Stop
 		task.Message += "Превышен лимит открытых тасок; "
 	}
@@ -80,34 +80,14 @@ func TradeTaskValidation(task *models.TradeTask) {
 }
 
 func CreateOrder(opr models.OperationTask) models.Result {
-	rr := getTradeReq(opr.Ex)
+	typ := GetTypeEx(opr.Ex, "Trade")
+	rr, _ := reflect.New(typ).Interface().(models.IParams)
 	rq := rr.GetParams(opr)
 	rq.DescRequest(models.GenDescRequest())
 	rq.SendRequest()
 	ToLog(*rq)
-	go SaveReqDb(rq)
+	go SaveDb(rq)
 	return rq.Response.Mapper().(models.Result)
-}
-
-func getTradeReq(ex models.Exchange) models.IParams {
-	switch ex {
-	case models.BINANCE:
-		return TradeReq.BinanceTradeParams{}
-	case models.GATEIO:
-		return TradeReq.GateioTradeParams{}
-	//case models.HUOBI:
-	//	return TradeReq.HuobiTradeParams{}
-	//case models.OKX:
-	//	return TradeReq.OkxTradeParams{}
-	case models.MEXC:
-		return TradeReq.MexcTradeParams{}
-	case models.BYBIT:
-		return TradeReq.BybitTradeParams{}
-	//case models.KUCOIN:
-	//	return TradeReq.KucoinTradeParams{}
-	default:
-		return nil
-	}
 }
 
 func Trade() {
@@ -119,15 +99,15 @@ func Trade() {
 		},
 		Spread: 1,
 		Buy: models.Operation{
-			Ex:     models.MEXC,
-			Price:  90,
-			Volume: 0.02,
+			Ex:     models.BINANCE,
+			Price:  70,
+			Volume: 0.08,
 			Side:   models.Buy,
 		},
 		Sell: models.Operation{
 			Ex:     models.GATEIO,
 			Price:  200,
-			Volume: 0.03,
+			Volume: 0.02,
 			Side:   models.Sell,
 		},
 		CreateDate: time.Time{},
@@ -135,9 +115,9 @@ func Trade() {
 		Status:     models.Done,
 	}
 
-	TradeTask = append(TradeTask, task)
+	//TradeTask = append(TradeTask, task)
 
-	TradeTaskHandler(&TradeTask[0])
+	TradeTaskHandler(task)
 	fmt.Println(task.Stage)
 	//fmt.Println(TradeTask[0].Stage)
 }

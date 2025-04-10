@@ -10,4 +10,5 @@ type RequestBlock struct {
 	Ccy        Ccy `gorm:"embedded"`
 	Ex         Exchange
 	CreateDate time.Time `gorm:"type:timestamp;autoCreateTime"`
+	Active     bool
 }

@@ -60,13 +60,14 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 				Volume: pair.OrderBook[0].Bids[0].Volume,
 				Side:   models.Sell,
 			},
-			Spread: (pair.OrderBook[0].Bids[0].Price/pair.OrderBook[len(pair.OrderBook)-1].Asks[0].Price - 1) * 100,
-			Stage:  models.Creation,
-			Status: models.Done,
+			Spread:     (pair.OrderBook[0].Bids[0].Price/pair.OrderBook[len(pair.OrderBook)-1].Asks[0].Price - 1) * 100,
+			CreateDate: time.Now(),
+			Stage:      models.Creation,
+			Status:     models.Done,
 		}
 		go func() {
 			TradeTask.Store(taskId, task)
-			SaveTradeTaskDb(&task)
+			SaveDb(&task)
 			TradeTaskHandler(LoadTask(taskId))
 		}()
 
@@ -74,7 +75,7 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 
 	if len(pair.OrderBook) > 0 {
 		go func() {
-			SaveBookDb(pair)
+			SaveDb(pair)
 			pair.OrderBook = []models.OrderBook{}
 		}()
 	}
@@ -82,7 +83,7 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 	for _, req := range reqList {
 		if SearchReqBlock(pair.Ccy, GetEx(req)) != "" {
 			ToLog(models.Result{Status: models.INFO, Message: "Запрос в блок-листе " + pair.Ccy.Currency + " - " + string(GetEx(req))})
-			return
+			continue
 		}
 
 		go func(rr models.IParams) {
@@ -95,7 +96,7 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 			rq.DescRequest(date, rid)
 			rq.SendRequest()
 			ToLog(*rq)
-			go SaveReqDb(rq)
+			go SaveDb(rq)
 			rs := rq.Response.Mapper().(models.OrderBook)
 
 			if isDone(ctx) {
@@ -108,13 +109,8 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 				rs.ReqId = rq.ReqId
 				pair.OrderBook = append(pair.OrderBook, rs)
 			} else {
-				reqb := models.RequestBlock{
-					ReqId: rq.ReqId,
-					Ccy:   pair.Ccy,
-					Ex:    rs.Exchange,
-				}
-				ReqBlock.Store(rq.ReqId, reqb)
-				SaveReqBlockDb(&reqb)
+				rb := CreateReqBlock(rq.ReqId, pair.Ccy, rs.Exchange)
+				SaveDb(&rb)
 
 				if rq.Log.Status == models.INFO {
 					rq.Log = models.Result{Status: models.WAR, Message: "Некорректный результат запроса " + rq.ReqId}

@@ -6,9 +6,10 @@ type TradeTask struct {
 	TaskId     string `gorm:"primaryKey"`
 	Ccy        Ccy    `gorm:"embedded"`
 	Spread     float64
-	Buy        Operation `gorm:"embedded;embeddedPrefix:buy_"`
-	Sell       Operation `gorm:"embedded;embeddedPrefix:sell_"`
-	CreateDate time.Time `gorm:"type:timestamp;autoCreateTime"`
+	Buy        Operation       `gorm:"embedded;embeddedPrefix:buy_"`
+	Sell       Operation       `gorm:"embedded;embeddedPrefix:sell_"`
+	OpTask     []OperationTask `gorm:"foreignKey:TaskId;constraint:OnDelete:CASCADE;"`
+	CreateDate time.Time       `gorm:"type:timestamp;autoCreateTime"`
 	Stage      StageTask
 	Status     StatusTask
 	Message    string
@@ -22,6 +23,8 @@ type Operation struct {
 }
 
 type OperationTask struct {
+	Id     uint `gorm:"primaryKey"`
+	TaskId string
 	Ccy
 	Operation
 }
@@ -37,10 +40,10 @@ const (
 type StatusTask string
 
 const (
-	Done     StatusTask = "done"
-	Stop     StatusTask = "stop"
-	Progress StatusTask = "progress"
-	Err      StatusTask = "error"
+	Done    StatusTask = "done"
+	Stop    StatusTask = "stop"
+	Pending StatusTask = "pending"
+	Err     StatusTask = "error"
 )
 
 type Side string

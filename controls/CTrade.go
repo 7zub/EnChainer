@@ -33,14 +33,20 @@ func TradeTaskHandler(task models.TradeTask) {
 		oSell := CreateOrder(oprSell).Status
 
 		if oBuy == models.OK && oSell == models.OK {
-			task.Status = models.Done
+			task.Status = models.Pending
 		} else {
 			task.Status = models.Err
 			task.Message = "Ошибка операции: покупка " + string(oBuy) + ", продажа " + string(oSell)
 		}
 
+		task.OpTask = append(task.OpTask, oprBuy, oprSell)
 		cnt += 1
 	}
+
+	if task.Stage == models.Trade && task.Status == models.Pending {
+		go PendingHandler(&task)
+	}
+
 	TradeTask.Store(task.TaskId, task)
 	SaveDb(&task)
 }
@@ -48,7 +54,7 @@ func TradeTaskHandler(task models.TradeTask) {
 func TradeTaskValidation(task *models.TradeTask) {
 	task.Stage = models.Validation
 
-	if cnt >= 0 {
+	if cnt >= 1 {
 		task.Status = models.Stop
 		task.Message += "Превышен лимит открытых тасок; "
 	}
@@ -58,7 +64,7 @@ func TradeTaskValidation(task *models.TradeTask) {
 		task.Message += "Таска на пару уже существует; "
 	}
 
-	if task.Spread < 0.5 {
+	if task.Spread < 0.3 {
 		task.Status = models.Stop
 		task.Message += "Низкий спред; "
 	}

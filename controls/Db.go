@@ -31,9 +31,9 @@ func CreateDb() {
 		ToLog(err)
 		panic("Не удалось подключиться к БД")
 	} else {
-		d.Migrator().DropTable(&models.Request{} /*&models.TradePair{},*/, &models.OrderBook{}, &models.TradeTask{}, &models.RequestBlock{})
+		d.Migrator().DropTable(&models.Request{} /*&models.TradePair{},*/, &models.OrderBook{}, &models.TradeTask{}, &models.OperationTask{}, &models.RequestBlock{})
 
-		err := d.AutoMigrate(&models.Request{}, &models.TradePair{}, &models.OrderBook{}, &models.TradeTask{}, &models.RequestBlock{})
+		err := d.AutoMigrate(&models.Request{}, &models.TradePair{}, &models.OrderBook{}, &models.TradeTask{}, &models.OperationTask{}, &models.RequestBlock{})
 		if err != nil {
 			ToLog(err)
 			panic("Ошибка миграции БД")

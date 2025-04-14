@@ -25,7 +25,8 @@ func TradeTaskHandler(task models.TradeTask) {
 			Ccy:       task.Ccy,
 			Operation: task.Sell,
 		}
-
+		oprBuy.Operation.Price = Round(oprBuy.Operation.Price)
+		oprSell.Operation.Price = Round(oprSell.Operation.Price)
 		oprBuy.Operation.Volume = Round(5.2 / oprBuy.Operation.Price)
 		oprSell.Operation.Volume = Round(5.2 / oprSell.Operation.Price)
 

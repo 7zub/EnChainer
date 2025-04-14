@@ -95,7 +95,7 @@ func (r *Request) UrlExec(rq *http.Request) {
 	r.ResponseRaw = string(body)
 
 	if resp.StatusCode == 429 {
-		r.Log = Result{Status: ERR, Message: fmt.Sprintf("Превышен лимит запросов к api %s", r.ReqId)}
+		r.Log = Result{Status: WAR, Message: fmt.Sprintf("Превышен лимит запросов к api %s", r.ReqId)}
 		return
 	}
 

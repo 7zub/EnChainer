@@ -34,7 +34,7 @@ func SearchReqBlock(ccy models.Ccy, ex models.Exchange) string {
 	ReqBlock.Range(func(key, val any) bool {
 		b, _ := val.(*models.RequestBlock)
 		if ccy == b.Ccy && ex == b.Ex && b.Active == true {
-			if time.Since(b.CreateDate) > 20*time.Second {
+			if time.Since(b.CreateDate) > 50*time.Second {
 				b.Active = false
 				ReqBlock.Store(ccy.Currency+string(ex), b)
 			} else {

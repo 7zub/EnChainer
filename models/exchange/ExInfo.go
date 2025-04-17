@@ -8,21 +8,22 @@ import (
 )
 
 type ExchangeInfo struct {
-	Exchange models.Exchange
-	ReqType  string
+	Exchange   models.Exchange
+	ReqType    string
+	Commission float32
 }
 
 var ExInfo = map[reflect.Type]ExchangeInfo{
-	reflect.TypeOf(BookReq.BinanceBookParams{}): {models.BINANCE, "Book"},
-	reflect.TypeOf(BookReq.GateioBookParams{}):  {models.GATEIO, "Book"},
-	reflect.TypeOf(BookReq.HuobiBookParams{}):   {models.HUOBI, "Book"},
-	reflect.TypeOf(BookReq.OkxBookParams{}):     {models.OKX, "Book"},
-	reflect.TypeOf(BookReq.MexcBookParams{}):    {models.MEXC, "Book"},
-	reflect.TypeOf(BookReq.BybitBookParams{}):   {models.BYBIT, "Book"},
-	reflect.TypeOf(BookReq.KucoinBookParams{}):  {models.KUCOIN, "Book"},
+	reflect.TypeOf(BookReq.BinanceBookParams{}): {Exchange: models.BINANCE, ReqType: "Book"},
+	reflect.TypeOf(BookReq.GateioBookParams{}):  {Exchange: models.GATEIO, ReqType: "Book"},
+	reflect.TypeOf(BookReq.HuobiBookParams{}):   {Exchange: models.HUOBI, ReqType: "Book"},
+	reflect.TypeOf(BookReq.OkxBookParams{}):     {Exchange: models.OKX, ReqType: "Book"},
+	reflect.TypeOf(BookReq.MexcBookParams{}):    {Exchange: models.MEXC, ReqType: "Book"},
+	reflect.TypeOf(BookReq.BybitBookParams{}):   {Exchange: models.BYBIT, ReqType: "Book"},
+	reflect.TypeOf(BookReq.KucoinBookParams{}):  {Exchange: models.KUCOIN, ReqType: "Book"},
 
-	reflect.TypeOf(TradeReq.BinanceTradeParams{}): {models.BINANCE, "Trade"},
-	reflect.TypeOf(TradeReq.GateioTradeParams{}):  {models.GATEIO, "Trade"},
-	reflect.TypeOf(TradeReq.MexcTradeParams{}):    {models.MEXC, "Trade"},
-	reflect.TypeOf(TradeReq.BybitTradeParams{}):   {models.BYBIT, "Trade"},
+	reflect.TypeOf(TradeReq.BinanceTradeParams{}): {Exchange: models.BINANCE, ReqType: "Trade", Commission: 0.1},
+	reflect.TypeOf(TradeReq.GateioTradeParams{}):  {Exchange: models.GATEIO, ReqType: "Trade", Commission: 0.1},
+	reflect.TypeOf(TradeReq.MexcTradeParams{}):    {Exchange: models.MEXC, ReqType: "Trade", Commission: 0.1},
+	reflect.TypeOf(TradeReq.BybitTradeParams{}):   {Exchange: models.BYBIT, ReqType: "Trade", Commission: 0.1},
 }

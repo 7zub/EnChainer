@@ -19,7 +19,7 @@ type Operation struct {
 	Ex     Exchange
 	Price  float64
 	Volume float64
-	Side   Side `gorm:"-"`
+	Side   Side
 }
 
 type OperationTask struct {
@@ -27,6 +27,8 @@ type OperationTask struct {
 	TaskId string
 	Ccy
 	Operation
+	Commission float32
+	CreateDate time.Time `gorm:"type:timestamp;autoCreateTime"`
 }
 
 type StageTask string
@@ -40,10 +42,11 @@ const (
 type StatusTask string
 
 const (
-	Done    StatusTask = "done"
-	Stop    StatusTask = "stop"
-	Pending StatusTask = "pending"
-	Err     StatusTask = "error"
+	Done     StatusTask = "done"
+	Stop     StatusTask = "stop"
+	Pending  StatusTask = "pending"
+	Progress StatusTask = "progress"
+	Err      StatusTask = "error"
 )
 
 type Side string

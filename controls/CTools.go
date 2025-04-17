@@ -8,13 +8,14 @@ import (
 	"log"
 	"math"
 	"os"
+	"path"
 	"reflect"
 	"runtime"
 )
 
 func ToLog(ifc interface{}) {
 	pc, _, _, _ := runtime.Caller(1)
-	funcName := runtime.FuncForPC(pc).Name()
+	funcName := path.Base(runtime.FuncForPC(pc).Name())
 
 	switch v := ifc.(type) {
 	case models.Request:

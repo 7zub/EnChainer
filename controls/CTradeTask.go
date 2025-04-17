@@ -17,7 +17,7 @@ func TradeTaskControl(w http.ResponseWriter) {
 }
 
 func SearchOpenTask(task models.TradeTask) string {
-	var res = "nil"
+	var res = "nil" //TODO
 	TradeTask.Range(func(key, val any) bool {
 		t, _ := val.(models.TradeTask)
 		if task.TaskId != t.TaskId && task.Ccy == t.Ccy && !(t.Stage == models.Trade && t.Status == models.Done) && t.Status != models.Stop {
@@ -27,6 +27,27 @@ func SearchOpenTask(task models.TradeTask) string {
 		return true
 	})
 	return res
+}
+
+func SearchOperation(ccy models.Ccy, ex models.Exchange) (*string, int) {
+	var res *string = nil
+	var i int
+	TradeTask.Range(func(key, val any) bool {
+		t, _ := val.(models.TradeTask)
+		if ccy == t.Ccy && (ex == t.Buy.Ex || ex == t.Sell.Ex) && t.Stage == models.Trade && t.Status == models.Pending {
+			res = &t.TaskId
+
+			if ex == t.Buy.Ex {
+				i = 0
+			} else if ex == t.Sell.Ex {
+				i = 1
+			}
+
+			return false
+		}
+		return true
+	})
+	return res, i
 }
 
 func GenTaskId() string {

@@ -44,10 +44,6 @@ func TradeTaskHandler(task models.TradeTask) {
 		cnt += 1
 	}
 
-	if task.Stage == models.Trade && task.Status == models.Pending {
-		go PendingHandler(&task)
-	}
-
 	TradeTask.Store(task.TaskId, task)
 	SaveDb(&task)
 }
@@ -94,7 +90,16 @@ func CreateOrder(opr models.OperationTask) models.Result {
 	rq.SendRequest()
 	ToLog(*rq)
 	go SaveDb(rq)
-	return rq.Response.Mapper().(models.Result)
+	res := rq.Response.Mapper().(models.Result)
+
+	switch res.Status {
+	case models.ERR:
+		res.Message = "Операция " + rq.ReqId + " не выполнена: " + rq.ResponseRaw
+	case models.OK:
+		res.Message = "Операция " + rq.ReqId + " выполнена"
+	}
+	ToLog(res)
+	return res
 }
 
 func Trade() {

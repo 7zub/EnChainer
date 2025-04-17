@@ -108,6 +108,7 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 			if rs.BookExist() {
 				rs.ReqId = rq.ReqId
 				pair.OrderBook = append(pair.OrderBook, rs)
+				go PendingHandler(pair.Ccy, rs)
 			} else {
 				rb := CreateReqBlock(rq.ReqId, pair.Ccy, rs.Exchange)
 				SaveDb(&rb)

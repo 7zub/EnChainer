@@ -46,9 +46,14 @@ func LoadConf() {
 	}
 }
 
-func Round(num float64) float64 {
+func Round(num float64, decimal float64) float64 {
+	factor := math.Pow(10, decimal)
+	return math.Round(num*factor) / factor
+}
+
+func RoundSn(num float64, decimal int) float64 {
 	order := math.Floor(math.Log10(math.Abs(num)))
-	decimalPlaces := 3 - int(order) - 1
+	decimalPlaces := decimal - int(order) - 1
 	multiplier := math.Pow10(decimalPlaces)
 	roundedNum := math.Round(num*multiplier) / multiplier
 

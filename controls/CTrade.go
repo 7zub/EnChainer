@@ -9,9 +9,9 @@ import (
 
 var cnt = 0
 
-func TradeTaskHandler(task models.TradeTask) {
+func TradeTaskHandler(task *models.TradeTask) {
 	if task.Stage == models.Creation && task.Status == models.Done {
-		TradeTaskValidation(&task)
+		TradeTaskValidation(task)
 	}
 
 	if task.Stage == models.Validation && task.Status == models.Done {
@@ -25,19 +25,42 @@ func TradeTaskHandler(task models.TradeTask) {
 			Ccy:       task.Ccy,
 			Operation: task.Sell,
 		}
-		oprBuy.Operation.Price = Round(oprBuy.Operation.Price)
-		oprSell.Operation.Price = Round(oprSell.Operation.Price)
-		oprBuy.Operation.Volume = Round(5.2 / oprBuy.Operation.Price)
-		oprSell.Operation.Volume = Round(5.2 / oprSell.Operation.Price)
+		oprBuy.Price = RoundSn(oprBuy.Price, 4)
+		oprSell.Price = RoundSn(oprSell.Price, 4)
+		oprBuy.Volume = RoundSn(5.2/oprBuy.Price, 3)
+		oprSell.Volume = RoundSn(5.2/oprSell.Price, 3)
 
-		oBuy := CreateOrder(oprBuy).Status
-		oSell := CreateOrder(oprSell).Status
+		if oprBuy.Ex == models.BYBIT {
+			if oprBuy.Price < 1 {
+				oprBuy.Price = RoundSn(oprBuy.Price, 3)
+			}
 
-		if oBuy == models.OK && oSell == models.OK {
-			task.Status = models.Pending
+			if oprBuy.Volume > 10 && oprBuy.Volume < 100 {
+				oprBuy.Volume = RoundSn(oprBuy.Volume, 2)
+			}
+		}
+
+		if oprSell.Ex == models.BYBIT {
+			if oprSell.Price < 1 {
+				oprSell.Price = RoundSn(oprSell.Price, 3)
+			}
+
+			if oprSell.Volume > 10 && oprSell.Volume < 100 {
+				oprSell.Volume = RoundSn(oprSell.Volume, 2)
+			}
+		}
+
+		var oSell, oBuy models.Result
+		if oSell, oprSell.ReqId = CreateOrder(oprSell); oSell.Status == models.OK {
+			if oBuy, oprBuy.ReqId = CreateOrder(oprBuy); oBuy.Status == models.OK {
+				task.Status = models.Pending
+			} else {
+				task.Status = models.Err
+				task.Message = "Ошибка операции: " + string(oprBuy.Side) + " " + string(oBuy.Status) + "; " + string(oprSell.Side) + " " + string(oSell.Status)
+			}
 		} else {
 			task.Status = models.Err
-			task.Message = "Ошибка операции: покупка " + string(oBuy) + ", продажа " + string(oSell)
+			task.Message = "Ошибка операции: " + string(oprSell.Side)
 		}
 
 		task.OpTask = append(task.OpTask, oprBuy, oprSell)
@@ -56,7 +79,7 @@ func TradeTaskValidation(task *models.TradeTask) {
 		task.Message += "Превышен лимит открытых тасок; "
 	}
 
-	if SearchOpenTask(*task) != "nil" {
+	if SearchOpenTask(task) != nil {
 		task.Status = models.Stop
 		task.Message += "Таска на пару уже существует; "
 	}
@@ -66,12 +89,12 @@ func TradeTaskValidation(task *models.TradeTask) {
 		task.Message += "Низкий спред; "
 	}
 
-	if task.Buy.Price*task.Buy.Volume < 3 {
+	if task.Buy.Price*task.Buy.Volume < 5 {
 		task.Status = models.Stop
 		task.Message += fmt.Sprintf("Низкий объем на покупку: %g; ", task.Buy.Price*task.Buy.Volume)
 	}
 
-	if task.Sell.Price*task.Sell.Volume < 3 {
+	if task.Sell.Price*task.Sell.Volume < 5 {
 		task.Status = models.Stop
 		task.Message += fmt.Sprintf("Низкий объем на продажу: %g; ", task.Sell.Price*task.Sell.Volume)
 	}
@@ -82,7 +105,7 @@ func TradeTaskValidation(task *models.TradeTask) {
 	}
 }
 
-func CreateOrder(opr models.OperationTask) models.Result {
+func CreateOrder(opr models.OperationTask) (models.Result, string) {
 	typ := GetTypeEx(opr.Ex, "Trade")
 	rr, _ := reflect.New(typ).Interface().(models.IParams)
 	rq := rr.GetParams(opr)
@@ -99,7 +122,7 @@ func CreateOrder(opr models.OperationTask) models.Result {
 		res.Message = "Операция " + rq.ReqId + " выполнена"
 	}
 	ToLog(res)
-	return res
+	return res, rq.ReqId
 }
 
 func Trade() {
@@ -111,15 +134,15 @@ func Trade() {
 		},
 		Spread: 1,
 		Buy: models.Operation{
-			Ex:     models.BINANCE,
+			Ex:     models.GATEIO,
 			Price:  70,
-			Volume: 0.08,
+			Volume: 0.09,
 			Side:   models.Buy,
 		},
 		Sell: models.Operation{
-			Ex:     models.GATEIO,
+			Ex:     models.BINANCE,
 			Price:  200,
-			Volume: 0.02,
+			Volume: 0.03,
 			Side:   models.Sell,
 		},
 		CreateDate: time.Time{},
@@ -127,9 +150,10 @@ func Trade() {
 		Status:     models.Done,
 	}
 
-	//TradeTask = append(TradeTask, task)
+	TradeTask.Store(task.TaskId, &task)
+	SaveDb(&task)
 
-	TradeTaskHandler(task)
+	TradeTaskHandler(&task)
 	fmt.Println(task.Stage)
 	//fmt.Println(TradeTask[0].Stage)
 }

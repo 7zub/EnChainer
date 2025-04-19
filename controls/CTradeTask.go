@@ -16,12 +16,12 @@ func TradeTaskControl(w http.ResponseWriter) {
 	json.NewEncoder(w).Encode(TradeTask)
 }
 
-func SearchOpenTask(task models.TradeTask) string {
-	var res = "nil" //TODO
+func SearchOpenTask(task *models.TradeTask) *string {
+	var res *string = nil
 	TradeTask.Range(func(key, val any) bool {
-		t, _ := val.(models.TradeTask)
+		t, _ := val.(*models.TradeTask)
 		if task.TaskId != t.TaskId && task.Ccy == t.Ccy && !(t.Stage == models.Trade && t.Status == models.Done) && t.Status != models.Stop {
-			res = task.TaskId
+			res = &task.TaskId
 			return false
 		}
 		return true
@@ -33,8 +33,8 @@ func SearchOperation(ccy models.Ccy, ex models.Exchange) (*string, int) {
 	var res *string = nil
 	var i int
 	TradeTask.Range(func(key, val any) bool {
-		t, _ := val.(models.TradeTask)
-		if ccy == t.Ccy && (ex == t.Buy.Ex || ex == t.Sell.Ex) && t.Stage == models.Trade && t.Status == models.Pending {
+		t, _ := val.(*models.TradeTask)
+		if ccy == t.Ccy && (ex == t.Buy.Ex || ex == t.Sell.Ex) && t.Stage == models.Trade && (t.Status == models.Pending || t.Status == models.Progress) {
 			res = &t.TaskId
 
 			if ex == t.Buy.Ex {
@@ -50,13 +50,21 @@ func SearchOperation(ccy models.Ccy, ex models.Exchange) (*string, int) {
 	return res, i
 }
 
+//func AddOperation(task *models.TradeTask, opr models.OperationTask) {
+//	task.Mu.Lock()
+//	defer task.Mu.Unlock()
+//	task := LoadTask(*pendId)
+//	task.OpTask = append(task.OpTask, opr)
+//	TradeTask.Store(task.TaskId, task)
+//}
+
 func GenTaskId() string {
 	taskIdCount = taskIdCount + 1
 	taskId := fmt.Sprintf("%07d-%04d", taskIdCount, rand.Intn(10000))
 	return taskId
 }
 
-func LoadTask(key string) models.TradeTask {
+func LoadTask(key string) *models.TradeTask {
 	t, _ := TradeTask.Load(key)
-	return t.(models.TradeTask)
+	return t.(*models.TradeTask)
 }

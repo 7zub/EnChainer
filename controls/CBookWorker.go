@@ -60,15 +60,15 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 				Volume: pair.OrderBook[0].Bids[0].Volume,
 				Side:   models.Sell,
 			},
-			Spread:     (pair.OrderBook[0].Bids[0].Price/pair.OrderBook[len(pair.OrderBook)-1].Asks[0].Price - 1) * 100,
+			Spread:     Round((pair.OrderBook[0].Bids[0].Price/pair.OrderBook[len(pair.OrderBook)-1].Asks[0].Price-1)*100, 4),
 			CreateDate: time.Now(),
 			Stage:      models.Creation,
 			Status:     models.Done,
 		}
 		go func() {
-			TradeTask.Store(taskId, task)
+			TradeTask.Store(taskId, &task)
 			SaveDb(&task)
-			TradeTaskHandler(LoadTask(taskId))
+			TradeTaskHandler(&task)
 		}()
 
 	}

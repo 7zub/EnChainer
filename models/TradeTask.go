@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"sync"
+	"time"
+)
 
 type TradeTask struct {
 	TaskId     string `gorm:"primaryKey"`
@@ -13,6 +16,7 @@ type TradeTask struct {
 	Stage      StageTask
 	Status     StatusTask
 	Message    string
+	Mu         sync.RWMutex `gorm:"-"`
 }
 
 type Operation struct {
@@ -25,6 +29,7 @@ type Operation struct {
 type OperationTask struct {
 	Id     uint `gorm:"primaryKey"`
 	TaskId string
+	ReqId  string
 	Ccy
 	Operation
 	Commission float32

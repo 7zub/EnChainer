@@ -2,6 +2,7 @@ package models
 
 import (
 	"crypto/hmac"
+	"database/sql/driver"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -10,6 +11,7 @@ import (
 	"math/rand"
 	"net/http"
 	"reflect"
+	"strings"
 	"time"
 )
 
@@ -24,6 +26,7 @@ type Request struct {
 	ReqType     string
 	SignWay     func(r *http.Request) `gorm:"-"`
 	Url         string
+	Header      Header
 	Params      IParams   `gorm:"-"`
 	Response    IResponse `gorm:"-"`
 	ResponseRaw string
@@ -68,9 +71,10 @@ func (r *Request) UrlBuild() *http.Request {
 	rq.URL.RawQuery = q.Encode()
 
 	switch r.ReqType {
-	case "Trade", "Balance":
+	case "Trade":
 		rq.Method = "POST"
 		r.SignWay(rq)
+		r.Header = Header(rq.Header)
 	}
 
 	rq.URL.RawQuery = rq.URL.Query().Encode()
@@ -114,4 +118,14 @@ func Sign(data, secret string, hash func() hash.Hash) string {
 	mac := hmac.New(hash, []byte(secret))
 	mac.Write([]byte(data))
 	return hex.EncodeToString(mac.Sum(nil))
+}
+
+type Header http.Header
+
+func (h Header) Value() (driver.Value, error) {
+	var parts []string
+	for k, v := range h {
+		parts = append(parts, fmt.Sprintf("%s: %s", k, strings.Join(v, ", ")))
+	}
+	return strings.Join(parts, "\n"), nil
 }

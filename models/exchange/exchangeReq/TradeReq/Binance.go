@@ -29,7 +29,7 @@ func (BinanceTradeParams) GetParams(task any) *models.Request {
 		SignWay: func(rq *http.Request) {
 			rq.Header.Add("X-MBX-APIKEY", models.Conf.Exchanges[string(t.Ex)].ApiKey)
 			q := rq.URL.Query()
-			sign := models.Sign(rq.URL.Query().Encode(), models.Conf.Exchanges[string(t.Ex)].SecretKey, sha256.New)
+			sign := models.Sign(rq.URL.Query().Encode(), models.Conf.Exchanges[string(t.Ex)].SecretKey, sha256.New, "hex")
 			q.Add("signature", sign)
 			rq.URL.RawQuery = q.Encode()
 		},

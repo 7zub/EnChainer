@@ -3,6 +3,7 @@ package models
 import (
 	"crypto/hmac"
 	"database/sql/driver"
+	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -114,10 +115,18 @@ func (r *Request) UrlExec(rq *http.Request) {
 	}
 }
 
-func Sign(data, secret string, hash func() hash.Hash) string {
+func Sign(data, secret string, hash func() hash.Hash, encode string) string {
 	mac := hmac.New(hash, []byte(secret))
 	mac.Write([]byte(data))
-	return hex.EncodeToString(mac.Sum(nil))
+
+	switch encode {
+	case "base64":
+		return base64.StdEncoding.EncodeToString(mac.Sum(nil))
+	case "hex":
+		return hex.EncodeToString(mac.Sum(nil))
+	default:
+		return hex.EncodeToString(mac.Sum(nil))
+	}
 }
 
 type Header http.Header

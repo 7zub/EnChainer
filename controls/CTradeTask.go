@@ -50,14 +50,6 @@ func SearchOperation(ccy models.Ccy, ex models.Exchange) (*string, int) {
 	return res, i
 }
 
-//func AddOperation(task *models.TradeTask, opr models.OperationTask) {
-//	task.Mu.Lock()
-//	defer task.Mu.Unlock()
-//	task := LoadTask(*pendId)
-//	task.OpTask = append(task.OpTask, opr)
-//	TradeTask.Store(task.TaskId, task)
-//}
-
 func GenTaskId() string {
 	taskIdCount = taskIdCount + 1
 	taskId := fmt.Sprintf("%07d-%04d", taskIdCount, rand.Intn(10000))

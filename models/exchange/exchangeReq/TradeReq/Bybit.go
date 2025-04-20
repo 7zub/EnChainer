@@ -32,7 +32,6 @@ func (BybitTradeParams) GetParams(task any) *models.Request {
 		Url:     "https://api.bybit.com/v5/order/create",
 		ReqType: "Trade",
 		SignWay: func(rq *http.Request) {
-
 			jsonBody, _ := json.Marshal(BybitTradeParams{
 				Ccy:     t.Currency + t.Currency2,
 				Side:    strings.ToUpper(string(t.Side[0])) + string(t.Side[1:]),
@@ -45,7 +44,7 @@ func (BybitTradeParams) GetParams(task any) *models.Request {
 			})
 
 			timestamp := strconv.FormatInt(time.Now().UnixMilli(), 10)
-			sign := models.Sign(timestamp+models.Conf.Exchanges[string(t.Ex)].ApiKey+string(jsonBody[:]), models.Conf.Exchanges[string(t.Ex)].SecretKey, sha256.New)
+			sign := models.Sign(timestamp+models.Conf.Exchanges[string(t.Ex)].ApiKey+string(jsonBody[:]), models.Conf.Exchanges[string(t.Ex)].SecretKey, sha256.New, "hex")
 
 			rq.Body = io.NopCloser(bytes.NewBuffer(jsonBody))
 			rq.Header.Set("Content-Type", "application/json")

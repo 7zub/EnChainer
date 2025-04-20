@@ -35,7 +35,6 @@ func (GateioTradeParams) GetParams(task any) *models.Request {
 		Url:     "https://api.gateio.ws" + endpoint,
 		ReqType: "Trade",
 		SignWay: func(rq *http.Request) {
-
 			jsonBody, _ := json.Marshal(GateioTradeParams{
 				Ccy:     t.Currency + "_" + t.Currency2,
 				Side:    strings.ToLower(string(t.Side)),
@@ -51,7 +50,7 @@ func (GateioTradeParams) GetParams(task any) *models.Request {
 			encBody := hex.EncodeToString(hash[:])
 			timestamp := strconv.FormatInt(time.Now().Unix(), 10)
 			payload := fmt.Sprintf("POST\n%s\n\n%s\n%s", endpoint, encBody, timestamp)
-			sign := models.Sign(payload, models.Conf.Exchanges[string(t.Ex)].SecretKey, sha512.New)
+			sign := models.Sign(payload, models.Conf.Exchanges[string(t.Ex)].SecretKey, sha512.New, "hex")
 
 			rq.Body = io.NopCloser(bytes.NewBuffer(jsonBody))
 			rq.Header.Add("Accept", "application/json")

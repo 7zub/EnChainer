@@ -8,9 +8,10 @@ type Config struct {
 }
 
 type ExchangeConf struct {
-	Url       string `yaml:"Url"`
-	ApiKey    string `yaml:"ApiKey"`
-	SecretKey string `yaml:"SecretKey"`
+	Url        string `yaml:"Url"`
+	ApiKey     string `yaml:"ApiKey"`
+	SecretKey  string `yaml:"SecretKey"`
+	PassPhrase string `yaml:"PassPhrase"`
 }
 
 type Db struct {

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
+	"sync"
 	"time"
 )
 
@@ -23,6 +24,7 @@ type TradePair struct {
 	UpdateDate time.Time     `gorm:"type:timestamp;autoUpdateTime"`
 	OrderBook  []OrderBook   `gorm:"foreignKey:TpId;constraint:OnDelete:CASCADE;"`
 	StopCh     chan struct{} `gorm:"-"`
+	Mu         sync.Mutex    `gorm:"-"`
 }
 
 type Ccy struct {

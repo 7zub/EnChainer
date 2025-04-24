@@ -109,7 +109,9 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 
 			if rs.BookExist() {
 				rs.ReqId = rq.ReqId
+				pair.Mu.Lock()
 				pair.OrderBook = append(pair.OrderBook, rs)
+				pair.Mu.Unlock()
 				PendingHandler(pair.Ccy, rs)
 			} else {
 				rb := CreateReqBlock(rq.ReqId, pair.Ccy, rs.Exchange)

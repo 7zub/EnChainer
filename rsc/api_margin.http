@@ -1,0 +1,713 @@
+@app = http://localhost:10
+
+GET {{app}}/addpair?currency=SUI&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=DOGE&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=ADA&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=ONDO&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=VIRTUAL&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=S&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=HBAR&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=SOLV&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=TRX&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=ZRO&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=ENA&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=LINK&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=AVAX&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=IP&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=TRUMP&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=WIF&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=GRASS&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=ZETA&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=BNB&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=NEAR&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=CMETH&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=RENDER&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=AAVE&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=ANIME&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=POPCAT&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=XLM&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=PLUME&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=WLD&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=KAS&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=UNI&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=SHIB&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=PYTH&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=ENS&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=AI16Z&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=PNUT&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=AIXBT&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=DYDX&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=W&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=CRV&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=SEI&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=DOT&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=PUFFER&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=LDO&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=OP&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=PENGU&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=JUP&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=ALGO&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=MASK&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=NOT&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=ORDI&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=TIA&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=HMSTR&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=ARB&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=BERA&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=ETHFI&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=ZK&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=DEEP&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=GALA&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=STRK&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=APT&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=C98&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=CAKE&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=BONK&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=INJ&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=DRIFT&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=JTO&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=MEW&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=HFT&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=ARKM&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=MKR&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=VANA&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=FIL&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=ATH&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=CTC&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=QNT&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=SAFE&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=POL&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=ICP&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=ATOM&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=BRETT&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=PENDLE&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=XDC&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=TAIKO&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=MERL&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=IO&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=FLOW&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=STX&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=KDA&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=ACH&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=JASMY&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=GOAT&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=EIGEN&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=SAND&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=CATI&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=BLAST&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=FLR&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=ZEN&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=DAI&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=AR&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=ETC&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=RUNE&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=BBSOL&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=BLUR&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=YFI&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=MYRO&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=MOG&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=MORPHO&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=WOO&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=MINA&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=OMNI&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=MANA&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=KAVA&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=MEME&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=GRT&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=ME&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=DOGS&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=CELO&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=APE&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=AXL&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=IMX&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=XAI&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=AEVO&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=ID&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=PRCL&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=TWT&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=SSV&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=EGLD&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=FLOKI&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=BOME&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=SATS&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=HOOK&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=COMP&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=KAIA&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=GMT&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=THETA&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=PEOPLE&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=MANTA&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=1INCH&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=SCR&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=SC&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=BABYDOGE&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=SUSHI&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=ZIL&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=STG&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=SNX&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=KSM&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=ROSE&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=TNSR&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=AXS&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=ZRX&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=PORTAL&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=FXS&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=DYM&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=BB&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=ENJ&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=CHZ&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=FIDA&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=MAGIC&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=XTZ&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=LEVER&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=AGLD&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=VANRY&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=METH&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=CYBER&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=LUNC&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=GMX&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=BICO&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=ONE&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=ANKR&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=RVN&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=PERP&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=MOVR&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=LRC&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=BAT&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=UMA&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=XEC&time=8300&title=Margin
+###
+GET {{app}}/addpair?currency=RDNT&time=8300&title=Margin
+###
+
+
+
+GET {{app}}/onpair?id=P_SUI
+###
+GET {{app}}/onpair?id=P_DOGE
+###
+GET {{app}}/onpair?id=P_ADA
+###
+GET {{app}}/onpair?id=P_ONDO
+###
+GET {{app}}/onpair?id=P_VIRTUAL
+###
+GET {{app}}/onpair?id=P_S
+###
+GET {{app}}/onpair?id=P_HBAR
+###
+GET {{app}}/onpair?id=P_SOLV
+###
+GET {{app}}/onpair?id=P_TRX
+###
+GET {{app}}/onpair?id=P_ZRO
+###
+GET {{app}}/onpair?id=P_ENA
+###
+GET {{app}}/onpair?id=P_LINK
+###
+GET {{app}}/onpair?id=P_AVAX
+###
+GET {{app}}/onpair?id=P_IP
+###
+GET {{app}}/onpair?id=P_TRUMP
+###
+GET {{app}}/onpair?id=P_WIF
+###
+GET {{app}}/onpair?id=P_GRASS
+###
+GET {{app}}/onpair?id=P_ZETA
+###
+GET {{app}}/onpair?id=P_BNB
+###
+GET {{app}}/onpair?id=P_NEAR
+###
+GET {{app}}/onpair?id=P_CMETH
+###
+GET {{app}}/onpair?id=P_RENDER
+###
+GET {{app}}/onpair?id=P_AAVE
+###
+GET {{app}}/onpair?id=P_ANIME
+###
+GET {{app}}/onpair?id=P_POPCAT
+###
+GET {{app}}/onpair?id=P_XLM
+###
+GET {{app}}/onpair?id=P_PLUME
+###
+GET {{app}}/onpair?id=P_WLD
+###
+GET {{app}}/onpair?id=P_KAS
+###
+GET {{app}}/onpair?id=P_UNI
+###
+GET {{app}}/onpair?id=P_SHIB
+###
+GET {{app}}/onpair?id=P_PYTH
+###
+GET {{app}}/onpair?id=P_ENS
+###
+GET {{app}}/onpair?id=P_AI16Z
+###
+GET {{app}}/onpair?id=P_PNUT
+###
+GET {{app}}/onpair?id=P_AIXBT
+###
+GET {{app}}/onpair?id=P_DYDX
+###
+GET {{app}}/onpair?id=P_W
+###
+GET {{app}}/onpair?id=P_CRV
+###
+GET {{app}}/onpair?id=P_SEI
+###
+GET {{app}}/onpair?id=P_DOT
+###
+GET {{app}}/onpair?id=P_PUFFER
+###
+GET {{app}}/onpair?id=P_LDO
+###
+GET {{app}}/onpair?id=P_OP
+###
+GET {{app}}/onpair?id=P_PENGU
+###
+GET {{app}}/onpair?id=P_JUP
+###
+GET {{app}}/onpair?id=P_ALGO
+###
+GET {{app}}/onpair?id=P_MASK
+###
+GET {{app}}/onpair?id=P_NOT
+###
+GET {{app}}/onpair?id=P_ORDI
+###
+GET {{app}}/onpair?id=P_TIA
+###
+GET {{app}}/onpair?id=P_HMSTR
+###
+GET {{app}}/onpair?id=P_ARB
+###
+GET {{app}}/onpair?id=P_BERA
+###
+GET {{app}}/onpair?id=P_ETHFI
+###
+GET {{app}}/onpair?id=P_ZK
+###
+GET {{app}}/onpair?id=P_DEEP
+###
+GET {{app}}/onpair?id=P_GALA
+###
+GET {{app}}/onpair?id=P_STRK
+###
+GET {{app}}/onpair?id=P_APT
+###
+GET {{app}}/onpair?id=P_C98
+###
+GET {{app}}/onpair?id=P_CAKE
+###
+GET {{app}}/onpair?id=P_BONK
+###
+GET {{app}}/onpair?id=P_INJ
+###
+GET {{app}}/onpair?id=P_DRIFT
+###
+GET {{app}}/onpair?id=P_JTO
+###
+GET {{app}}/onpair?id=P_MEW
+###
+GET {{app}}/onpair?id=P_HFT
+###
+GET {{app}}/onpair?id=P_ARKM
+###
+GET {{app}}/onpair?id=P_MKR
+###
+GET {{app}}/onpair?id=P_VANA
+###
+GET {{app}}/onpair?id=P_FIL
+###
+GET {{app}}/onpair?id=P_ATH
+###
+GET {{app}}/onpair?id=P_CTC
+###
+GET {{app}}/onpair?id=P_QNT
+###
+GET {{app}}/onpair?id=P_SAFE
+###
+GET {{app}}/onpair?id=P_POL
+###
+GET {{app}}/onpair?id=P_ICP
+###
+GET {{app}}/onpair?id=P_ATOM
+###
+GET {{app}}/onpair?id=P_BRETT
+###
+GET {{app}}/onpair?id=P_PENDLE
+###
+GET {{app}}/onpair?id=P_XDC
+###
+GET {{app}}/onpair?id=P_TAIKO
+###
+GET {{app}}/onpair?id=P_MERL
+###
+GET {{app}}/onpair?id=P_IO
+###
+GET {{app}}/onpair?id=P_FLOW
+###
+GET {{app}}/onpair?id=P_STX
+###
+GET {{app}}/onpair?id=P_KDA
+###
+GET {{app}}/onpair?id=P_ACH
+###
+GET {{app}}/onpair?id=P_JASMY
+###
+GET {{app}}/onpair?id=P_GOAT
+###
+GET {{app}}/onpair?id=P_EIGEN
+###
+GET {{app}}/onpair?id=P_SAND
+###
+GET {{app}}/onpair?id=P_CATI
+###
+GET {{app}}/onpair?id=P_BLAST
+###
+GET {{app}}/onpair?id=P_FLR
+###
+GET {{app}}/onpair?id=P_ZEN
+###
+GET {{app}}/onpair?id=P_DAI
+###
+GET {{app}}/onpair?id=P_AR
+###
+GET {{app}}/onpair?id=P_ETC
+###
+GET {{app}}/onpair?id=P_RUNE
+###
+GET {{app}}/onpair?id=P_BBSOL
+###
+GET {{app}}/onpair?id=P_BLUR
+###
+GET {{app}}/onpair?id=P_YFI
+###
+GET {{app}}/onpair?id=P_MYRO
+###
+GET {{app}}/onpair?id=P_MOG
+###
+GET {{app}}/onpair?id=P_MORPHO
+###
+GET {{app}}/onpair?id=P_WOO
+###
+GET {{app}}/onpair?id=P_MINA
+###
+GET {{app}}/onpair?id=P_OMNI
+###
+GET {{app}}/onpair?id=P_MANA
+###
+GET {{app}}/onpair?id=P_KAVA
+###
+GET {{app}}/onpair?id=P_MEME
+###
+GET {{app}}/onpair?id=P_GRT
+###
+GET {{app}}/onpair?id=P_ME
+###
+GET {{app}}/onpair?id=P_DOGS
+###
+GET {{app}}/onpair?id=P_CELO
+###
+GET {{app}}/onpair?id=P_APE
+###
+GET {{app}}/onpair?id=P_AXL
+###
+GET {{app}}/onpair?id=P_IMX
+###
+GET {{app}}/onpair?id=P_XAI
+###
+GET {{app}}/onpair?id=P_AEVO
+###
+GET {{app}}/onpair?id=P_ID
+###
+GET {{app}}/onpair?id=P_PRCL
+###
+GET {{app}}/onpair?id=P_TWT
+###
+GET {{app}}/onpair?id=P_SSV
+###
+GET {{app}}/onpair?id=P_EGLD
+###
+GET {{app}}/onpair?id=P_FLOKI
+###
+GET {{app}}/onpair?id=P_BOME
+###
+GET {{app}}/onpair?id=P_SATS
+###
+GET {{app}}/onpair?id=P_HOOK
+###
+GET {{app}}/onpair?id=P_COMP
+###
+GET {{app}}/onpair?id=P_KAIA
+###
+GET {{app}}/onpair?id=P_GMT
+###
+GET {{app}}/onpair?id=P_THETA
+###
+GET {{app}}/onpair?id=P_PEOPLE
+###
+GET {{app}}/onpair?id=P_MANTA
+###
+GET {{app}}/onpair?id=P_1INCH
+###
+GET {{app}}/onpair?id=P_SCR
+###
+GET {{app}}/onpair?id=P_SC
+###
+GET {{app}}/onpair?id=P_BABYDOGE
+###
+GET {{app}}/onpair?id=P_SUSHI
+###
+GET {{app}}/onpair?id=P_ZIL
+###
+GET {{app}}/onpair?id=P_STG
+###
+GET {{app}}/onpair?id=P_SNX
+###
+GET {{app}}/onpair?id=P_KSM
+###
+GET {{app}}/onpair?id=P_ROSE
+###
+GET {{app}}/onpair?id=P_TNSR
+###
+GET {{app}}/onpair?id=P_AXS
+###
+GET {{app}}/onpair?id=P_ZRX
+###
+GET {{app}}/onpair?id=P_PORTAL
+###
+GET {{app}}/onpair?id=P_FXS
+###
+GET {{app}}/onpair?id=P_DYM
+###
+GET {{app}}/onpair?id=P_BB
+###
+GET {{app}}/onpair?id=P_ENJ
+###
+GET {{app}}/onpair?id=P_CHZ
+###
+GET {{app}}/onpair?id=P_FIDA
+###
+GET {{app}}/onpair?id=P_MAGIC
+###
+GET {{app}}/onpair?id=P_XTZ
+###
+GET {{app}}/onpair?id=P_LEVER
+###
+GET {{app}}/onpair?id=P_AGLD
+###
+GET {{app}}/onpair?id=P_VANRY
+###
+GET {{app}}/onpair?id=P_METH
+###
+GET {{app}}/onpair?id=P_CYBER
+###
+GET {{app}}/onpair?id=P_LUNC
+###
+GET {{app}}/onpair?id=P_GMX
+###
+GET {{app}}/onpair?id=P_BICO
+###
+GET {{app}}/onpair?id=P_ONE
+###
+GET {{app}}/onpair?id=P_ANKR
+###
+GET {{app}}/onpair?id=P_RVN
+###
+GET {{app}}/onpair?id=P_PERP
+###
+GET {{app}}/onpair?id=P_MOVR
+###
+GET {{app}}/onpair?id=P_LRC
+###
+GET {{app}}/onpair?id=P_BAT
+###
+GET {{app}}/onpair?id=P_UMA
+###
+GET {{app}}/onpair?id=P_XEC
+###
+GET {{app}}/onpair?id=P_RDNT
+###

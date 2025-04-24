@@ -12,7 +12,7 @@ func StartPair(pair *models.TradePair) {
 		BookReq.BinanceBookParams{},
 		BookReq.GateioBookParams{},
 		//BookReq.HuobiBookParams{},
-		//BookReq.OkxBookParams{},
+		BookReq.OkxBookParams{},
 		BookReq.MexcBookParams{},
 		BookReq.BybitBookParams{},
 		//BookReq.KucoinBookParams{},
@@ -96,7 +96,9 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 			rq.DescRequest(date, rid)
 			rq.SendRequest()
 			ToLog(*rq)
-			go SaveDb(rq)
+			if rq.Code != 200 && rq.Code != 201 {
+				go SaveDb(rq)
+			}
 			rs := rq.Response.Mapper().(models.OrderBook)
 
 			if isDone(ctx) {
@@ -108,7 +110,7 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 			if rs.BookExist() {
 				rs.ReqId = rq.ReqId
 				pair.OrderBook = append(pair.OrderBook, rs)
-				go PendingHandler(pair.Ccy, rs)
+				PendingHandler(pair.Ccy, rs)
 			} else {
 				rb := CreateReqBlock(rq.ReqId, pair.Ccy, rs.Exchange)
 				SaveDb(&rb)

@@ -10,6 +10,9 @@ import (
 var cnt = 0
 
 func TradeTaskHandler(task *models.TradeTask) {
+	task.Mu.Lock()
+	defer task.Mu.Unlock()
+
 	if task.Stage == models.Creation && task.Status == models.Done {
 		TradeTaskValidation(task)
 	}
@@ -25,30 +28,9 @@ func TradeTaskHandler(task *models.TradeTask) {
 			Ccy:       task.Ccy,
 			Operation: task.Sell,
 		}
-		oprBuy.Price = RoundSn(oprBuy.Price, 4)
-		oprSell.Price = RoundSn(oprSell.Price, 4)
-		oprBuy.Volume = RoundSn(5.2/oprBuy.Price, 3)
-		oprSell.Volume = RoundSn(5.2/oprSell.Price, 3)
 
-		if oprBuy.Ex == models.BYBIT {
-			if oprBuy.Price < 1 {
-				oprBuy.Price = RoundSn(oprBuy.Price, 3)
-			}
-
-			if oprBuy.Volume > 10 && oprBuy.Volume < 100 {
-				oprBuy.Volume = RoundSn(oprBuy.Volume, 2)
-			}
-		}
-
-		if oprSell.Ex == models.BYBIT {
-			if oprSell.Price < 1 {
-				oprSell.Price = RoundSn(oprSell.Price, 3)
-			}
-
-			if oprSell.Volume > 10 && oprSell.Volume < 100 {
-				oprSell.Volume = RoundSn(oprSell.Volume, 2)
-			}
-		}
+		PreparedOperation(&oprBuy, false)
+		PreparedOperation(&oprSell, false)
 
 		var oSell, oBuy models.Result
 		if oSell, oprSell.ReqId = CreateOrder(oprSell); oSell.Status == models.OK {
@@ -103,6 +85,11 @@ func TradeTaskValidation(task *models.TradeTask) {
 		task.Status = models.Stop
 		task.Message += "На бирже MEXC нет маржинальной торговли; "
 	}
+
+	if task.Sell.Ex == models.BINANCE && task.Ccy.Currency == "KDA" {
+		task.Status = models.Stop
+		task.Message += "На бирже Binance не работает маржа; "
+	}
 }
 
 func CreateOrder(opr models.OperationTask) (models.Result, string) {
@@ -140,9 +127,9 @@ func Trade() {
 			Side:   models.Buy,
 		},
 		Sell: models.Operation{
-			Ex:     models.BINANCE,
+			Ex:     models.OKX,
 			Price:  200,
-			Volume: 0.03,
+			Volume: 0.05,
 			Side:   models.Sell,
 		},
 		CreateDate: time.Time{},

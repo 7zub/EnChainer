@@ -51,13 +51,21 @@ func Round(num float64, decimal float64) float64 {
 	return math.Round(num*factor) / factor
 }
 
-func RoundSn(num float64, decimal int) float64 {
+func RoundSn(num float64, decimal int, mode string) float64 {
 	order := math.Floor(math.Log10(math.Abs(num)))
 	decimalPlaces := decimal - int(order) - 1
 	multiplier := math.Pow10(decimalPlaces)
-	roundedNum := math.Round(num*multiplier) / multiplier
 
-	return roundedNum
+	switch mode {
+	case "down":
+		return math.Floor(num*multiplier) / multiplier
+	case "up":
+		return math.Ceil(num*multiplier) / multiplier
+	case "near":
+		return math.Round(num*multiplier) / multiplier
+	default:
+		return math.Round(num*multiplier) / multiplier
+	}
 }
 
 func GetEx(structValue interface{}) models.Exchange {

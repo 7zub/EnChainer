@@ -36,14 +36,15 @@ func (GateioTradeParams) GetParams(task any) *models.Request {
 		ReqType: "Trade",
 		SignWay: func(rq *http.Request) {
 			jsonBody, _ := json.Marshal(GateioTradeParams{
-				Ccy:     t.Currency + "_" + t.Currency2,
-				Side:    strings.ToLower(string(t.Side)),
-				Type:    "limit",
-				Volume:  t.Volume,
-				Price:   t.Price,
-				Live:    "gtc",
-				Account: "unified",
-				Margin:  "true",
+				Ccy:       t.Currency + "_" + t.Currency2,
+				Side:      strings.ToLower(string(t.Side)),
+				Type:      "limit",
+				Volume:    t.Volume,
+				Price:     t.Price,
+				Live:      "gtc",
+				Account:   "unified",
+				Margin:    "true",
+				AutoRepay: "true",
 			})
 
 			hash := sha512.Sum512(jsonBody)

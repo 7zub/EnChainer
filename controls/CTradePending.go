@@ -9,6 +9,10 @@ func PendingHandler(ccy models.Ccy, book models.OrderBook) {
 	if pendId, i := SearchOperation(ccy, book.Exchange); pendId != nil {
 		task := LoadTask(*pendId)
 
+		//if task.OpTask[i].Price diff := ((newPrice - oldPrice) / oldPrice) * 100 {
+		// TODO Переделать ReqWorker!
+		//}
+
 		opr := models.OperationTask{
 			Ccy:       task.Ccy,
 			Operation: task.OpTask[i].Operation,
@@ -17,11 +21,14 @@ func PendingHandler(ccy models.Ccy, book models.OrderBook) {
 		switch i {
 		case 0:
 			opr.Operation.Side = models.Sell
-			opr.Operation.Price = RoundSn(book.Bids[0].Price, 4)
+			opr.Operation.Price = book.Bids[0].Price
 		case 1:
 			opr.Operation.Side = models.Buy
-			opr.Operation.Price = RoundSn(book.Asks[0].Price, 4)
+			opr.Operation.Price = book.Asks[0].Price
 		}
+
+		PreparedOperation(&opr, true)
+
 		var o models.Result
 		o, opr.ReqId = CreateOrder(opr)
 		task.Mu.Lock()

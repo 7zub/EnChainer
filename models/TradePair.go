@@ -31,12 +31,13 @@ type Ccy struct {
 }
 
 type OrderBook struct {
-	Id       uint `gorm:"primaryKey"`
-	TpId     uint
-	Exchange Exchange
-	Bids     JsonValueBook `gorm:"type:jsonb"`
-	Asks     JsonValueBook `gorm:"type:jsonb"`
-	ReqId    string        `gorm:"unique"`
+	Id         uint `gorm:"primaryKey"`
+	TpId       uint
+	Exchange   Exchange
+	Bids       JsonValueBook `gorm:"type:jsonb"`
+	Asks       JsonValueBook `gorm:"type:jsonb"`
+	CreateDate time.Time     `gorm:"type:timestamp;autoCreateTime"`
+	ReqId      string        `gorm:"unique"`
 }
 
 type JsonValueBook []ValueBook

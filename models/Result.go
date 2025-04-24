@@ -1,8 +1,7 @@
 package models
 
 type Result struct {
-	Status Status
-	//Source  string
+	Status  Status
 	Message string
 }
 

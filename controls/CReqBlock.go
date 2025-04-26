@@ -8,7 +8,7 @@ import (
 
 var ReqBlock sync.Map
 
-func CreateReqBlock(rid string, ccy models.Ccy, ex models.Exchange) *models.RequestBlock {
+func CreateReqBlock(rq models.Request, ccy models.Ccy, ex models.Exchange) *models.RequestBlock {
 	var reqb *models.RequestBlock
 	v, ok := ReqBlock.Load(ccy.Currency + string(ex))
 
@@ -17,16 +17,18 @@ func CreateReqBlock(rid string, ccy models.Ccy, ex models.Exchange) *models.Requ
 		reqb.Active = true
 	} else {
 		reqb = &models.RequestBlock{
-			ReqId:  rid,
-			Ccy:    ccy,
-			Ex:     ex,
-			Active: true,
+			ReqId:      rq.ReqId,
+			Ccy:        ccy,
+			Ex:         ex,
+			ReasonCode: rq.Code,
+			Reason:     rq.ResponseRaw,
+			CreateDate: time.Now(),
+			Active:     true,
 		}
 	}
 
 	ReqBlock.Store(ccy.Currency+string(ex), reqb)
 	return reqb
-
 }
 
 func SearchReqBlock(ccy models.Ccy, ex models.Exchange) string {
@@ -34,11 +36,12 @@ func SearchReqBlock(ccy models.Ccy, ex models.Exchange) string {
 	ReqBlock.Range(func(key, val any) bool {
 		b, _ := val.(*models.RequestBlock)
 		if ccy == b.Ccy && ex == b.Ex && b.Active == true {
-			if time.Since(b.CreateDate) > 50*time.Second {
+			if b.ReasonCode == 400 || time.Since(b.CreateDate) < 50*time.Second {
+				res = b.ReqId
+			} else {
 				b.Active = false
 				ReqBlock.Store(ccy.Currency+string(ex), b)
-			} else {
-				res = b.ReqId
+				SaveDb(b)
 			}
 			return false
 		}

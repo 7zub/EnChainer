@@ -20,11 +20,12 @@ type TradePair struct {
 	Ccy        Ccy `gorm:"embedded"`
 	Status     int
 	SessTime   time.Duration
-	CreateDate time.Time     `gorm:"type:timestamp;autoCreateTime"`
-	UpdateDate time.Time     `gorm:"type:timestamp;autoUpdateTime"`
-	OrderBook  []OrderBook   `gorm:"foreignKey:TpId;constraint:OnDelete:CASCADE;"`
-	StopCh     chan struct{} `gorm:"-"`
-	Mu         sync.Mutex    `gorm:"-"`
+	CreateDate time.Time      `gorm:"type:timestamp;autoCreateTime"`
+	UpdateDate time.Time      `gorm:"type:timestamp;autoUpdateTime"`
+	OrderBook  []OrderBook    `gorm:"foreignKey:TpId;constraint:OnDelete:CASCADE;"`
+	StopCh     chan struct{}  `gorm:"-"`
+	Mu         sync.Mutex     `gorm:"-"`
+	Wg         sync.WaitGroup `gorm:"-"`
 }
 
 type Ccy struct {
@@ -40,6 +41,7 @@ type OrderBook struct {
 	Asks       JsonValueBook `gorm:"type:jsonb"`
 	CreateDate time.Time     `gorm:"type:timestamp;autoCreateTime"`
 	ReqId      string        `gorm:"unique"`
+	TaskId     string
 }
 
 type JsonValueBook []ValueBook

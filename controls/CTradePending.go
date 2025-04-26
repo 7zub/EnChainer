@@ -5,56 +5,67 @@ import (
 	"fmt"
 )
 
-func PendingHandler(ccy models.Ccy, book models.OrderBook) {
-	if pendId, i := SearchOperation(ccy, book.Exchange); pendId != nil {
+func PendingHandler(ccy models.Ccy, book []models.OrderBook) {
+	if pendId := SearchPendTask(ccy); pendId != nil {
 		task := LoadTask(*pendId)
 
-		//if task.OpTask[i].Price diff := ((newPrice - oldPrice) / oldPrice) * 100 {
-		// TODO Переделать ReqWorker!
-		//}
-
-		opr := models.OperationTask{
-			Ccy:       task.Ccy,
-			Operation: task.OpTask[i].Operation,
-		}
-
-		switch i {
-		case 0:
-			opr.Operation.Side = models.Sell
-			opr.Operation.Price = book.Bids[0].Price
-		case 1:
-			opr.Operation.Side = models.Buy
-			opr.Operation.Price = book.Asks[0].Price
-		}
-
-		PreparedOperation(&opr, true)
-
-		var o models.Result
-		o, opr.ReqId = CreateOrder(opr)
-		task.Mu.Lock()
-		task.OpTask = append(task.OpTask, opr)
-		task.Mu.Unlock()
-		TradeTask.Store(task.TaskId, task)
-		l := len(task.OpTask)
-
-		fmt.Println("Проверка " + fmt.Sprintf("%d", len(task.OpTask)))
-
-		if o.Status == models.OK {
-			switch l {
-			case 3:
-				task.Status = models.Progress
-			case 4:
-				task.Status = models.Done
-			default:
-				task.Status = models.Err
-				task.Message = fmt.Sprintf("Некорректное количество операций: %d", len(task.OpTask))
+		var b, s float64
+		for i := range book {
+			if book[i].Exchange == task.Buy.Ex {
+				b = book[i].Asks[0].Price
 			}
-		} else {
-			task.Status = models.Err
-			task.Message = "Ошибка завершения сделки: " + string(opr.Operation.Side) + " " + string(o.Status)
+
+			if book[i].Exchange == task.Sell.Ex {
+				s = book[i].Bids[0].Price
+			}
 		}
 
-		TradeTask.Store(task.TaskId, task)
-		SaveDb(&task)
+		if b <= 0 || s <= 0 {
+			ToLog(models.Result{Status: models.WAR, Message: fmt.Sprintf("Отсутсвует книга: b %f, s %f", b, s)})
+			return
+		}
+
+		spr := Round((s/b-1)*100, 4)
+
+		if task.Spread-spr > 0.15 {
+			opr1 := models.OperationTask{
+				Ccy:       task.Ccy,
+				Operation: task.OpTask[0].Operation,
+			}
+
+			opr2 := models.OperationTask{
+				Ccy:       task.Ccy,
+				Operation: task.OpTask[1].Operation,
+			}
+
+			opr1.Operation.Side = models.Sell
+			opr1.Operation.Price = s
+			opr2.Operation.Side = models.Buy
+			opr2.Operation.Price = b
+
+			PreparedOperation(&opr1, true)
+			PreparedOperation(&opr2, true)
+
+			var o1, o2 models.Result
+			o1, opr1.ReqId = CreateOrder(opr1)
+			o2, opr2.ReqId = CreateOrder(opr2)
+
+			task.OpTask = append(task.OpTask, opr1, opr2)
+			TradeTask.Store(task.TaskId, task)
+
+			fmt.Println("Проверка " + fmt.Sprintf("%d", len(task.OpTask)))
+
+			if o1.Status == models.OK && o2.Status == models.OK {
+				task.Status = models.Done
+			} else {
+				task.Status = models.Err
+				task.Message = "Ошибка закрытия операции: " + string(opr1.Side) + " " + string(o1.Status) + "; " + string(opr2.Side) + " " + string(o2.Status)
+			}
+
+			TradeTask.Store(task.TaskId, task)
+			SaveDb(&task)
+		} else {
+			ToLog(models.Result{Status: models.WAR, Message: fmt.Sprintf("Маленькая разница с новым спредом: %f", task.Spread-spr)})
+		}
 	}
 }

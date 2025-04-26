@@ -1,6 +1,9 @@
 package controls
 
-import "enchainer/models"
+import (
+	"enchainer/models"
+	"time"
+)
 
 func PreparedOperation(opr *models.OperationTask, pend bool) {
 	var mode string
@@ -14,11 +17,11 @@ func PreparedOperation(opr *models.OperationTask, pend bool) {
 	}
 
 	if opr.Ex == models.BYBIT {
-		if opr.Price < 1 {
+		if opr.Price > 0.2 && opr.Price < 1 {
 			decPrice = 3
 		}
 
-		if 5.2/opr.Price > 10 && 5.2/opr.Price < 100 {
+		if 5.2/opr.Price > 3 && 5.2/opr.Price < 100 {
 			decVol = 2
 		}
 	}
@@ -28,4 +31,6 @@ func PreparedOperation(opr *models.OperationTask, pend bool) {
 	if pend == false {
 		opr.Volume = RoundSn(5.2/opr.Price, decVol, "down")
 	}
+
+	opr.CreateDate = time.Now()
 }

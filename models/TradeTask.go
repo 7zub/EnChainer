@@ -33,7 +33,7 @@ type OperationTask struct {
 	Ccy
 	Operation
 	Commission float32
-	CreateDate time.Time `gorm:"type:timestamp;autoCreateTime"`
+	CreateDate time.Time `gorm:"type:timestamp"`
 }
 
 type StageTask string

@@ -13,11 +13,13 @@ func main() {
 	logOn()
 	controls.LoadConf()
 	controls.CreateDb()
+	controls.LoadBlockDb(&[]models.RequestBlock{})
+
 	controls.LoadBookDb(&controls.TradePair)
 	for i, pair := range controls.TradePair {
 		if pair.Status == models.On {
 			controls.StartPair(&controls.TradePair[i])
-			time.Sleep(200 * time.Millisecond)
+			time.Sleep(300 * time.Millisecond)
 		}
 	}
 	//controls.Trade()

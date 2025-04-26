@@ -19,11 +19,11 @@ func ToLog(ifc interface{}) {
 
 	switch v := ifc.(type) {
 	case models.Request:
-		log.Printf("%s %s, %s", v.Log.Status, funcName, v.Log.Message)
+		log.Printf("%-4s %-25s %s", v.Log.Status, funcName, v.Log.Message)
 	case models.Result:
-		log.Printf("%s %s, %s", v.Status, funcName, v.Message)
+		log.Printf("%-4s %-25s %s", v.Status, funcName, v.Message)
 	default:
-		log.Printf("%s, %s, %s", models.ERR, funcName, v)
+		log.Printf("%-4s %-25s %s", models.ERR, funcName, v)
 	}
 }
 

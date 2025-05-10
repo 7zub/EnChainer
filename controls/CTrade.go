@@ -49,7 +49,11 @@ func TradeTaskHandler(task *models.TradeTask) {
 		cnt += 1
 	}
 
-	TradeTask.Store(task.TaskId, task)
+	if task.Stage == models.Validation && task.Status == models.Stop {
+		TradeTask.Delete(task.TaskId)
+	} else {
+		TradeTask.Store(task.TaskId, task)
+	}
 	SaveDb(&task)
 }
 
@@ -82,7 +86,7 @@ func Trade() {
 		},
 		Spread: 1,
 		Buy: models.Operation{
-			Ex:     models.GATEIO,
+			Ex:     models.BYBIT,
 			Price:  70,
 			Volume: 0.09,
 			Side:   models.Buy,

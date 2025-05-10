@@ -36,7 +36,7 @@ func SearchReqBlock(ccy models.Ccy, ex models.Exchange) string {
 	ReqBlock.Range(func(key, val any) bool {
 		b, _ := val.(*models.RequestBlock)
 		if ccy == b.Ccy && ex == b.Ex && b.Active == true {
-			if b.ReasonCode == 400 || time.Since(b.CreateDate) < 50*time.Second {
+			if b.ReasonCode == 400 || time.Since(b.CreateDate) < 110*time.Second {
 				res = b.ReqId
 			} else {
 				b.Active = false

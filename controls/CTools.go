@@ -52,20 +52,24 @@ func Round(num float64, decimal float64) float64 {
 }
 
 func RoundSn(num float64, decimal int, mode string) float64 {
-	order := math.Floor(math.Log10(math.Abs(num)))
-	decimalPlaces := decimal - int(order) - 1
-	multiplier := math.Pow10(decimalPlaces)
+	pow := math.Pow10(decimal)
+	var rounded float64
 
 	switch mode {
 	case "down":
-		return math.Floor(num*multiplier) / multiplier
+		rounded = math.Floor(num*pow) / pow
 	case "up":
-		return math.Ceil(num*multiplier) / multiplier
+		rounded = math.Ceil(num*pow) / pow
 	case "near":
-		return math.Round(num*multiplier) / multiplier
+		rounded = math.Round(num*pow) / pow
 	default:
-		return math.Round(num*multiplier) / multiplier
+		rounded = math.Round(num*pow) / pow
 	}
+
+	if rounded == num {
+		rounded += 1 / pow
+	}
+	return rounded
 }
 
 func GetEx(structValue interface{}) models.Exchange {

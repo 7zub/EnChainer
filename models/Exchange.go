@@ -10,4 +10,5 @@ const (
 	MEXC    Exchange = "MEXC"
 	BYBIT   Exchange = "BYBIT"
 	KUCOIN  Exchange = "KUCOIN"
+	COINEX  Exchange = "COINEX"
 )

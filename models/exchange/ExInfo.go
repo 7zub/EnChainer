@@ -21,6 +21,7 @@ var ExInfo = map[reflect.Type]ExchangeInfo{
 	reflect.TypeOf(BookReq.MexcBookParams{}):    {Exchange: models.MEXC, ReqType: "Book"},
 	reflect.TypeOf(BookReq.BybitBookParams{}):   {Exchange: models.BYBIT, ReqType: "Book"},
 	reflect.TypeOf(BookReq.KucoinBookParams{}):  {Exchange: models.KUCOIN, ReqType: "Book"},
+	reflect.TypeOf(BookReq.CoinexBookParams{}):  {Exchange: models.COINEX, ReqType: "Book"},
 
 	reflect.TypeOf(TradeReq.BinanceTradeParams{}): {Exchange: models.BINANCE, ReqType: "Trade", Commission: 0.1},
 	reflect.TypeOf(TradeReq.GateioTradeParams{}):  {Exchange: models.GATEIO, ReqType: "Trade", Commission: 0.1},

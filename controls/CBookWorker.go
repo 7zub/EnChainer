@@ -17,6 +17,7 @@ func StartPair(pair *models.TradePair) {
 		BookReq.MexcBookParams{},
 		BookReq.BybitBookParams{},
 		//BookReq.KucoinBookParams{},
+		BookReq.CoinexBookParams{},
 	}
 	go TaskTicker(pair, RqList)
 }

@@ -52,14 +52,17 @@ func Round(num float64, decimal float64) float64 {
 }
 
 func RoundSn(num float64, decimal int, mode string) float64 {
-	pow := math.Pow10(decimal)
-	var rounded float64
+	d := decimal - int(math.Floor(math.Log10(math.Abs(num)))) - 1
+	pow := math.Pow10(d)
+	var rounded, slip float64
 
 	switch mode {
 	case "down":
 		rounded = math.Floor(num*pow) / pow
+		slip = -2
 	case "up":
 		rounded = math.Ceil(num*pow) / pow
+		slip = 2
 	case "near":
 		rounded = math.Round(num*pow) / pow
 	default:
@@ -67,7 +70,7 @@ func RoundSn(num float64, decimal int, mode string) float64 {
 	}
 
 	if rounded == num {
-		rounded += 1 / pow
+		rounded += slip / pow
 	}
 	return rounded
 }

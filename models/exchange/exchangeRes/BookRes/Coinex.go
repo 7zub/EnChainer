@@ -6,22 +6,18 @@ import (
 )
 
 type CoinexBook struct {
-	Code    int            `json:"code"`
-	Message string         `json:"message"`
-	Data    CoinexBookData `json:"data"`
-	Bids    interface{}
-}
-
-type CoinexBookData struct {
-	Timestamp int64      `json:"timestamp"`
-	Asks      [][]string `json:"asks"`
-	Bids      [][]string `json:"bids"`
+	Data struct {
+		Depth struct {
+			Asks [][]string `json:"asks"`
+			Bids [][]string `json:"bids"`
+		} `json:"depth"`
+	} `json:"data"`
 }
 
 func (book CoinexBook) Mapper() any {
 	var newBids, newAsks []models.ValueBook
 
-	for _, bid := range book.Data.Bids {
+	for _, bid := range book.Data.Depth.Bids {
 		price, _ := strconv.ParseFloat(bid[0], 64)
 		volume, _ := strconv.ParseFloat(bid[1], 64)
 
@@ -31,7 +27,7 @@ func (book CoinexBook) Mapper() any {
 		})
 	}
 
-	for _, ask := range book.Data.Asks {
+	for _, ask := range book.Data.Depth.Asks {
 		price, _ := strconv.ParseFloat(ask[0], 64)
 		volume, _ := strconv.ParseFloat(ask[1], 64)
 

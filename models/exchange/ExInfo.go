@@ -28,4 +28,5 @@ var ExInfo = map[reflect.Type]ExchangeInfo{
 	reflect.TypeOf(TradeReq.OkxTradeParams{}):     {Exchange: models.OKX, ReqType: "Trade", Commission: 0.1},
 	reflect.TypeOf(TradeReq.MexcTradeParams{}):    {Exchange: models.MEXC, ReqType: "Trade", Commission: 0.1},
 	reflect.TypeOf(TradeReq.BybitTradeParams{}):   {Exchange: models.BYBIT, ReqType: "Trade", Commission: 0.1},
+	reflect.TypeOf(TradeReq.CoinexTradeParams{}):  {Exchange: models.COINEX, ReqType: "Trade", Commission: 0.1},
 }

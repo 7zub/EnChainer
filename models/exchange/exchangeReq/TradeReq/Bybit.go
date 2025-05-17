@@ -44,7 +44,8 @@ func (BybitTradeParams) GetParams(task any) *models.Request {
 			})
 
 			timestamp := strconv.FormatInt(time.Now().UnixMilli(), 10)
-			sign := models.Sign(timestamp+models.Conf.Exchanges[string(t.Ex)].ApiKey+string(jsonBody[:]), models.Conf.Exchanges[string(t.Ex)].SecretKey, sha256.New, "hex")
+			payload := fmt.Sprintf("%s%s%s", timestamp, models.Conf.Exchanges[string(t.Ex)].ApiKey, string(jsonBody[:]))
+			sign := models.Sign(payload, models.Conf.Exchanges[string(t.Ex)].SecretKey, sha256.New, "hex")
 
 			rq.Body = io.NopCloser(bytes.NewBuffer(jsonBody))
 			rq.Header.Set("Content-Type", "application/json")

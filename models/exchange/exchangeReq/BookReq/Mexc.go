@@ -15,7 +15,7 @@ func (MexcBookParams) GetParams(ccy any) *models.Request {
 
 	return &models.Request{
 		Url:      "https://api.mexc.com/api/v3/depth",
-		ReqType:  "Book",
+		ReqType:  models.ReqType.Book,
 		Params:   MexcBookParams{Ccy: c.Currency + c.Currency2, Limit: 5},
 		Response: &BookRes.MexcBook{},
 	}

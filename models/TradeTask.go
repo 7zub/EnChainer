@@ -19,24 +19,8 @@ type TradeTask struct {
 	Mu         sync.RWMutex `gorm:"-"`
 }
 
-type Operation struct {
-	Ex     Exchange
-	Price  float64
-	Volume float64
-	Side   Side
-}
-
-type OperationTask struct {
-	Id     uint `gorm:"primaryKey"`
-	TaskId string
-	ReqId  string
-	Ccy
-	Operation
-	Commission float32
-	CreateDate time.Time `gorm:"type:timestamp"`
-}
-
 type StageTask string
+type StatusTask string
 
 const (
 	Creation   StageTask = "creation"
@@ -44,19 +28,10 @@ const (
 	Trade      StageTask = "trade"
 )
 
-type StatusTask string
-
 const (
 	Done     StatusTask = "done"
 	Stop     StatusTask = "stop"
 	Pending  StatusTask = "pending"
 	Progress StatusTask = "progress"
 	Err      StatusTask = "error"
-)
-
-type Side string
-
-const (
-	Buy  Side = "buy"
-	Sell Side = "sell"
 )

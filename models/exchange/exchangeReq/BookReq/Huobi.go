@@ -17,7 +17,7 @@ func (HuobiBookParams) GetParams(ccy any) *models.Request {
 
 	return &models.Request{
 		Url:      "https://api.huobi.pro/market/depth",
-		ReqType:  "Book",
+		ReqType:  models.ReqType.Book,
 		Params:   HuobiBookParams{Ccy: strings.ToLower(c.Currency + c.Currency2), Limit: 5, Type: "step0"},
 		Response: &BookRes.HuobiBook{},
 	}

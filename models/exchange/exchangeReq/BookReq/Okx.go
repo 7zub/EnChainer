@@ -15,7 +15,7 @@ func (OkxBookParams) GetParams(ccy any) *models.Request {
 
 	return &models.Request{
 		Url:      "https://okx.com/api/v5/market/books",
-		ReqType:  "Book",
+		ReqType:  models.ReqType.Book,
 		Params:   OkxBookParams{Ccy: c.Currency + "-" + c.Currency2, Limit: 5},
 		Response: &BookRes.OkxBook{},
 	}

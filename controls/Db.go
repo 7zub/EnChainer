@@ -38,9 +38,17 @@ func CreateDb() {
 			&models.TradeTask{},
 			&models.OperationTask{},
 			//&models.RequestBlock{}
+			&models.TransferTask{},
 		)
 
-		err := d.AutoMigrate(&models.Request{}, &models.TradePair{}, &models.OrderBook{}, &models.TradeTask{}, &models.OperationTask{}, &models.RequestBlock{})
+		err := d.AutoMigrate(
+			&models.Request{},
+			&models.TradePair{},
+			&models.OrderBook{},
+			&models.TradeTask{},
+			&models.OperationTask{},
+			&models.RequestBlock{},
+			&models.TransferTask{})
 		if err != nil {
 			ToLog(err)
 			panic("Ошибка миграции БД")

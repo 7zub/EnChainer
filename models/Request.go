@@ -24,8 +24,9 @@ type IParams interface {
 
 type Request struct {
 	ReqId       string `gorm:"primaryKey"`
-	ReqType     string
+	ReqType     RqType
 	SignWay     func(r *http.Request) `gorm:"-"`
+	Method      string
 	Url         string
 	Header      Header
 	Params      IParams   `gorm:"-"`
@@ -34,6 +35,16 @@ type Request struct {
 	Code        int
 	ReqDate     time.Time `gorm:"type:timestamp"`
 	Log         Result    `gorm:"-"`
+}
+
+type RqType string
+
+var ReqType = struct {
+	Book, Trade, Transfer RqType
+}{
+	Book:     "Book",
+	Trade:    "Trade",
+	Transfer: "Transfer",
 }
 
 func (r *Request) SendRequest() {
@@ -72,12 +83,14 @@ func (r *Request) UrlBuild() *http.Request {
 	rq.URL.RawQuery = q.Encode()
 
 	switch r.ReqType {
-	case "Trade":
-		rq.Method = "POST"
+	case ReqType.Book:
+		r.Method = "GET"
+	case ReqType.Trade, ReqType.Transfer:
+		r.Method = "POST"
 		r.SignWay(rq)
 		r.Header = Header(rq.Header)
 	}
-
+	rq.Method = r.Method
 	rq.URL.RawQuery = rq.URL.Query().Encode()
 	return rq
 }

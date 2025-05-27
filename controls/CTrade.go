@@ -2,6 +2,7 @@ package controls
 
 import (
 	"enchainer/models"
+	"enchainer/models/exchange/exchangeReq/OtherReq"
 	"fmt"
 	"reflect"
 	"time"
@@ -32,17 +33,22 @@ func TradeTaskHandler(task *models.TradeTask) {
 		PreparedOperation(&oprBuy, false)
 		PreparedOperation(&oprSell, false)
 
-		var oSell, oBuy models.Result
-		if oSell, oprSell.ReqId = CreateOrder(oprSell); oSell.Status == models.OK {
-			if oBuy, oprBuy.ReqId = CreateOrder(oprBuy); oBuy.Status == models.OK {
-				task.Status = models.Pending
+		if nt := NeedTransfer(&oprSell); nt.Status == models.OK {
+			var oSell, oBuy models.Result
+			if oSell, oprSell.ReqId = CreateAction(oprSell, models.ReqType.Trade); oSell.Status == models.OK {
+				if oBuy, oprBuy.ReqId = CreateAction(oprBuy, models.ReqType.Trade); oBuy.Status == models.OK {
+					task.Status = models.Pending
+				} else {
+					task.Status = models.Err
+					task.Message = "Ошибка операции: " + string(oprBuy.Side) + " " + string(oBuy.Status) + "; " + string(oprSell.Side) + " " + string(oSell.Status)
+				}
 			} else {
 				task.Status = models.Err
-				task.Message = "Ошибка операции: " + string(oprBuy.Side) + " " + string(oBuy.Status) + "; " + string(oprSell.Side) + " " + string(oSell.Status)
+				task.Message = "Ошибка операции: " + string(oprSell.Side)
 			}
 		} else {
 			task.Status = models.Err
-			task.Message = "Ошибка операции: " + string(oprSell.Side)
+			task.Message = nt.Message
 		}
 
 		task.OpTask = append(task.OpTask, oprBuy, oprSell)
@@ -57,10 +63,12 @@ func TradeTaskHandler(task *models.TradeTask) {
 	SaveDb(&task)
 }
 
-func CreateOrder(opr models.OperationTask) (models.Result, string) {
-	typ := GetTypeEx(opr.Ex, "Trade")
+func CreateAction(act any, reqtype models.RqType) (models.Result, string) {
+	v := reflect.ValueOf(act)
+	ex := v.FieldByName("Ex")
+	typ := GetTypeEx(models.Exchange(ex.String()), string(reqtype))
 	rr, _ := reflect.New(typ).Interface().(models.IParams)
-	rq := rr.GetParams(opr)
+	rq := rr.GetParams(act)
 	rq.DescRequest(models.GenDescRequest())
 	rq.SendRequest()
 	ToLog(*rq)
@@ -69,9 +77,9 @@ func CreateOrder(opr models.OperationTask) (models.Result, string) {
 
 	switch res.Status {
 	case models.ERR:
-		res.Message = "Операция " + rq.ReqId + " не выполнена: " + rq.ResponseRaw
+		res.Message = fmt.Sprintf("%s %s не выполнен: %s", reqtype, rq.ReqId, rq.ResponseRaw)
 	case models.OK:
-		res.Message = "Операция " + rq.ReqId + " выполнена"
+		res.Message = fmt.Sprintf("%s %s успешна: %s", reqtype, rq.ReqId, rq.ResponseRaw)
 	}
 	ToLog(res)
 	return res, rq.ReqId
@@ -86,15 +94,15 @@ func Trade() {
 		},
 		Spread: 1,
 		Buy: models.Operation{
-			Ex:     models.BYBIT,
+			Ex:     models.OKX,
 			Price:  70,
-			Volume: 0.09,
+			Volume: 0.34,
 			Side:   models.Buy,
 		},
 		Sell: models.Operation{
-			Ex:     models.OKX,
-			Price:  200,
-			Volume: 0.05,
+			Ex:     models.COINEX,
+			Price:  210,
+			Volume: 0.4,
 			Side:   models.Sell,
 		},
 		CreateDate: time.Time{},
@@ -108,4 +116,26 @@ func Trade() {
 	TradeTaskHandler(&task)
 	fmt.Println(task.Stage)
 	//fmt.Println(TradeTask[0].Stage)
+}
+
+func Trans() {
+	var tr = models.TransferTask{
+		Ex:   models.COINEX,
+		From: models.Spot,
+		To:   models.Isolate,
+		Ccy: models.Ccy{
+			Currency:  "SOL",
+			Currency2: "USDT",
+		},
+		Amount:     5,
+		CreateDate: time.Now(),
+	}
+
+	rr := OtherReq.CoinexTransferParams{}
+	rq := rr.GetParams(tr)
+	rq.DescRequest(models.GenDescRequest())
+	rq.SendRequest()
+	ToLog(*rq)
+	go SaveDb(rq)
+	SaveDb(&tr)
 }

@@ -3,6 +3,7 @@ package exchange
 import (
 	"enchainer/models"
 	"enchainer/models/exchange/exchangeReq/BookReq"
+	"enchainer/models/exchange/exchangeReq/OtherReq"
 	"enchainer/models/exchange/exchangeReq/TradeReq"
 	"reflect"
 )
@@ -29,4 +30,6 @@ var ExInfo = map[reflect.Type]ExchangeInfo{
 	reflect.TypeOf(TradeReq.MexcTradeParams{}):    {Exchange: models.MEXC, ReqType: "Trade", Commission: 0.1},
 	reflect.TypeOf(TradeReq.BybitTradeParams{}):   {Exchange: models.BYBIT, ReqType: "Trade", Commission: 0.1},
 	reflect.TypeOf(TradeReq.CoinexTradeParams{}):  {Exchange: models.COINEX, ReqType: "Trade", Commission: 0.1},
+
+	reflect.TypeOf(OtherReq.CoinexTransferParams{}): {Exchange: models.COINEX, ReqType: "Transfer"},
 }

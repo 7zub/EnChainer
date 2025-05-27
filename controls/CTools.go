@@ -34,7 +34,7 @@ func exceptTask(ex string) {
 }
 
 func LoadConf() {
-	data, err := os.ReadFile("rsc/config.yaml")
+	data, err := os.ReadFile("rsc/config.yml")
 	if err != nil {
 		ToLog(err)
 		panic("Ошибка загрузки конфигурации")

@@ -2,5 +2,5 @@
 export.json
 _dev
 app.log
-rsc/config.yaml
+rsc/config.yml
 rsc/*.http

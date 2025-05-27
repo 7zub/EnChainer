@@ -30,7 +30,7 @@ func (BybitTradeParams) GetParams(task any) *models.Request {
 
 	return &models.Request{
 		Url:     "https://api.bybit.com/v5/order/create",
-		ReqType: "Trade",
+		ReqType: models.ReqType.Trade,
 		SignWay: func(rq *http.Request) {
 			jsonBody, _ := json.Marshal(BybitTradeParams{
 				Ccy:     t.Currency + t.Currency2,

@@ -27,7 +27,7 @@ func PendingHandler(ccy models.Ccy, book []models.OrderBook) {
 
 		spr := Round((s/b-1)*100, 4)
 
-		if task.Spread-spr > 0.15 {
+		if task.Spread-spr > models.Const.SpreadClose {
 			opr1 := models.OperationTask{
 				Ccy:       task.Ccy,
 				Operation: task.OpTask[0].Operation,
@@ -47,8 +47,8 @@ func PendingHandler(ccy models.Ccy, book []models.OrderBook) {
 			PreparedOperation(&opr2, true)
 
 			var o1, o2 models.Result
-			o1, opr1.ReqId = CreateOrder(opr1)
-			o2, opr2.ReqId = CreateOrder(opr2)
+			o1, opr1.ReqId = CreateAction(opr1, models.ReqType.Trade)
+			o2, opr2.ReqId = CreateAction(opr2, models.ReqType.Trade)
 
 			task.OpTask = append(task.OpTask, opr1, opr2)
 			TradeTask.Store(task.TaskId, task)

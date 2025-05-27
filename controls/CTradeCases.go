@@ -21,7 +21,7 @@ func PreparedOperation(opr *models.OperationTask, pend bool) {
 			decPrice = 3
 		}
 
-		if 5.2/opr.Price > 3 && 5.2/opr.Price < 100 {
+		if models.Const.Lot/opr.Price > 3 && models.Const.Lot/opr.Price < 100 {
 			decVol = 2
 		}
 	}
@@ -29,8 +29,26 @@ func PreparedOperation(opr *models.OperationTask, pend bool) {
 	opr.Price = RoundSn(opr.Price, decPrice, mode)
 
 	if pend == false {
-		opr.Volume = RoundSn(5.2/opr.Price, decVol, "down")
+		opr.Volume = RoundSn(models.Const.Lot/opr.Price, decVol, "down")
 	}
 
 	opr.CreateDate = time.Now()
+}
+
+func NeedTransfer(opr *models.OperationTask) models.Result {
+	if opr.Ex != models.COINEX {
+		return models.Result{Status: models.OK}
+	}
+
+	var tr = models.TransferTask{
+		Ex:         opr.Ex,
+		From:       models.Spot,
+		To:         models.Isolate,
+		Ccy:        opr.Ccy,
+		Amount:     6,
+		CreateDate: time.Now(),
+	}
+
+	trf, _ := CreateAction(tr, models.ReqType.Transfer)
+	return trf
 }

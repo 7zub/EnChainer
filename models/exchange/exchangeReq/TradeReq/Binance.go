@@ -25,7 +25,7 @@ func (BinanceTradeParams) GetParams(task any) *models.Request {
 
 	return &models.Request{
 		Url:     "https://api.binance.com/sapi/v1/margin/order",
-		ReqType: "Trade",
+		ReqType: models.ReqType.Trade,
 		SignWay: func(rq *http.Request) {
 			rq.Header.Add("X-MBX-APIKEY", models.Conf.Exchanges[string(t.Ex)].ApiKey)
 			q := rq.URL.Query()

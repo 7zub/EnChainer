@@ -29,7 +29,7 @@ func (OkxTradeParams) GetParams(task any) *models.Request {
 
 	return &models.Request{
 		Url:     "https://www.okx.com" + endpoint,
-		ReqType: "Trade",
+		ReqType: models.ReqType.Trade,
 		SignWay: func(rq *http.Request) {
 
 			jsonBody, _ := json.Marshal(OkxTradeParams{

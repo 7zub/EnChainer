@@ -29,7 +29,7 @@ func (CoinexTradeParams) GetParams(task any) *models.Request {
 
 	return &models.Request{
 		Url:     "https://api.coinex.com" + endpoint,
-		ReqType: "Trade",
+		ReqType: models.ReqType.Trade,
 		SignWay: func(rq *http.Request) {
 
 			jsonBody, _ := json.Marshal(CoinexTradeParams{
@@ -38,7 +38,7 @@ func (CoinexTradeParams) GetParams(task any) *models.Request {
 				Type:   "limit",
 				Volume: t.Volume,
 				Price:  t.Price,
-				Margin: "SPOT",
+				Margin: "margin",
 			})
 
 			timestamp := strconv.FormatInt(time.Now().UnixMilli(), 10)

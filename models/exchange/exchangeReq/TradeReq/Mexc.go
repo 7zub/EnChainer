@@ -24,7 +24,7 @@ func (MexcTradeParams) GetParams(task any) *models.Request {
 
 	return &models.Request{
 		Url:     "https://api.mexc.com/api/v3/order",
-		ReqType: "Trade",
+		ReqType: models.ReqType.Trade,
 		SignWay: func(rq *http.Request) {
 			rq.Header.Add("X-MEXC-APIKEY", models.Conf.Exchanges[string(t.Ex)].ApiKey)
 			q := rq.URL.Query()

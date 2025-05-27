@@ -33,7 +33,7 @@ func (GateioTradeParams) GetParams(task any) *models.Request {
 
 	return &models.Request{
 		Url:     "https://api.gateio.ws" + endpoint,
-		ReqType: "Trade",
+		ReqType: models.ReqType.Trade,
 		SignWay: func(rq *http.Request) {
 			jsonBody, _ := json.Marshal(GateioTradeParams{
 				Ccy:       t.Currency + "_" + t.Currency2,

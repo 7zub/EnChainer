@@ -3,10 +3,12 @@ package models
 import "time"
 
 type TransferTask struct {
-	Id   uint `gorm:"primaryKey"`
-	Ex   Exchange
-	From Account
-	To   Account
+	Id     uint `gorm:"primaryKey"`
+	TaskId string
+	ReqId  string
+	Ex     Exchange
+	From   Account
+	To     Account
 	Ccy
 	Amount     float64
 	CreateDate time.Time `gorm:"type:timestamp"`

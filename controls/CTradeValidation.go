@@ -8,7 +8,7 @@ import (
 func TradeTaskValidation(task *models.TradeTask) {
 	task.Stage = models.Validation
 
-	if cnt >= 1 {
+	if cnt >= models.Const.MaxTrade {
 		task.Status = models.Stop
 		task.Message += "Превышен лимит открытых тасок; "
 	}
@@ -18,17 +18,17 @@ func TradeTaskValidation(task *models.TradeTask) {
 		task.Message += "Таска на пару уже существует; "
 	}
 
-	if task.Spread < 0.3 {
+	if task.Spread < models.Const.Spread {
 		task.Status = models.Stop
 		task.Message += "Низкий спред; "
 	}
 
-	if task.Buy.Price*task.Buy.Volume < 5 {
+	if task.Buy.Price*task.Buy.Volume < models.Const.Lot {
 		task.Status = models.Stop
 		task.Message += fmt.Sprintf("Низкий объем на покупку: %g; ", task.Buy.Price*task.Buy.Volume)
 	}
 
-	if task.Sell.Price*task.Sell.Volume < 5 {
+	if task.Sell.Price*task.Sell.Volume < models.Const.Lot {
 		task.Status = models.Stop
 		task.Message += fmt.Sprintf("Низкий объем на продажу: %g; ", task.Sell.Price*task.Sell.Volume)
 	}

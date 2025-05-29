@@ -95,6 +95,8 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 
 	if len(pair.OrderBook) > 1 {
 		models.SortOrderBooks(&pair.OrderBook)
+		ask, deepAsk := models.GetVolume(&pair.OrderBook[len(pair.OrderBook)-1].Asks)
+		bid, deepBid := models.GetVolume(&pair.OrderBook[0].Bids)
 
 		taskId = GenTaskId()
 		task := models.TradeTask{
@@ -105,17 +107,19 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 			},
 			Buy: models.Operation{
 				Ex:     pair.OrderBook[len(pair.OrderBook)-1].Exchange,
-				Price:  pair.OrderBook[len(pair.OrderBook)-1].Asks[0].Price,
-				Volume: pair.OrderBook[len(pair.OrderBook)-1].Asks[0].Volume,
+				Price:  ask.Price,
+				Volume: ask.Volume,
 				Side:   models.Buy,
+				Deep:   deepAsk,
 			},
 			Sell: models.Operation{
 				Ex:     pair.OrderBook[0].Exchange,
-				Price:  pair.OrderBook[0].Bids[0].Price,
-				Volume: pair.OrderBook[0].Bids[0].Volume,
+				Price:  bid.Price,
+				Volume: bid.Volume,
 				Side:   models.Sell,
+				Deep:   deepBid,
 			},
-			Spread:     Round((pair.OrderBook[0].Bids[0].Price/pair.OrderBook[len(pair.OrderBook)-1].Asks[0].Price-1)*100, 4),
+			Spread:     Round((bid.Price/ask.Price-1)*100, 4),
 			CreateDate: time.Now(),
 			Stage:      models.Creation,
 			Status:     models.Done,

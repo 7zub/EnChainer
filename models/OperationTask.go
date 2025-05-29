@@ -7,6 +7,7 @@ type Operation struct {
 	Price  float64
 	Volume float64
 	Side   Side
+	Deep   int
 }
 
 type OperationTask struct {

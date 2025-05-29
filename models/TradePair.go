@@ -87,6 +87,23 @@ func (book OrderBook) BookExist() bool {
 	return false
 }
 
+func GetVolume(valueBook *JsonValueBook) (ValueBook, int) {
+	var p, v, usd float64
+	var deep int
+
+	for i, book := range *valueBook {
+		p += book.Price
+		v += book.Volume
+		usd += book.Price * book.Volume
+		deep = i + 1
+
+		if usd > Const.Lot {
+			return ValueBook{Price: p / float64(deep), Volume: v}, deep
+		}
+	}
+	return ValueBook{Price: p / float64(deep), Volume: v}, deep
+}
+
 func ProfitBid(orderBooks *[]OrderBook) {
 
 }

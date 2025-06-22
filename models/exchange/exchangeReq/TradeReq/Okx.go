@@ -31,7 +31,6 @@ func (OkxTradeParams) GetParams(task any) *models.Request {
 		Url:     "https://www.okx.com" + endpoint,
 		ReqType: models.ReqType.Trade,
 		SignWay: func(rq *http.Request) {
-
 			jsonBody, _ := json.Marshal(OkxTradeParams{
 				Ccy:       t.Currency + "-" + t.Currency2,
 				Side:      strings.ToLower(string(t.Side)),

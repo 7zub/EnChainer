@@ -31,7 +31,6 @@ func (CoinexTradeParams) GetParams(task any) *models.Request {
 		Url:     "https://api.coinex.com" + endpoint,
 		ReqType: models.ReqType.Trade,
 		SignWay: func(rq *http.Request) {
-
 			jsonBody, _ := json.Marshal(CoinexTradeParams{
 				Ccy:    t.Currency + t.Currency2,
 				Side:   strings.ToLower(string(t.Side)),

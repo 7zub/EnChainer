@@ -57,6 +57,6 @@ func (HuobiTradeParams) GetParams(task any) *models.Request {
 
 		},
 		Params:   params,
-		Response: &TradeRes.GateioTrade{},
+		Response: &TradeRes.HuobiTrade{},
 	}
 }

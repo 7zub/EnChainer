@@ -1,6 +1,4 @@
 .idea
-export.json
-_dev
 app.log
 rsc/config.yml
 rsc/*.http

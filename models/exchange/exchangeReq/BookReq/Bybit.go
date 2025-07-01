@@ -17,7 +17,7 @@ func (BybitBookParams) GetParams(ccy any) *models.Request {
 	return &models.Request{
 		Url:      "https://api.bybit.com/v5/market/orderbook",
 		ReqType:  models.ReqType.Book,
-		Params:   BybitBookParams{Ccy: c.Currency + c.Currency2, Category: "linear", Limit: 5},
+		Params:   BybitBookParams{Ccy: c.Currency + c.Currency2, Category: "spot", Limit: 5},
 		Response: &BookRes.BybitBook{},
 	}
 }

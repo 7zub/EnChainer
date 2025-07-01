@@ -56,7 +56,12 @@ func PendingHandler(ccy models.Ccy, book []models.OrderBook) {
 			fmt.Println("Проверка " + fmt.Sprintf("%d", len(task.OpTask)))
 
 			if o1.Status == models.OK && o2.Status == models.OK {
-				task.Status = models.Done
+				if NeedTransfer(&opr1, true).Status == models.OK && NeedTransfer(&opr2, true).Status == models.OK {
+					task.Status = models.Done
+				} else {
+					task.Status = models.Err
+					task.Message = "Ошибка трансфера в спот"
+				}
 			} else {
 				task.Status = models.Err
 				task.Message = "Ошибка закрытия операции: " + string(opr1.Side) + " " + string(o1.Status) + "; " + string(opr2.Side) + " " + string(o2.Status)

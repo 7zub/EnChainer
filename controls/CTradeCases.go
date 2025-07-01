@@ -35,17 +35,22 @@ func PreparedOperation(opr *models.OperationTask, pend bool) {
 	opr.CreateDate = time.Now()
 }
 
-func NeedTransfer(opr *models.OperationTask) models.Result {
+func NeedTransfer(opr *models.OperationTask, isl bool) models.Result {
 	if opr.Ex != models.COINEX {
 		return models.Result{Status: models.OK}
 	}
 
+	from, to := models.Spot, models.Isolate
+	if isl {
+		from, to = to, from
+	}
+
 	var tr = models.TransferTask{
 		Ex:         opr.Ex,
-		From:       models.Spot,
-		To:         models.Isolate,
+		From:       from,
+		To:         to,
 		Ccy:        opr.Ccy,
-		Amount:     6,
+		Amount:     models.Const.Lot,
 		CreateDate: time.Now(),
 	}
 

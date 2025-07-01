@@ -33,7 +33,10 @@ func TradeTaskHandler(task *models.TradeTask) {
 		PreparedOperation(&oprBuy, false)
 		PreparedOperation(&oprSell, false)
 
-		if nt := NeedTransfer(&oprSell); nt.Status == models.OK {
+		ntBuy := NeedTransfer(&oprBuy, false)
+		ntSell := NeedTransfer(&oprSell, false)
+
+		if ntBuy.Status == models.OK && ntSell.Status == models.OK {
 			var oSell, oBuy models.Result
 			if oSell, oprSell.ReqId = CreateAction(oprSell, models.ReqType.Trade); oSell.Status == models.OK {
 				if oBuy, oprBuy.ReqId = CreateAction(oprBuy, models.ReqType.Trade); oBuy.Status == models.OK {
@@ -48,7 +51,7 @@ func TradeTaskHandler(task *models.TradeTask) {
 			}
 		} else {
 			task.Status = models.Err
-			task.Message = nt.Message
+			task.Message = ntBuy.Message + ntSell.Message
 		}
 
 		task.OpTask = append(task.OpTask, oprBuy, oprSell)
@@ -89,20 +92,20 @@ func Trade() {
 	task := models.TradeTask{
 		TaskId: "10",
 		Ccy: models.Ccy{
-			Currency:  "SOL",
+			Currency:  "FLOW",
 			Currency2: "USDT",
 		},
 		Spread: 1,
 		Buy: models.Operation{
-			Ex:     models.OKX,
-			Price:  70,
-			Volume: 0.34,
+			Ex:     models.COINEX,
+			Price:  0.36,
+			Volume: 60,
 			Side:   models.Buy,
 		},
 		Sell: models.Operation{
-			Ex:     models.COINEX,
-			Price:  210,
-			Volume: 0.4,
+			Ex:     models.GATEIO,
+			Price:  0.3,
+			Volume: 35.9,
 			Side:   models.Sell,
 		},
 		CreateDate: time.Time{},

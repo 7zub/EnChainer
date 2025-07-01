@@ -7,6 +7,7 @@ import (
 	"gopkg.in/yaml.v3"
 	"log"
 	"math"
+	"math/big"
 	"os"
 	"path"
 	"reflect"
@@ -70,7 +71,9 @@ func RoundSn(num float64, decimal int, mode string) float64 {
 	}
 
 	if rounded == num {
-		rounded += slip / pow
+		a, _ := new(big.Float).SetString(fmt.Sprint(rounded))
+		b, _ := new(big.Float).SetString(fmt.Sprint(slip / pow))
+		rounded, _ = new(big.Float).Add(a, b).Float64()
 	}
 	return rounded
 }

@@ -14,8 +14,8 @@ func main() {
 	controls.LoadConf()
 	controls.CreateDb()
 	controls.LoadBlockDb(&[]models.RequestBlock{})
-
 	controls.LoadBookDb(&controls.TradePair)
+
 	for i, pair := range controls.TradePair {
 		if pair.Status == models.On {
 			controls.StartPair(&controls.TradePair[i])

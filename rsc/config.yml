@@ -1,0 +1,34 @@
+api:
+    BINANCE:
+      ApiKey:
+      SecretKey:
+
+    GATEIO:
+      ApiKey:
+      SecretKey:
+
+    MEXC:
+      ApiKey:
+      SecretKey:
+
+    BYBIT:
+      ApiKey:
+      SecretKey:
+
+    OKX:
+      ApiKey:
+      SecretKey:
+      PassPhrase:
+
+    COINEX:
+      ApiKey:
+      SecretKey:
+
+db:
+  host:
+  user:
+  password:
+  dbname:
+  port: 5432
+  search_path: "ex"
+  sslmode: "disable"

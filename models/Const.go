@@ -5,9 +5,11 @@ var Const = struct {
 	MaxTrade    int
 	Spread      float64
 	SpreadClose float64
+	Split       float64
 }{
-	Lot:         5.2,
-	MaxTrade:    0,
-	Spread:      0.4,
-	SpreadClose: 0.15,
+	Lot:         9.2,
+	MaxTrade:    2,
+	Spread:      0.7,
+	SpreadClose: 0.1,
+	Split:       3,
 }

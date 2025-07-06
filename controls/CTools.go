@@ -60,10 +60,10 @@ func RoundSn(num float64, decimal int, mode string) float64 {
 	switch mode {
 	case "down":
 		rounded = math.Floor(num*pow) / pow
-		slip = -2
+		slip = -models.Const.Split
 	case "up":
 		rounded = math.Ceil(num*pow) / pow
-		slip = 2
+		slip = models.Const.Split
 	case "near":
 		rounded = math.Round(num*pow) / pow
 	default:

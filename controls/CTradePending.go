@@ -13,11 +13,11 @@ func PendingHandler(ccy models.Ccy, book []models.OrderBook) {
 		var b, s float64
 		for i = range book {
 			if book[i].Exchange == task.Buy.Ex {
-				b = book[i].Asks[0].Price
+				b = book[i].Bids[0].Price
 			}
 
 			if book[i].Exchange == task.Sell.Ex {
-				s = book[i].Bids[0].Price
+				s = book[i].Asks[0].Price
 			}
 		}
 
@@ -41,10 +41,10 @@ func PendingHandler(ccy models.Ccy, book []models.OrderBook) {
 				Operation: task.OpTask[1].Operation,
 			}
 
-			opr1.Operation.Side = models.Sell
-			opr1.Operation.Price = s
-			opr2.Operation.Side = models.Buy
-			opr2.Operation.Price = b
+			opr1.Operation.Side = models.Buy
+			opr1.Operation.Price = b
+			opr2.Operation.Side = models.Sell
+			opr2.Operation.Price = s
 
 			PreparedOperation(&opr1, true)
 			PreparedOperation(&opr2, true)

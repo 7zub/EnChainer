@@ -54,7 +54,7 @@ func TradeTaskHandler(task *models.TradeTask) {
 			task.Message = ntBuy.Message + ntSell.Message
 		}
 
-		task.OpTask = append(task.OpTask, oprBuy, oprSell)
+		task.OpTask = append(task.OpTask, oprSell, oprBuy)
 		cnt += 1
 	}
 

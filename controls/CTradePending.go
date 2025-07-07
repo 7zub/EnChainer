@@ -9,8 +9,9 @@ func PendingHandler(ccy models.Ccy, book []models.OrderBook) {
 	if pendId := SearchPendTask(ccy); pendId != nil {
 		task := LoadTask(*pendId)
 
+		var i int
 		var b, s float64
-		for i := range book {
+		for i = range book {
 			if book[i].Exchange == task.Buy.Ex {
 				b = book[i].Asks[0].Price
 			}
@@ -21,13 +22,15 @@ func PendingHandler(ccy models.Ccy, book []models.OrderBook) {
 		}
 
 		if b <= 0 || s <= 0 {
-			ToLog(models.Result{Status: models.WAR, Message: fmt.Sprintf("Отсутсвует книга: b %f, s %f", b, s)})
+			ToLog(models.Result{Status: models.WAR, Message: fmt.Sprintf("Отсутсвует книга: bids %f, ask %f для %v", b, s, task)})
 			return
 		}
 
 		spr := Round((s/b-1)*100, 4)
 
 		if task.Spread-spr > models.Const.SpreadClose {
+			ToLog(models.Result{Status: models.WAR, Message: fmt.Sprintf("Найден спрэд: %f, %v", task.Spread-spr, book[i])})
+
 			opr1 := models.OperationTask{
 				Ccy:       task.Ccy,
 				Operation: task.OpTask[0].Operation,
@@ -71,7 +74,7 @@ func PendingHandler(ccy models.Ccy, book []models.OrderBook) {
 			TradeTask.Store(task.TaskId, task)
 			SaveDb(&task)
 		} else {
-			ToLog(models.Result{Status: models.WAR, Message: fmt.Sprintf("Маленькая разница с новым спредом: %f", task.Spread-spr)})
+			ToLog(models.Result{Status: models.WAR, Message: fmt.Sprintf("Маленькая разница с новым спредом: %f, %v", task.Spread-spr, task)})
 		}
 	}
 }

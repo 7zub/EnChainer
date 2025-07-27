@@ -12,11 +12,11 @@ func StartPair(pair *models.TradePair) {
 	RqList := []models.IParams{
 		BookReq.BinanceBookParams{},
 		BookReq.GateioBookParams{},
-		//BookReq.HuobiBookParams{},
+		BookReq.HuobiBookParams{},
 		BookReq.OkxBookParams{},
 		BookReq.MexcBookParams{},
 		BookReq.BybitBookParams{},
-		//BookReq.KucoinBookParams{},
+		BookReq.KucoinBookParams{},
 		BookReq.CoinexBookParams{},
 	}
 	go TaskTicker(pair, RqList)
@@ -65,7 +65,7 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 
 			if isDone(ctx) {
 				rq.Log = models.Result{Status: models.WAR, Message: "Задержка запроса " + rq.ReqId + ": " + rq.Url}
-				go SaveDb(rq)
+				ChanAny <- rq
 				ToLog(*rq)
 				return
 			}
@@ -73,14 +73,14 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 			if rs.BookExist() {
 				rs.ReqId = rq.ReqId
 				rs.CreateDate = time.Now()
+				rs.TpId = pair.Id
 				pair.Mu.Lock()
 				pair.OrderBook = append(pair.OrderBook, rs)
 				pair.Mu.Unlock()
-				//go SaveDb(rq)
 			} else {
 				rb := CreateReqBlock(*rq, pair.Ccy, rs.Exchange)
-				SaveDb(rb)
-				go SaveDb(rq)
+				ChanAny <- rb
+				ChanAny <- rq
 
 				if rq.Log.Status == models.INFO {
 					rq.Log = models.Result{Status: models.WAR, Message: "Некорректный результат запроса " + rq.ReqId}
@@ -126,7 +126,7 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 		}
 		go func() {
 			TradeTask.Store(taskId, &task)
-			SaveDb(&task)
+			ChanAny <- task
 			PendingHandler(pair.Ccy, pair.OrderBook)
 			TradeTaskHandler(&task)
 		}()
@@ -138,7 +138,7 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 			for i := range pair.OrderBook {
 				pair.OrderBook[i].TaskId = taskId
 			}
-			SaveDb(pair)
+			ChanBook <- pair.OrderBook
 			pair.OrderBook = []models.OrderBook{}
 		}()
 	}

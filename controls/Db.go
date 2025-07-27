@@ -6,9 +6,12 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
+	"time"
 )
 
 var db = gorm.DB{}
+var ChanBook = make(chan []models.OrderBook, 1000)
+var ChanAny = make(chan any, 10)
 
 func CreateDb() {
 	dsn := fmt.Sprintf(
@@ -33,21 +36,21 @@ func CreateDb() {
 	} else {
 		d.Migrator().DropTable(
 			&models.Request{},
+			//&models.RequestBlock{}
 			//&models.TradePair{},
 			&models.OrderBook{},
 			&models.TradeTask{},
 			&models.OperationTask{},
-			//&models.RequestBlock{}
 			&models.TransferTask{},
 		)
 
 		err := d.AutoMigrate(
 			&models.Request{},
+			&models.RequestBlock{},
 			&models.TradePair{},
 			&models.OrderBook{},
 			&models.TradeTask{},
 			&models.OperationTask{},
-			&models.RequestBlock{},
 			&models.TransferTask{})
 		if err != nil {
 			ToLog(err)
@@ -89,5 +92,44 @@ func LoadBlockDb(block *[]models.RequestBlock) {
 
 	for i := range *block {
 		ReqBlock.Store((*block)[i].Ccy.Currency+string((*block)[i].Ex), &(*block)[i])
+	}
+}
+
+func DbSaver(ch1 <-chan []models.OrderBook, ch2 <-chan any) {
+	batch := make([]models.OrderBook, 0, 200)
+	ticker := time.NewTicker(time.Second * 200)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case p := <-ch2:
+			result := db.Save(p)
+
+			if result.Error != nil {
+				ToLog(fmt.Sprintf("Ошибка БД %T: %s", p, result.Error))
+			}
+
+		case ob := <-ch1:
+			batch = append(batch, ob...)
+			if len(batch) >= 160 {
+				result := db.Save(batch)
+				if result.Error != nil {
+					ToLog(fmt.Sprintf("Ошибка БД при сохранении batch %T: %s", batch, result.Error))
+				} else {
+					ToLog(fmt.Sprintf("Сохранен batch %T: размером %v", batch, len(batch)))
+				}
+				batch = batch[:0]
+			}
+
+		case <-ticker.C:
+			if len(batch) > 0 {
+				result := db.Save(&batch)
+				batch = batch[:0]
+
+				if result.Error != nil {
+					ToLog(fmt.Sprintf("Ошибка БД при сохранении batch %T: %s", batch, result.Error))
+				}
+			}
+		}
 	}
 }

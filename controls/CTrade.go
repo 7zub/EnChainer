@@ -63,7 +63,7 @@ func TradeTaskHandler(task *models.TradeTask) {
 	} else {
 		TradeTask.Store(task.TaskId, task)
 	}
-	SaveDb(&task)
+	ChanAny <- task
 }
 
 func CreateAction(act any, reqtype models.RqType) (models.Result, string) {
@@ -75,7 +75,7 @@ func CreateAction(act any, reqtype models.RqType) (models.Result, string) {
 	rq.DescRequest(models.GenDescRequest())
 	rq.SendRequest()
 	ToLog(*rq)
-	go SaveDb(rq)
+	ChanAny <- rq
 	res := rq.Response.Mapper().(models.Result)
 
 	switch res.Status {
@@ -118,7 +118,6 @@ func Trade() {
 
 	TradeTaskHandler(&task)
 	fmt.Println(task.Stage)
-	//fmt.Println(TradeTask[0].Stage)
 }
 
 func Trans() {

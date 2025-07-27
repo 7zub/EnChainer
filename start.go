@@ -15,7 +15,7 @@ func main() {
 	controls.CreateDb()
 	controls.LoadBlockDb(&[]models.RequestBlock{})
 	controls.LoadBookDb(&controls.TradePair)
-
+	go controls.DbSaver(controls.ChanBook, controls.ChanAny)
 	for i, pair := range controls.TradePair {
 		if pair.Status == models.On {
 			controls.StartPair(&controls.TradePair[i])

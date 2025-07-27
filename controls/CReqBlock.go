@@ -41,7 +41,7 @@ func SearchReqBlock(ccy models.Ccy, ex models.Exchange) string {
 			} else {
 				b.Active = false
 				ReqBlock.Store(ccy.Currency+string(ex), b)
-				SaveDb(b)
+				ChanAny <- b
 			}
 			return false
 		}

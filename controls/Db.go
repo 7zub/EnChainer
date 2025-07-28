@@ -11,7 +11,7 @@ import (
 
 var db = gorm.DB{}
 var ChanBook = make(chan []models.OrderBook, 1000)
-var ChanAny = make(chan any, 10)
+var ChanAny = make(chan any, 100)
 
 func CreateDb() {
 	dsn := fmt.Sprintf(
@@ -96,7 +96,7 @@ func LoadBlockDb(block *[]models.RequestBlock) {
 }
 
 func DbSaver(ch1 <-chan []models.OrderBook, ch2 <-chan any) {
-	batch := make([]models.OrderBook, 0, 200)
+	batch := make([]models.OrderBook, 0, 1000)
 	ticker := time.NewTicker(time.Second * 200)
 	defer ticker.Stop()
 
@@ -111,12 +111,12 @@ func DbSaver(ch1 <-chan []models.OrderBook, ch2 <-chan any) {
 
 		case ob := <-ch1:
 			batch = append(batch, ob...)
-			if len(batch) >= 160 {
+			if len(batch) >= models.Const.BatchSize {
 				result := db.Save(batch)
 				if result.Error != nil {
 					ToLog(fmt.Sprintf("Ошибка БД при сохранении batch %T: %s", batch, result.Error))
 				} else {
-					ToLog(fmt.Sprintf("Сохранен batch %T: размером %v", batch, len(batch)))
+					ToLog(models.Result{Status: models.INFO, Message: fmt.Sprintf("Сохранен batch %T: размером %v", batch, len(batch))})
 				}
 				batch = batch[:0]
 			}

@@ -10,26 +10,32 @@ func PendingHandler(ccy models.Ccy, book []models.OrderBook) {
 		task := LoadTask(*pendId)
 
 		var i int
-		var b, s float64
+		var bid, ask float64
+		var bkid []string
 		for i = range book {
 			if book[i].Exchange == task.Buy.Ex {
-				b = book[i].Bids[0].Price
+				bid = book[i].Bids[0].Price
+				bkid = append(bkid, book[i].ReqId)
 			}
 
 			if book[i].Exchange == task.Sell.Ex {
-				s = book[i].Asks[0].Price
+				ask = book[i].Asks[0].Price
+				bkid = append(bkid, book[i].ReqId)
 			}
 		}
 
-		if b <= 0 || s <= 0 {
-			ToLog(models.Result{Status: models.WAR, Message: fmt.Sprintf("Отсутсвует книга: bids %f, ask %f для %v", b, s, task)})
+		if bid <= 0 || ask <= 0 {
+			ToLog(models.Result{Status: models.WAR, Message: fmt.Sprintf("Отсутсвует книга: bids %f, ask %f для запросов %v", bid, ask, bkid)})
 			return
 		}
 
-		spr := Round((s/b-1)*100, 4)
+		spr := Round((ask/bid-1)*100, 4)
 
 		if task.Spread-spr > models.Const.SpreadClose {
-			ToLog(models.Result{Status: models.WAR, Message: fmt.Sprintf("Найден спрэд: %f, %v", task.Spread-spr, book[i])})
+			ToLog(models.Result{
+				Status:  models.WAR,
+				Message: fmt.Sprintf("Найден спрэд: %f - %f = %f, %v", task.Spread, spr, task.Spread-spr, book[i]),
+			})
 
 			opr1 := models.OperationTask{
 				Ccy:       task.Ccy,
@@ -42,9 +48,9 @@ func PendingHandler(ccy models.Ccy, book []models.OrderBook) {
 			}
 
 			opr1.Operation.Side = models.Buy
-			opr1.Operation.Price = b
+			opr1.Operation.Price = bid
 			opr2.Operation.Side = models.Sell
-			opr2.Operation.Price = s
+			opr2.Operation.Price = ask
 
 			PreparedOperation(&opr1, true)
 			PreparedOperation(&opr2, true)

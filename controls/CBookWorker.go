@@ -124,13 +124,13 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 			Stage:      models.Creation,
 			Status:     models.Done,
 		}
-		go func() {
+
+		go func(ob []models.OrderBook) {
 			TradeTask.Store(taskId, &task)
 			ChanAny <- task
-			PendingHandler(pair.Ccy, pair.OrderBook)
+			PendingHandler(pair.Ccy, ob)
 			TradeTaskHandler(&task)
-		}()
-
+		}(pair.OrderBook)
 	}
 
 	if len(pair.OrderBook) > 0 {

@@ -31,8 +31,8 @@ func (CoinexTransferParams) GetParams(task any) *models.Request {
 		SignWay: func(rq *http.Request) {
 
 			jsonBody, _ := json.Marshal(CoinexTransferParams{
-				From:   string(models.Spot),
-				To:     string(models.Isolate),
+				From:   string(models.Market.Spot),
+				To:     string(models.Market.Isolate),
 				Market: t.Currency + t.Currency2,
 				Ccy:    t.Currency2,
 				Amount: fmt.Sprintf("%g", t.Amount),

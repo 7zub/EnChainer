@@ -40,7 +40,7 @@ func NeedTransfer(opr *models.OperationTask, isl bool) models.Result {
 		return models.Result{Status: models.OK}
 	}
 
-	from, to := models.Spot, models.Isolate
+	from, to := models.Market.Spot, models.Market.Isolate
 	if isl {
 		from, to = to, from
 	}

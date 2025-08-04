@@ -42,8 +42,8 @@ func Trade() {
 func Trans() {
 	var tr = models.TransferTask{
 		Ex:   models.COINEX,
-		From: models.Spot,
-		To:   models.Isolate,
+		From: models.Market.Spot,
+		To:   models.Market.Isolate,
 		Ccy: models.Ccy{
 			Currency:  "SOL",
 			Currency2: "USDT",

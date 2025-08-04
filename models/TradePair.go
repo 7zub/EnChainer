@@ -18,6 +18,7 @@ type TradePair struct {
 	PairId     string
 	Title      string
 	Ccy        Ccy `gorm:"embedded"`
+	Market     MarketType
 	Status     int
 	SessTime   time.Duration
 	CreateDate time.Time      `gorm:"type:timestamp;autoCreateTime"`
@@ -31,6 +32,17 @@ type TradePair struct {
 type Ccy struct {
 	Currency  string `gorm:"column:ccy"`
 	Currency2 string `gorm:"column:ccy2"`
+}
+
+type MarketType string
+
+var Market = struct {
+	Spot, Isolate, Cross, Feature MarketType
+}{
+	Spot:    "spot",
+	Isolate: "margin",
+	Cross:   "cross",
+	Feature: "features",
 }
 
 type OrderBook struct {

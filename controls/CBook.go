@@ -28,6 +28,7 @@ func AddPair(w http.ResponseWriter, r *http.Request) {
 	tp := models.TradePair{
 		PairId: pairid,
 		Title:  params.Get("title"),
+		Market: models.Market.Spot,
 		Ccy: models.Ccy{
 			Currency:  params.Get("currency"),
 			Currency2: "USDT",

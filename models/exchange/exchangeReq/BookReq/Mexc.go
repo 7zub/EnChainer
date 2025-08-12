@@ -10,13 +10,22 @@ type MexcBookParams struct {
 	Limit int    `url:"limit"`
 }
 
-func (MexcBookParams) GetParams(ccy any) *models.Request {
-	c := ccy.(models.Ccy)
+func (MexcBookParams) GetParams(pair any) *models.Request {
+	p := pair.(*models.TradePair)
+
+	var url, ccy string
+	switch p.Market {
+	case models.Market.Spot:
+		url = "https://api.mexc.com/api/v3/depth"
+		ccy = p.Ccy.Currency + p.Ccy.Currency2
+	case models.Market.Feature:
+		url = "https://contract.mexc.com/api/v1/contract/depth/" + p.Ccy.Currency + "_" + p.Ccy.Currency2
+	}
 
 	return &models.Request{
-		Url:      "https://api.mexc.com/api/v3/depth",
+		Url:      url,
 		ReqType:  models.ReqType.Book,
-		Params:   MexcBookParams{Ccy: c.Currency + c.Currency2, Limit: 5},
+		Params:   MexcBookParams{Ccy: ccy, Limit: 5},
 		Response: &BookRes.MexcBook{},
 	}
 }

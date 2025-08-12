@@ -6,18 +6,26 @@ import (
 )
 
 type CoinexBookParams struct {
-	Ccy     string  `url:"market"`
-	Limit   int     `url:"limit"`
-	Decimal float64 `url:"interval"`
+	Ccy     string `url:"market"`
+	Limit   int    `url:"limit"`
+	Decimal string `url:"interval"`
 }
 
-func (CoinexBookParams) GetParams(ccy any) *models.Request {
-	c := ccy.(models.Ccy)
+func (CoinexBookParams) GetParams(pair any) *models.Request {
+	p := pair.(*models.TradePair)
+
+	var mark string
+	switch p.Market {
+	case models.Market.Spot:
+		mark = "spot"
+	case models.Market.Feature:
+		mark = "futures"
+	}
 
 	return &models.Request{
-		Url:      "https://api.coinex.com/v2/spot/depth",
+		Url:      "https://api.coinex.com/v2/" + mark + "/depth",
 		ReqType:  models.ReqType.Book,
-		Params:   CoinexBookParams{Ccy: c.Currency + c.Currency2, Limit: 5, Decimal: 0},
+		Params:   CoinexBookParams{Ccy: p.Ccy.Currency + p.Ccy.Currency2, Limit: 5, Decimal: "0"},
 		Response: &BookRes.CoinexBook{},
 	}
 }

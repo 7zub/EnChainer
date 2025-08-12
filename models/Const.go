@@ -9,7 +9,7 @@ var Const = struct {
 	BatchSize   int
 }{
 	Lot:         9.2,
-	MaxTrade:    2,
+	MaxTrade:    0,
 	Spread:      0.7,
 	SpreadClose: 0.1,
 	Split:       3,

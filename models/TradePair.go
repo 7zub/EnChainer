@@ -17,8 +17,8 @@ type TradePair struct {
 	Id         uint `gorm:"primaryKey"`
 	PairId     string
 	Title      string
-	Ccy        Ccy `gorm:"embedded"`
 	Market     MarketType
+	Ccy        Ccy `gorm:"embedded"`
 	Status     int
 	SessTime   time.Duration
 	CreateDate time.Time      `gorm:"type:timestamp;autoCreateTime"`

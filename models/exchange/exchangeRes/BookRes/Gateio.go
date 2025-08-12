@@ -6,37 +6,39 @@ import (
 )
 
 type GateioBook struct {
-	Current int        `json:"current"`
-	Bids    [][]string `json:"bids"`
-	Asks    [][]string `json:"asks"`
+	Current float64 `json:"current"`
+	Bids    []any   `json:"bids"`
+	Asks    []any   `json:"asks"`
 }
 
 func (book GateioBook) Mapper() any {
-	var newBids, newAsks []models.ValueBook
+	parseLevel := func(level any) (price, volume float64) {
+		switch v := level.(type) {
+		case []any:
+			price, _ = strconv.ParseFloat(v[0].(string), 64)
+			volume, _ = strconv.ParseFloat(v[1].(string), 64)
+		case map[string]any:
+			price, _ = strconv.ParseFloat(v["p"].(string), 64)
+			volume = v["s"].(float64)
+		}
+		return
+	}
+
+	var bids, asks []models.ValueBook
 
 	for _, bid := range book.Bids {
-		price, _ := strconv.ParseFloat(bid[0], 64)
-		volume, _ := strconv.ParseFloat(bid[1], 64)
-
-		newBids = append(newBids, models.ValueBook{
-			Price:  price,
-			Volume: volume,
-		})
+		p, v := parseLevel(bid)
+		bids = append(bids, models.ValueBook{Price: p, Volume: v})
 	}
 
 	for _, ask := range book.Asks {
-		price, _ := strconv.ParseFloat(ask[0], 64)
-		volume, _ := strconv.ParseFloat(ask[1], 64)
-
-		newAsks = append(newAsks, models.ValueBook{
-			Price:  price,
-			Volume: volume,
-		})
+		p, v := parseLevel(ask)
+		asks = append(asks, models.ValueBook{Price: p, Volume: v})
 	}
 
 	return models.OrderBook{
 		Exchange: models.GATEIO,
-		Bids:     newBids,
-		Asks:     newAsks,
+		Bids:     bids,
+		Asks:     asks,
 	}
 }

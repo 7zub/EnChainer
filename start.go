@@ -20,7 +20,7 @@ func main() {
 	for i, pair := range controls.TradePair {
 		if pair.Status == models.On {
 			controls.StartPair(&controls.TradePair[i])
-			time.Sleep(300 * time.Millisecond)
+			time.Sleep(100 * time.Millisecond)
 		}
 	}
 	web.HandleRequests()

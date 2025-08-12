@@ -57,7 +57,7 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 			defer cancel()
 			defer exceptTask(rid)
 
-			rq := rr.GetParams(pair.Ccy)
+			rq := rr.GetParams(pair)
 			rq.DescRequest(date, rid)
 			rq.SendRequest()
 			ToLog(*rq)

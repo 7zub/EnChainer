@@ -76,8 +76,8 @@ func (r *Request) UrlBuild() *http.Request {
 	for i := 0; i < fields.NumField(); i++ {
 		tag := fields.Field(i).Tag.Get("url")
 
-		if tag != "-" {
-			q.Add(tag, fmt.Sprintf("%v", values.Field(i)))
+		if tag != "-" && !values.Field(i).IsZero() {
+			q.Add(tag, fmt.Sprint(values.Field(i).Interface()))
 		}
 	}
 	rq.URL.RawQuery = q.Encode()
@@ -100,11 +100,11 @@ func (r *Request) UrlExec(rq *http.Request) {
 	client := http.Client{}
 	resp, err := client.Do(rq)
 	r.Code = -1
-	r.Log = Result{Status: INFO, Message: fmt.Sprintf("Запрос %s: %s", r.ReqId, rq.URL.String())}
+	r.Log = Result{Status: INFO, Message: fmt.Sprintf("Запрос %s %s", r.ReqId, rq.URL.String())}
 
 	if err != nil {
 		r.ResponseRaw = err.Error()
-		r.Log = Result{Status: ERR, Message: fmt.Sprintf("Ошибка выполнения запроса %s: %s", r.ReqId, err)}
+		r.Log = Result{Status: ERR, Message: fmt.Sprintf("Ошибка выполнения запроса %s %s %s", r.ReqId, rq.URL.String(), err)}
 		return
 	}
 
@@ -113,23 +113,23 @@ func (r *Request) UrlExec(rq *http.Request) {
 	if resp.StatusCode != 403 {
 		r.ResponseRaw = string(body)
 	} else {
-		r.Log = Result{Status: WAR, Message: fmt.Sprintf("Доступ к api заблокирован %s", r.ReqId)}
+		r.Log = Result{Status: WAR, Message: fmt.Sprintf("Доступ к api заблокирован %s %s", rq.URL.String(), r.ReqId)}
 		return
 	}
 
 	if resp.StatusCode == 429 {
-		r.Log = Result{Status: WAR, Message: fmt.Sprintf("Превышен лимит запросов к api %s", r.ReqId)}
+		r.Log = Result{Status: WAR, Message: fmt.Sprintf("Превышен лимит запросов к api %s %s", r.ReqId, rq.URL.String())}
 		return
 	}
 
 	if err != nil {
-		r.Log = Result{Status: ERR, Message: fmt.Sprintf("Ошибка чтения ответа на %s: %s", r.ReqId, err)}
+		r.Log = Result{Status: ERR, Message: fmt.Sprintf("Ошибка чтения ответа на %s %s %s", r.ReqId, rq.URL.String(), err)}
 		return
 	}
 
 	err = json.Unmarshal(body, r.Response)
 	if err != nil {
-		r.Log = Result{Status: ERR, Message: fmt.Sprintf("Ошибка десериализации %s: %s", r.ReqId, err)}
+		r.Log = Result{Status: ERR, Message: fmt.Sprintf("Ошибка десериализации %s %s %s", r.ReqId, rq.URL.String(), err)}
 	}
 }
 

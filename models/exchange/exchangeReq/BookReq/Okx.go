@@ -10,13 +10,21 @@ type OkxBookParams struct {
 	Limit int    `url:"sz"`
 }
 
-func (OkxBookParams) GetParams(ccy any) *models.Request {
-	c := ccy.(models.Ccy)
+func (OkxBookParams) GetParams(pair any) *models.Request {
+	p := pair.(*models.TradePair)
+
+	var ccy string
+	switch p.Market {
+	case models.Market.Spot:
+		ccy = p.Ccy.Currency + "-" + p.Ccy.Currency2
+	case models.Market.Feature:
+		ccy = p.Ccy.Currency + "-" + p.Ccy.Currency2 + "-SWAP"
+	}
 
 	return &models.Request{
 		Url:      "https://okx.com/api/v5/market/books",
 		ReqType:  models.ReqType.Book,
-		Params:   OkxBookParams{Ccy: c.Currency + "-" + c.Currency2, Limit: 5},
+		Params:   OkxBookParams{Ccy: ccy, Limit: 5},
 		Response: &BookRes.OkxBook{},
 	}
 }

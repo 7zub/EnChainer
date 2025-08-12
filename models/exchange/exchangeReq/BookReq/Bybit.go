@@ -11,13 +11,21 @@ type BybitBookParams struct {
 	Category string `url:"category"`
 }
 
-func (BybitBookParams) GetParams(ccy any) *models.Request {
-	c := ccy.(models.Ccy)
+func (BybitBookParams) GetParams(pair any) *models.Request {
+	p := pair.(*models.TradePair)
+
+	var mark string
+	switch p.Market {
+	case models.Market.Spot:
+		mark = "spot"
+	case models.Market.Feature:
+		mark = "linear"
+	}
 
 	return &models.Request{
 		Url:      "https://api.bybit.com/v5/market/orderbook",
 		ReqType:  models.ReqType.Book,
-		Params:   BybitBookParams{Ccy: c.Currency + c.Currency2, Category: "spot", Limit: 5},
+		Params:   BybitBookParams{Ccy: p.Ccy.Currency + p.Ccy.Currency2, Category: mark, Limit: 5},
 		Response: &BookRes.BybitBook{},
 	}
 }

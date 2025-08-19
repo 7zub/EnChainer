@@ -7,8 +7,8 @@ import (
 
 func PreparedOperation(opr *models.OperationTask, pend bool) {
 	var mode string
-	var decPrice = 4
-	var decVol = 3
+	var decPrice = models.Const.DecimalPrice
+	var decVol = models.Const.DecimalVolume
 
 	if opr.Side == models.Buy {
 		mode = "up"

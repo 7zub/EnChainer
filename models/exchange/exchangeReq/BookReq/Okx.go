@@ -17,7 +17,7 @@ func (OkxBookParams) GetParams(pair any) *models.Request {
 	switch p.Market {
 	case models.Market.Spot:
 		ccy = p.Ccy.Currency + "-" + p.Ccy.Currency2
-	case models.Market.Feature:
+	case models.Market.Features:
 		ccy = p.Ccy.Currency + "-" + p.Ccy.Currency2 + "-SWAP"
 	}
 

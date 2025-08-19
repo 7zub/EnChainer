@@ -14,7 +14,7 @@ type IResponse interface {
 }
 
 type TradePair struct {
-	Id         uint `gorm:"primaryKey"`
+	Id         uint `gorm:"primaryKey;autoIncrement"`
 	PairId     string
 	Title      string
 	Market     MarketType
@@ -37,12 +37,12 @@ type Ccy struct {
 type MarketType string
 
 var Market = struct {
-	Spot, Isolate, Cross, Feature MarketType
+	Spot, Isolate, Cross, Features MarketType
 }{
-	Spot:    "spot",
-	Isolate: "margin",
-	Cross:   "cross",
-	Feature: "features",
+	Spot:     "spot",
+	Isolate:  "margin",
+	Cross:    "cross",
+	Features: "features",
 }
 
 type OrderBook struct {

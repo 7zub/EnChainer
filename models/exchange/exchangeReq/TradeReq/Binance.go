@@ -23,8 +23,17 @@ type BinanceTradeParams struct {
 func (BinanceTradeParams) GetParams(task any) *models.Request {
 	t := task.(models.OperationTask)
 
+	var url, autoBorrow string
+	switch t.Market {
+	case models.Market.Spot:
+		url = "https://api.binance.com/sapi/v1/margin/order"
+		autoBorrow = "AUTO_BORROW_REPAY"
+	case models.Market.Features:
+		url = "https://fapi.binance.com/fapi/v1/order"
+	}
+
 	return &models.Request{
-		Url:     "https://api.binance.com/sapi/v1/margin/order",
+		Url:     url,
 		ReqType: models.ReqType.Trade,
 		SignWay: func(rq *http.Request) {
 			rq.Header.Add("X-MBX-APIKEY", models.Conf.Exchanges[string(t.Ex)].ApiKey)
@@ -41,7 +50,7 @@ func (BinanceTradeParams) GetParams(task any) *models.Request {
 			Price:      t.Price,
 			Live:       "GTC",
 			Time:       time.Now().UnixMilli(),
-			AutoBorrow: "AUTO_BORROW_REPAY",
+			AutoBorrow: autoBorrow,
 		},
 		Response: &TradeRes.BinanceTrade{},
 	}

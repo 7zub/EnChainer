@@ -127,6 +127,10 @@ func (r *Request) UrlExec(rq *http.Request) {
 		return
 	}
 
+	if r.Response == nil {
+		return
+	}
+
 	err = json.Unmarshal(body, r.Response)
 	if err != nil {
 		r.Log = Result{Status: ERR, Message: fmt.Sprintf("Ошибка десериализации %s %s %s", r.ReqId, rq.URL.String(), err)}

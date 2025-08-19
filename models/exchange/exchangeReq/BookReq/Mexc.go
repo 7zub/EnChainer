@@ -18,7 +18,7 @@ func (MexcBookParams) GetParams(pair any) *models.Request {
 	case models.Market.Spot:
 		url = "https://api.mexc.com/api/v3/depth"
 		ccy = p.Ccy.Currency + p.Ccy.Currency2
-	case models.Market.Feature:
+	case models.Market.Features:
 		url = "https://contract.mexc.com/api/v1/contract/depth/" + p.Ccy.Currency + "_" + p.Ccy.Currency2
 	}
 

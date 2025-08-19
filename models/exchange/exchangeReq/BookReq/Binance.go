@@ -17,7 +17,7 @@ func (BinanceBookParams) GetParams(pair any) *models.Request {
 	switch p.Market {
 	case models.Market.Spot:
 		url = "https://api.binance.com/api/v3/depth"
-	case models.Market.Feature:
+	case models.Market.Features:
 		url = "https://fapi.binance.com/fapi/v1/depth"
 	}
 

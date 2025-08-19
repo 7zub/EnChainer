@@ -111,6 +111,7 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 				Volume: ask.Volume,
 				Side:   models.Buy,
 				Deep:   deepAsk,
+				Market: pair.Market,
 			},
 			Sell: models.Operation{
 				Ex:     pair.OrderBook[0].Exchange,
@@ -118,6 +119,7 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 				Volume: bid.Volume,
 				Side:   models.Sell,
 				Deep:   deepBid,
+				Market: pair.Market,
 			},
 			Spread:     Round((bid.Price/ask.Price-1)*100, 4),
 			CreateDate: time.Now(),

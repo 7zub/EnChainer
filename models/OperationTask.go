@@ -8,6 +8,7 @@ type Operation struct {
 	Volume float64
 	Side   Side
 	Deep   int
+	Market MarketType
 }
 
 type OperationTask struct {

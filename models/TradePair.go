@@ -37,12 +37,12 @@ type Ccy struct {
 type MarketType string
 
 var Market = struct {
-	Spot, Isolate, Cross, Features MarketType
+	Spot, Isolate, Cross, Futures MarketType
 }{
-	Spot:     "spot",
-	Isolate:  "margin",
-	Cross:    "cross",
-	Features: "features",
+	Spot:    "spot",
+	Isolate: "margin",
+	Cross:   "cross",
+	Futures: "futures",
 }
 
 type OrderBook struct {

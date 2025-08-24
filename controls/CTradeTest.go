@@ -12,23 +12,23 @@ func Trade() {
 	task := models.TradeTask{
 		TaskId: "10",
 		Ccy: models.Ccy{
-			Currency:  "FLOW",
+			Currency:  "1INCH",
 			Currency2: "USDT",
 		},
 		Spread: 0.9,
 		Buy: models.Operation{
-			Ex:     models.GATEIO,
-			Price:  0.25,
-			Volume: 100,
+			Ex:     models.COINEX,
+			Price:  0.22,
+			Volume: 300,
 			Side:   models.Buy,
-			Market: models.Market.Features,
+			Market: models.Market.Futures,
 		},
 		Sell: models.Operation{
-			Ex:     models.BINANCE,
-			Price:  0.9,
-			Volume: 100,
+			Ex:     models.HUOBI,
+			Price:  0.5,
+			Volume: 300,
 			Side:   models.Sell,
-			Market: models.Market.Features,
+			Market: models.Market.Futures,
 		},
 		CreateDate: time.Time{},
 		Stage:      models.Creation,
@@ -67,17 +67,17 @@ func Trans() {
 func Lever() {
 	var tr = models.OperationTask{
 		Ccy: models.Ccy{
-			Currency:  "SOL",
+			Currency:  "FLOW",
 			Currency2: "USDT",
 		},
 		Operation: models.Operation{
 			Ex:     models.BINANCE,
-			Market: models.Market.Features,
+			Market: models.Market.Futures,
 		},
 	}
 
 	rr := LeverReq.BinanceLeverageParams{
-		Leverage: 50,
+		Leverage: 20,
 	}
 	rq := rr.GetParams(tr)
 	rq.DescRequest(models.GenDescRequest())

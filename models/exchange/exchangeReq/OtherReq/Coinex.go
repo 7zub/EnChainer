@@ -38,8 +38,6 @@ func (CoinexTransferParams) GetParams(task any) *models.Request {
 				Amount: fmt.Sprintf("%g", t.Amount),
 			})
 
-			fmt.Println(string(jsonBody))
-
 			timestamp := strconv.FormatInt(time.Now().UnixMilli(), 10)
 			payload := fmt.Sprintf("POST%s%s%s", endpoint, string(jsonBody), timestamp)
 			sign := models.Sign(payload, models.Conf.Exchanges[string(t.Ex)].SecretKey, sha256.New, "hex")

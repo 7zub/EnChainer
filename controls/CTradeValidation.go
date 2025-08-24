@@ -33,13 +33,28 @@ func TradeTaskValidation(task *models.TradeTask) {
 		task.Message += fmt.Sprintf("Низкий объем на продажу: %g; ", task.Sell.Price*task.Sell.Volume)
 	}
 
-	if task.Sell.Ex == models.MEXC {
+	if task.Sell.Ex == models.MEXC && task.Sell.Market == models.Market.Spot {
 		task.Status = models.Stop
 		task.Message += "На бирже MEXC нет маржинальной торговли; "
 	}
 
-	if task.Sell.Ex == models.BINANCE && (task.Ccy.Currency == "KDA" || task.Ccy.Currency == "VANRY") {
+	if (task.Buy.Ex == models.MEXC || task.Sell.Ex == models.MEXC) && task.Sell.Market == models.Market.Futures {
 		task.Status = models.Stop
-		task.Message += "На бирже Binance не работает маржа; "
+		task.Message += "Фьючерсная торговля на MEXC отключена; "
+	}
+
+	if task.Buy.Ex == models.OKX || task.Sell.Ex == models.OKX {
+		task.Status = models.Stop
+		task.Message += "Объем в OKX указан в контрактах; "
+	}
+
+	if task.Buy.Ex == models.GATEIO || task.Sell.Ex == models.GATEIO {
+		task.Status = models.Stop
+		task.Message += "Объем в GATEIO указан в контрактах; "
+	}
+
+	if task.Buy.Ex == models.KUCOIN || task.Sell.Ex == models.KUCOIN {
+		task.Status = models.Stop
+		task.Message += "KUCOIN торговля пока не реализована; "
 	}
 }

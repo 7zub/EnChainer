@@ -20,7 +20,7 @@ func (GateioBookParams) GetParams(pair any) *models.Request {
 	case models.Market.Spot:
 		mark = "spot"
 		params = GateioBookParams{Ccy: p.Ccy.Currency + "_" + p.Ccy.Currency2}
-	case models.Market.Features:
+	case models.Market.Futures:
 		mark = "futures/" + strings.ToLower(p.Ccy.Currency2)
 		params = GateioBookParams{Contract: p.Ccy.Currency + "_" + p.Ccy.Currency2}
 	}

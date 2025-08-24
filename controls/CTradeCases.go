@@ -36,7 +36,7 @@ func PreparedOperation(opr *models.OperationTask, pend bool) {
 }
 
 func NeedTransfer(opr *models.OperationTask, isl bool) models.Result {
-	if opr.Ex != models.COINEX {
+	if opr.Ex != models.COINEX || opr.Market == models.Market.Futures {
 		return models.Result{Status: models.OK}
 	}
 

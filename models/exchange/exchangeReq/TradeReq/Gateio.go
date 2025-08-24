@@ -25,26 +25,60 @@ type GateioTradeParams struct {
 	Account   string  `url:"-" json:"account"`
 	Margin    string  `url:"-" json:"auto_borrow"`
 	AutoRepay string  `url:"-" json:"auto_repay"`
+
+	Contract string  `url:"-" json:"contract"`
+	Size     float64 `url:"-" json:"size"`
+	Live1    string  `url:"-" json:"tif"`
 }
 
 func (GateioTradeParams) GetParams(task any) *models.Request {
 	t := task.(models.OperationTask)
-	endpoint := "/api/v4/spot/orders"
+
+	var endpoint string
+	var params GateioTradeParams
+	switch t.Market {
+	case models.Market.Spot:
+		endpoint = "/api/v4/spot/orders"
+		params = GateioTradeParams{
+			Ccy:       t.Ccy.Currency + "_" + t.Ccy.Currency2,
+			Side:      string(t.Side),
+			Type:      "limit",
+			Volume:    t.Volume,
+			Live:      "gtc",
+			Account:   "unified",
+			Margin:    "true",
+			AutoRepay: "true",
+		}
+	case models.Market.Futures:
+		endpoint = "/api/v4/futures/" + strings.ToLower(t.Ccy.Currency2) + "/orders"
+		params = GateioTradeParams{
+			Contract: t.Ccy.Currency + "_" + t.Ccy.Currency2,
+			Live1:    "gtc",
+		}
+		if t.Side == models.Sell {
+			params.Size = -t.Volume
+		} else {
+			params.Size = t.Volume
+		}
+	}
 
 	return &models.Request{
 		Url:     "https://api.gateio.ws" + endpoint,
 		ReqType: models.ReqType.Trade,
 		SignWay: func(rq *http.Request) {
 			jsonBody, _ := json.Marshal(GateioTradeParams{
-				Ccy:       t.Currency + "_" + t.Currency2,
-				Side:      strings.ToLower(string(t.Side)),
-				Type:      "limit",
-				Volume:    t.Volume,
+				Ccy:       params.Ccy,
+				Side:      params.Side,
+				Type:      params.Type,
+				Volume:    params.Volume,
 				Price:     t.Price,
-				Live:      "gtc",
-				Account:   "unified",
-				Margin:    "true",
-				AutoRepay: "true",
+				Live:      params.Live,
+				Account:   params.Account,
+				Margin:    params.Margin,
+				AutoRepay: params.AutoRepay,
+
+				Contract: params.Contract,
+				Size:     params.Size,
 			})
 
 			hash := sha512.Sum512(jsonBody)

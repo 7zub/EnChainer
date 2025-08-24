@@ -13,17 +13,17 @@ type BinanceLeverageParams struct {
 	Timestamp int64  `url:"timestamp"`
 }
 
-func (BinanceLeverageParams) GetParams(task any) *models.Request {
+func (l BinanceLeverageParams) GetParams(task any) *models.Request {
 	t := task.(models.OperationTask)
 
 	url := ""
-	if t.Market == models.Market.Features {
+	if t.Market == models.Market.Futures {
 		url = "https://fapi.binance.com/fapi/v1/leverage"
 	}
 
 	return &models.Request{
 		Url:     url,
-		ReqType: models.ReqType.Trade,
+		ReqType: models.ReqType.Lever,
 		SignWay: func(rq *http.Request) {
 			rq.Header.Add("X-MBX-APIKEY", models.Conf.Exchanges[string(t.Ex)].ApiKey)
 			q := rq.URL.Query()
@@ -33,7 +33,7 @@ func (BinanceLeverageParams) GetParams(task any) *models.Request {
 		},
 		Params: BinanceLeverageParams{
 			Symbol:    t.Currency + t.Currency2,
-			Leverage:  50,
+			Leverage:  l.Leverage,
 			Timestamp: time.Now().UnixMilli(),
 		},
 	}

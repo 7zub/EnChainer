@@ -28,7 +28,7 @@ func (BinanceTradeParams) GetParams(task any) *models.Request {
 	case models.Market.Spot:
 		url = "https://api.binance.com/sapi/v1/margin/order"
 		autoBorrow = "AUTO_BORROW_REPAY"
-	case models.Market.Features:
+	case models.Market.Futures:
 		url = "https://fapi.binance.com/fapi/v1/order"
 	}
 

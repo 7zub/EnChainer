@@ -40,11 +40,12 @@ type Request struct {
 type RqType string
 
 var ReqType = struct {
-	Book, Trade, Transfer RqType
+	Book, Trade, Transfer, Lever RqType
 }{
 	Book:     "Book",
 	Trade:    "Trade",
 	Transfer: "Transfer",
+	Lever:    "Lever",
 }
 
 func (r *Request) SendRequest() {
@@ -85,7 +86,7 @@ func (r *Request) UrlBuild() *http.Request {
 	switch r.ReqType {
 	case ReqType.Book:
 		r.Method = "GET"
-	case ReqType.Trade, ReqType.Transfer:
+	case ReqType.Trade, ReqType.Transfer, ReqType.Lever:
 		r.Method = "POST"
 		r.SignWay(rq)
 		r.Header = Header(rq.Header)

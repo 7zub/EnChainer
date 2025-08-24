@@ -28,6 +28,14 @@ type BybitTradeParams struct {
 func (BybitTradeParams) GetParams(task any) *models.Request {
 	t := task.(models.OperationTask)
 
+	var mark string
+	switch t.Market {
+	case models.Market.Spot:
+		mark = "spot"
+	case models.Market.Futures:
+		mark = "linear"
+	}
+
 	return &models.Request{
 		Url:     "https://api.bybit.com/v5/order/create",
 		ReqType: models.ReqType.Trade,
@@ -39,7 +47,7 @@ func (BybitTradeParams) GetParams(task any) *models.Request {
 				Volume:  fmt.Sprintf("%g", t.Volume),
 				Price:   fmt.Sprintf("%g", t.Price),
 				Live:    "GTC",
-				Account: "spot",
+				Account: mark,
 				Margin:  1,
 			})
 

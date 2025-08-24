@@ -10,7 +10,7 @@ var ReqBlock sync.Map
 
 func CreateReqBlock(rq models.Request, ccy models.Ccy, ex models.Exchange) *models.RequestBlock {
 	var reqb *models.RequestBlock
-	v, ok := ReqBlock.Load(ccy.Currency + string(ex))
+	v, ok := ReqBlock.Load(ccy.Currency + string(ex)) //TODO
 
 	if ok {
 		reqb = v.(*models.RequestBlock)
@@ -36,7 +36,7 @@ func SearchReqBlock(ccy models.Ccy, ex models.Exchange) string {
 	ReqBlock.Range(func(key, val any) bool {
 		b, _ := val.(*models.RequestBlock)
 		if ccy == b.Ccy && ex == b.Ex && b.Active == true {
-			if b.ReasonCode == 400 || time.Since(b.CreateDate) < 110*time.Second {
+			if b.ReasonCode == 400 || time.Since(b.CreateDate) < models.Const.TimeoutBlock*time.Second {
 				res = b.ReqId
 			} else {
 				b.Active = false

@@ -18,7 +18,7 @@ func (BybitBookParams) GetParams(pair any) *models.Request {
 	switch p.Market {
 	case models.Market.Spot:
 		mark = "spot"
-	case models.Market.Features:
+	case models.Market.Futures:
 		mark = "linear"
 	}
 

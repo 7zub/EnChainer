@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 var Const = struct {
 	Lot           float64
 	MaxTrade      int
@@ -8,14 +10,16 @@ var Const = struct {
 	Split         float64
 	DecimalPrice  int
 	DecimalVolume int
+	TimeoutBlock  time.Duration
 	BatchSize     int
 }{
-	Lot:           9.2,
-	MaxTrade:      0,
-	Spread:        0.7,
+	Lot:           10.1,
+	MaxTrade:      1,
+	Spread:        0.4,
 	SpreadClose:   0.1,
 	Split:         3,
-	DecimalPrice:  3,
-	DecimalVolume: 3,
+	DecimalPrice:  4,
+	DecimalVolume: 2,
+	TimeoutBlock:  160,
 	BatchSize:     700,
 }

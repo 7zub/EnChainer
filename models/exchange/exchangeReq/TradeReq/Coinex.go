@@ -25,7 +25,14 @@ type CoinexTradeParams struct {
 
 func (CoinexTradeParams) GetParams(task any) *models.Request {
 	t := task.(models.OperationTask)
-	endpoint := "/v2/spot/order"
+
+	var endpoint string
+	switch t.Market {
+	case models.Market.Spot:
+		endpoint = "/v2/spot/order"
+	case models.Market.Futures:
+		endpoint = "/v2/futures/order"
+	}
 
 	return &models.Request{
 		Url:     "https://api.coinex.com" + endpoint,
@@ -37,7 +44,7 @@ func (CoinexTradeParams) GetParams(task any) *models.Request {
 				Type:   "limit",
 				Volume: t.Volume,
 				Price:  t.Price,
-				Margin: "margin",
+				Margin: string(t.Market),
 			})
 
 			timestamp := strconv.FormatInt(time.Now().UnixMilli(), 10)

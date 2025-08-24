@@ -22,7 +22,7 @@ func (HuobiBookParams) GetParams(pair any) *models.Request {
 	case models.Market.Spot:
 		url = "https://api.huobi.pro/market/depth"
 		params = HuobiBookParams{Ccy: strings.ToLower(p.Ccy.Currency + p.Ccy.Currency2), Limit: "5", Type: "step0"}
-	case models.Market.Features:
+	case models.Market.Futures:
 		url = "https://api.hbdm.com/linear-swap-ex/market/depth"
 		params = HuobiBookParams{Contract: strings.ToUpper(p.Ccy.Currency + "-" + p.Ccy.Currency2), Type: "step0"}
 	}

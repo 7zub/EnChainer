@@ -18,7 +18,7 @@ func (KucoinBookParams) GetParams(pair any) *models.Request {
 		url = "https://api.kucoin.com/api/v1/market/orderbook/level2_20"
 		ccy = p.Ccy.Currency + "-" + p.Ccy.Currency2
 
-	case models.Market.Features:
+	case models.Market.Futures:
 		url = "https://api-futures.kucoin.com/api/v1/level2/depth20"
 		ccy = p.Ccy.Currency + p.Ccy.Currency2 + "M"
 	}

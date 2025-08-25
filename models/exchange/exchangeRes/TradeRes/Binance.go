@@ -9,7 +9,7 @@ type BinanceTrade struct {
 }
 
 func (book BinanceTrade) Mapper() any {
-	if book.OrderId > 0 {
+	if book.OrderId > 1 {
 		return models.Result{
 			Status: models.OK,
 		}

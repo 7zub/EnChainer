@@ -4,14 +4,14 @@ import (
 	"enchainer/models"
 )
 
-type HuobiTrade struct {
+type KucoinTrade struct {
 	Data struct {
-		OrderId int64 `json:"order_id"`
+		OrderId string `json:"orderId"`
 	} `json:"data"`
 }
 
-func (book HuobiTrade) Mapper() any {
-	if book.Data.OrderId > 1 {
+func (book KucoinTrade) Mapper() any {
+	if len(book.Data.OrderId) > 0 {
 		return models.Result{
 			Status: models.OK,
 		}

@@ -2,6 +2,8 @@ package controls
 
 import (
 	"enchainer/models"
+	"enchainer/models/exchange/exchangeRes/ContractRes"
+	"fmt"
 	"time"
 )
 
@@ -56,4 +58,17 @@ func NeedTransfer(opr *models.OperationTask, isl bool) models.Result {
 
 	trf, _ := CreateAction(tr, models.ReqType.Transfer)
 	return trf
+}
+
+func NeedContract(opr *models.OperationTask) float64 {
+	cct, _ := CreateAction(*opr, models.ReqType.Contract)
+
+	if opr.Ex == models.GATEIO {
+		for _, c := range cct.Any.(ContractRes.GateioContract) {
+			if c.Ccy == "ETH_USDT" {
+				fmt.Println("Contract size for ", c.Ccy, " is ", c.Cct)
+			}
+		}
+	}
+	return 1
 }

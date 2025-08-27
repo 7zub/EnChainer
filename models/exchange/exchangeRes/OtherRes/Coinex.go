@@ -8,8 +8,8 @@ type CoinexTransfer struct {
 	Message string `json:"message"`
 }
 
-func (answer CoinexTransfer) Mapper() any {
-	if answer.Message == "OK" {
+func (a CoinexTransfer) Mapper() any {
+	if a.Message == "OK" {
 		return models.Result{
 			Status: models.OK,
 		}

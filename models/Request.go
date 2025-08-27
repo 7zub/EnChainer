@@ -40,12 +40,13 @@ type Request struct {
 type RqType string
 
 var ReqType = struct {
-	Book, Trade, Transfer, Lever RqType
+	Book, Trade, Transfer, Lever, Contract RqType
 }{
 	Book:     "Book",
 	Trade:    "Trade",
 	Transfer: "Transfer",
 	Lever:    "Lever",
+	Contract: "Contract",
 }
 
 func (r *Request) SendRequest() {
@@ -84,7 +85,7 @@ func (r *Request) UrlBuild() *http.Request {
 	rq.URL.RawQuery = q.Encode()
 
 	switch r.ReqType {
-	case ReqType.Book:
+	case ReqType.Book, ReqType.Contract:
 		r.Method = "GET"
 	case ReqType.Trade, ReqType.Transfer, ReqType.Lever:
 		r.Method = "POST"

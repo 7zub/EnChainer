@@ -1,0 +1,22 @@
+package ContractReq
+
+import (
+	"enchainer/models"
+	"enchainer/models/exchange/exchangeRes/ContractRes"
+)
+
+type GateioContractParams struct {
+	Ccy      string
+	Contract float64
+}
+
+func (GateioContractParams) GetParams(task any) *models.Request {
+	//p := pair.(*models.TradePair)
+
+	return &models.Request{
+		Url:      "https://api.gateio.ws/api/v4/futures/usdt/contracts",
+		ReqType:  models.ReqType.Contract,
+		Params:   GateioContractParams{},
+		Response: &ContractRes.GateioContract{},
+	}
+}

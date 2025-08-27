@@ -66,7 +66,7 @@ func (HuobiTradeParams) GetParams(task any) *models.Request {
 		Url:     "https://" + url + endpoint,
 		ReqType: models.ReqType.Trade,
 		SignWay: func(rq *http.Request) {
-			jsonBody, _ := json.Marshal(params)
+			jsonBody, _ := json.Marshal(params) //TODO возможно подтягивание лишних полей в json (нужен: ,omitempty)
 			timestamp := time.Now().UTC().Format("2006-01-02T15:04:05")
 			q := rq.URL.Query()
 			q.Set("AccessKeyId", models.Conf.Exchanges[string(t.Ex)].ApiKey)

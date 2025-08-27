@@ -52,9 +52,4 @@ func TradeTaskValidation(task *models.TradeTask) {
 		task.Status = models.Stop
 		task.Message += "Объем в GATEIO указан в контрактах; "
 	}
-
-	if task.Buy.Ex == models.KUCOIN || task.Sell.Ex == models.KUCOIN {
-		task.Status = models.Stop
-		task.Message += "KUCOIN торговля пока не реализована; "
-	}
 }

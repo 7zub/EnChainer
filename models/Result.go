@@ -3,6 +3,7 @@ package models
 type Result struct {
 	Status  Status
 	Message string
+	Any     any
 }
 
 type Status string

@@ -16,15 +16,15 @@ import (
 )
 
 type GateioTradeParams struct {
-	Ccy       string  `url:"-" json:"currency_pair"`
+	Ccy       string  `url:"-" json:"currency_pair,omitempty"`
 	Side      string  `url:"-" json:"side"`
 	Type      string  `url:"-" json:"type"`
-	Volume    float64 `url:"-" json:"amount"`
+	Volume    float64 `url:"-" json:"amount,omitempty"`
 	Price     float64 `url:"-" json:"price"`
-	Live      string  `url:"-" json:"time_in_force"`
-	Account   string  `url:"-" json:"account"`
-	Margin    string  `url:"-" json:"auto_borrow"`
-	AutoRepay string  `url:"-" json:"auto_repay"`
+	Live      string  `url:"-" json:"time_in_force,omitempty"`
+	Account   string  `url:"-" json:"account,omitempty"`
+	Margin    string  `url:"-" json:"auto_borrow,omitempty"`
+	AutoRepay string  `url:"-" json:"auto_repay,omitempty"`
 
 	Contract string  `url:"-" json:"contract"`
 	Size     float64 `url:"-" json:"size"`
@@ -79,6 +79,7 @@ func (GateioTradeParams) GetParams(task any) *models.Request {
 
 				Contract: params.Contract,
 				Size:     params.Size,
+				Live1:    params.Live1,
 			})
 
 			hash := sha512.Sum512(jsonBody)

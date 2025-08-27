@@ -21,7 +21,7 @@ type OkxTradeParams struct {
 	Margin    string  `url:"-" json:"tdMode"`
 	MarginCcy string  `url:"-" json:"ccy"`
 
-	PosSide string `url:"-" json:"posSide"`
+	PosSide string `url:"-" json:"posSide,omitempty"`
 }
 
 func (OkxTradeParams) GetParams(task any) *models.Request {

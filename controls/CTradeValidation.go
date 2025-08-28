@@ -47,9 +47,4 @@ func TradeTaskValidation(task *models.TradeTask) {
 		task.Status = models.Stop
 		task.Message += "Объем в OKX указан в контрактах; "
 	}
-
-	if task.Buy.Ex == models.GATEIO || task.Sell.Ex == models.GATEIO {
-		task.Status = models.Stop
-		task.Message += "Объем в GATEIO указан в контрактах; "
-	}
 }

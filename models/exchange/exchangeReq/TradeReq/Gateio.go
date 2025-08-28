@@ -26,9 +26,9 @@ type GateioTradeParams struct {
 	Margin    string  `url:"-" json:"auto_borrow,omitempty"`
 	AutoRepay string  `url:"-" json:"auto_repay,omitempty"`
 
-	Contract string  `url:"-" json:"contract"`
-	Size     float64 `url:"-" json:"size"`
-	Live1    string  `url:"-" json:"tif"`
+	Contract string `url:"-" json:"contract"`
+	Size     int    `url:"-" json:"size"`
+	Live1    string `url:"-" json:"tif"`
 }
 
 func (GateioTradeParams) GetParams(task any) *models.Request {
@@ -53,12 +53,12 @@ func (GateioTradeParams) GetParams(task any) *models.Request {
 		endpoint = "/api/v4/futures/" + strings.ToLower(t.Ccy.Currency2) + "/orders"
 		params = GateioTradeParams{
 			Contract: t.Ccy.Currency + "_" + t.Ccy.Currency2,
+			Size:     int(t.Volume / t.Cct),
 			Live1:    "gtc",
 		}
+
 		if t.Side == models.Sell {
-			params.Size = -t.Volume
-		} else {
-			params.Size = t.Volume
+			params.Size = -params.Size
 		}
 	}
 

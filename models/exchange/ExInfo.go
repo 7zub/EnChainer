@@ -3,6 +3,7 @@ package exchange
 import (
 	"enchainer/models"
 	"enchainer/models/exchange/exchangeReq/BookReq"
+	"enchainer/models/exchange/exchangeReq/ContractReq"
 	"enchainer/models/exchange/exchangeReq/OtherReq"
 	"enchainer/models/exchange/exchangeReq/TradeReq"
 	"reflect"
@@ -10,7 +11,7 @@ import (
 
 type ExchangeInfo struct {
 	Exchange   models.Exchange
-	ReqType    string
+	ReqType    string // TODO
 	Commission float32
 }
 
@@ -34,4 +35,6 @@ var ExInfo = map[reflect.Type]ExchangeInfo{
 	reflect.TypeOf(TradeReq.KucoinTradeParams{}):  {Exchange: models.KUCOIN, ReqType: "Trade", Commission: 0.1},
 
 	reflect.TypeOf(OtherReq.CoinexTransferParams{}): {Exchange: models.COINEX, ReqType: "Transfer"},
+
+	reflect.TypeOf(ContractReq.GateioContractParams{}): {Exchange: models.GATEIO, ReqType: "Contract"},
 }

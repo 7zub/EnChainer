@@ -17,6 +17,7 @@ type OperationTask struct {
 	ReqId  string
 	Ccy
 	Operation
+	Cct        float64
 	Commission float32
 	CreateDate time.Time `gorm:"type:timestamp"`
 }

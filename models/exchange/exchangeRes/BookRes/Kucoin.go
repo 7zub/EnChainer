@@ -38,7 +38,7 @@ func (book KucoinBook) Mapper() any {
 
 	for _, ask := range book.Data.Asks {
 		p, v := parseLevel(ask)
-		newAsks = append(newBids, models.ValueBook{Price: p, Volume: v})
+		newAsks = append(newAsks, models.ValueBook{Price: p, Volume: v})
 	}
 
 	return models.OrderBook{

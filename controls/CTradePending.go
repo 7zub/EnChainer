@@ -48,9 +48,9 @@ func PendingHandler(ccy models.Ccy, book []models.OrderBook) {
 			}
 
 			opr1.Operation.Side = models.Buy
-			opr1.Operation.Price = bid
+			opr1.Operation.Price = ask
 			opr2.Operation.Side = models.Sell
-			opr2.Operation.Price = ask
+			opr2.Operation.Price = bid
 
 			PreparedOperation(&opr1, true)
 			PreparedOperation(&opr2, true)

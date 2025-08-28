@@ -4,6 +4,7 @@ import (
 	"enchainer/models"
 	"enchainer/models/exchange/exchangeRes/ContractRes"
 	"fmt"
+	"strconv"
 	"time"
 )
 
@@ -18,7 +19,7 @@ func PreparedOperation(opr *models.OperationTask, pend bool) {
 		mode = "down"
 	}
 
-	if opr.Ex == models.BYBIT {
+	if opr.Ex == models.BYBIT && opr.Market == models.Market.Spot {
 		if opr.Price > 0.2 && opr.Price < 1 {
 			decPrice = 3
 		}
@@ -60,15 +61,23 @@ func NeedTransfer(opr *models.OperationTask, isl bool) models.Result {
 	return trf
 }
 
-func NeedContract(opr *models.OperationTask) float64 {
-	cct, _ := CreateAction(*opr, models.ReqType.Contract)
+func NeedContract(opr *models.OperationTask) models.Result {
+	if !(opr.Ex == models.GATEIO && opr.Market == models.Market.Futures) {
+		return models.Result{Status: models.OK}
+	}
 
-	if opr.Ex == models.GATEIO {
-		for _, c := range cct.Any.(ContractRes.GateioContract) {
-			if c.Ccy == "ETH_USDT" {
-				fmt.Println("Contract size for ", c.Ccy, " is ", c.Cct)
+	act, _ := CreateAction(*opr, models.ReqType.Contract)
+
+	for _, c := range act.Any.(ContractRes.GateioContract) {
+		if c.Ccy == opr.Ccy.Currency+"_"+opr.Ccy.Currency2 {
+			fmt.Println("Contract size for ", c.Ccy, " is ", c.Cct)
+			opr.Cct, _ = strconv.ParseFloat(c.Cct, 64)
+			if opr.Cct <= 0 {
+				return models.Result{Status: models.ERR, Message: "Ошибка получения контракта"}
 			}
+			return act
 		}
 	}
-	return 1
+
+	return models.Result{Status: models.ERR, Message: "Не найдена валюта"}
 }

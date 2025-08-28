@@ -31,6 +31,9 @@ func TradeTaskHandler(task *models.TradeTask) {
 		PreparedOperation(&oprBuy, false)
 		PreparedOperation(&oprSell, false)
 
+		NeedContract(&oprBuy)
+		NeedContract(&oprSell)
+
 		ntBuy := NeedTransfer(&oprBuy, false)
 		ntSell := NeedTransfer(&oprSell, false)
 

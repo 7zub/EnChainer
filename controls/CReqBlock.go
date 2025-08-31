@@ -23,6 +23,7 @@ func CreateReqBlock(rq models.Request, ccy models.Ccy, ex models.Exchange) *mode
 			ReasonCode: rq.Code,
 			Reason:     rq.ResponseRaw,
 			CreateDate: time.Now(),
+			RepeatDate: time.Now(),
 			Active:     true,
 		}
 	}
@@ -36,10 +37,11 @@ func SearchReqBlock(ccy models.Ccy, ex models.Exchange) string {
 	ReqBlock.Range(func(key, val any) bool {
 		b, _ := val.(*models.RequestBlock)
 		if ccy == b.Ccy && ex == b.Ex && b.Active == true {
-			if b.ReasonCode == 400 || time.Since(b.CreateDate) < models.Const.TimeoutBlock*time.Second {
+			if b.ReasonCode == 400 || time.Since(b.RepeatDate) < models.Const.TimeoutBlock*time.Second {
 				res = b.ReqId
 			} else {
 				b.Active = false
+				b.RepeatDate = time.Now()
 				ReqBlock.Store(ccy.Currency+string(ex), b)
 				ChanAny <- b
 			}

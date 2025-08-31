@@ -3,7 +3,6 @@ package controls
 import (
 	"enchainer/models"
 	"enchainer/models/exchange/exchangeRes/ContractRes"
-	"fmt"
 	"strconv"
 	"time"
 )
@@ -62,21 +61,26 @@ func NeedTransfer(opr *models.OperationTask, isl bool) models.Result {
 }
 
 func NeedContract(opr *models.OperationTask) models.Result {
-	if !(opr.Ex == models.GATEIO && opr.Market == models.Market.Futures) {
+	if !((opr.Ex == models.GATEIO || opr.Ex == models.HUOBI) && opr.Market == models.Market.Futures) {
 		return models.Result{Status: models.OK}
 	}
 
-	act, _ := CreateAction(*opr, models.ReqType.Contract)
+	var act, _ = CreateAction(*opr, models.ReqType.Contract)
 
-	for _, c := range act.Any.(ContractRes.GateioContract) {
-		if c.Ccy == opr.Ccy.Currency+"_"+opr.Ccy.Currency2 {
-			fmt.Println("Contract size for ", c.Ccy, " is ", c.Cct)
-			opr.Cct, _ = strconv.ParseFloat(c.Cct, 64)
-			if opr.Cct <= 0 {
-				return models.Result{Status: models.ERR, Message: "Ошибка получения контракта"}
+	switch opr.Ex {
+	case models.GATEIO:
+		for _, c := range act.Any.(ContractRes.GateioContract) {
+			if c.Ccy == opr.Ccy.Currency+"_"+opr.Ccy.Currency2 {
+				opr.Cct, _ = strconv.ParseFloat(c.Cct, 64)
+				if opr.Cct <= 0 {
+					return models.Result{Status: models.ERR, Message: "Ошибка получения контракта"}
+				}
+				return act
 			}
-			return act
 		}
+
+	case models.HUOBI:
+		opr.Cct = act.Any.(ContractRes.HuobiContract).Data[0].ContractSize
 	}
 
 	return models.Result{Status: models.ERR, Message: "Не найдена валюта"}

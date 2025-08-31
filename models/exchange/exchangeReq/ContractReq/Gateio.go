@@ -10,9 +10,7 @@ type GateioContractParams struct {
 	Contract float64
 }
 
-func (GateioContractParams) GetParams(task any) *models.Request {
-	//p := pair.(*models.TradePair)
-
+func (GateioContractParams) GetParams(any) *models.Request {
 	return &models.Request{
 		Url:      "https://api.gateio.ws/api/v4/futures/usdt/contracts",
 		ReqType:  models.ReqType.Contract,

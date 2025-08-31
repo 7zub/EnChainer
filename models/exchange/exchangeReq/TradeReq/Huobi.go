@@ -14,20 +14,20 @@ import (
 )
 
 type HuobiTradeParams struct {
-	Ccy       string  `url:"symbol" json:"symbol"`
-	Type      string  `url:"type" json:"type"`
-	Volume    float64 `url:"amount" json:"amount"`
+	Ccy       string  `url:"symbol" json:"symbol,omitempty"`
+	Type      string  `url:"type" json:"type,omitempty"`
+	Volume    float64 `url:"amount" json:"amount,omitempty"`
 	Price     float64 `url:"price" json:"price"`
-	AccountId string  `url:"account-id" json:"account-id"`
-	Source    string  `url:"source" json:"source"`
-	Purpose   string  `url:"trade-purpose" json:"trade-purpose"`
+	AccountId string  `url:"account-id" json:"account-id,omitempty"`
+	Source    string  `url:"source" json:"source,omitempty"`
+	Purpose   string  `url:"trade-purpose" json:"trade-purpose,omitempty"`
 
-	Contract string  `url:"contract_code" json:"contract_code"`
-	Vol      float64 `url:"volume" json:"volume"`
-	Dir      string  `url:"direction" json:"direction"`
-	Offset   string  `url:"offset" json:"offset"`
-	Lever    int     `url:"lever_rate" json:"lever_rate"`
-	Mark     string  `url:"order_price_type" json:"order_price_type"`
+	Contract string `url:"contract_code" json:"contract_code,omitempty"`
+	Vol      int    `url:"volume" json:"volume,omitempty"`
+	Dir      string `url:"direction" json:"direction,omitempty"`
+	Offset   string `url:"offset" json:"offset,omitempty"`
+	Lever    int    `url:"lever_rate" json:"lever_rate,omitempty"`
+	Mark     string `url:"order_price_type" json:"order_price_type,omitempty"`
 }
 
 func (HuobiTradeParams) GetParams(task any) *models.Request {
@@ -53,20 +53,22 @@ func (HuobiTradeParams) GetParams(task any) *models.Request {
 		endpoint = "/linear-swap-api/v1/swap_cross_order"
 		params = HuobiTradeParams{
 			Contract: strings.ToLower(t.Ccy.Currency + "-" + t.Ccy.Currency2),
-			Vol:      t.Volume,
+			Vol:      int(t.Volume / t.Cct),
 			Price:    t.Price,
 			Dir:      string(t.Side),
 			//Offset:   "open", в реж. хеджирования
 			Lever: 10,
 			Mark:  "limit",
 		}
+
+		fmt.Println("Объем Huobi фьюч: ", int(t.Volume/t.Cct), "val: ", t.Volume, "cct: ", t.Cct)
 	}
 
 	return &models.Request{
 		Url:     "https://" + url + endpoint,
 		ReqType: models.ReqType.Trade,
 		SignWay: func(rq *http.Request) {
-			jsonBody, _ := json.Marshal(params) //TODO возможно подтягивание лишних полей в json (нужен: ,omitempty)
+			jsonBody, _ := json.Marshal(params)
 			timestamp := time.Now().UTC().Format("2006-01-02T15:04:05")
 			q := rq.URL.Query()
 			q.Set("AccessKeyId", models.Conf.Exchanges[string(t.Ex)].ApiKey)

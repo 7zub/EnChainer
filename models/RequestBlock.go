@@ -12,5 +12,6 @@ type RequestBlock struct {
 	ReasonCode int
 	Reason     string
 	CreateDate time.Time `gorm:"type:timestamp;autoCreateTime"`
+	RepeatDate time.Time `gorm:"type:timestamp"`
 	Active     bool
 }

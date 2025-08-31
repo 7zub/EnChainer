@@ -80,7 +80,7 @@ func PendingHandler(ccy models.Ccy, book []models.OrderBook) {
 			TradeTask.Store(task.TaskId, task)
 			ChanAny <- task
 		} else {
-			ToLog(models.Result{Status: models.WAR, Message: fmt.Sprintf("Маленькая разница с новым спредом: %f, %v", task.Spread-spr, task)})
+			ToLog(models.Result{Status: models.WAR, Message: fmt.Sprintf("Маленькая разница с новым спредом: %f - %f = %f, %v", task.Spread, spr, task.Spread-spr, task)})
 		}
 	}
 }

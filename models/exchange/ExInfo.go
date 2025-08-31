@@ -37,4 +37,5 @@ var ExInfo = map[reflect.Type]ExchangeInfo{
 	reflect.TypeOf(OtherReq.CoinexTransferParams{}): {Exchange: models.COINEX, ReqType: "Transfer"},
 
 	reflect.TypeOf(ContractReq.GateioContractParams{}): {Exchange: models.GATEIO, ReqType: "Contract"},
+	reflect.TypeOf(ContractReq.HuobiContractParams{}):  {Exchange: models.HUOBI, ReqType: "Contract"},
 }

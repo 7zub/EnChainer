@@ -9,6 +9,7 @@ import (
 
 func PreparedOperation(opr *models.OperationTask, pend bool) {
 	var mode string
+	var slip float64
 	var decPrice = models.Const.DecimalPrice
 	var decVol = models.Const.DecimalVolume
 
@@ -16,6 +17,12 @@ func PreparedOperation(opr *models.OperationTask, pend bool) {
 		mode = "up"
 	} else {
 		mode = "down"
+	}
+
+	if opr.Deep > 1 {
+		slip = models.Const.Slip * 2
+	} else {
+		slip = models.Const.Slip
 	}
 
 	if opr.Ex == models.BYBIT && opr.Market == models.Market.Spot {
@@ -28,10 +35,10 @@ func PreparedOperation(opr *models.OperationTask, pend bool) {
 		}
 	}
 
-	opr.Price = RoundSn(opr.Price, decPrice, mode)
+	opr.Price = RoundSn(opr.Price, decPrice, mode, slip)
 
 	if pend == false {
-		opr.Volume = RoundSn(models.Const.Lot/opr.Price, decVol, "down")
+		opr.Volume = RoundSn(models.Const.Lot/opr.Price, decVol, "down", 0)
 	}
 
 	opr.CreateDate = time.Now()

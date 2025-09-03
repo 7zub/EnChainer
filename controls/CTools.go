@@ -52,27 +52,27 @@ func Round(num float64, decimal float64) float64 {
 	return math.Round(num*factor) / factor
 }
 
-func RoundSn(num float64, decimal int, mode string) float64 {
+func RoundSn(num float64, decimal int, mode string, slip float64) float64 {
 	d := decimal - int(math.Floor(math.Log10(math.Abs(num)))) - 1
 	pow := math.Pow10(d)
-	var rounded, slip float64
+	var rounded, cSlip float64
 
 	switch mode {
 	case "down":
 		rounded = math.Floor(num*pow) / pow
-		slip = -models.Const.Split
+		cSlip = -slip
 	case "up":
 		rounded = math.Ceil(num*pow) / pow
-		slip = models.Const.Split
+		cSlip = slip
 	case "near":
 		rounded = math.Round(num*pow) / pow
 	default:
 		rounded = math.Round(num*pow) / pow
 	}
 
-	if rounded == num {
+	if slip != 0 {
 		a, _ := new(big.Float).SetString(fmt.Sprint(rounded))
-		b, _ := new(big.Float).SetString(fmt.Sprint(slip / pow))
+		b, _ := new(big.Float).SetString(fmt.Sprint(cSlip / pow))
 		rounded, _ = new(big.Float).Add(a, b).Float64()
 	}
 	return rounded

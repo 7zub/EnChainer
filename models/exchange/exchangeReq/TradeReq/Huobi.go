@@ -60,8 +60,6 @@ func (HuobiTradeParams) GetParams(task any) *models.Request {
 			Lever: 10,
 			Mark:  "limit",
 		}
-
-		fmt.Println("Объем Huobi фьюч: ", int(t.Volume/t.Cct), "val: ", t.Volume, "cct: ", t.Cct)
 	}
 
 	return &models.Request{

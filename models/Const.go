@@ -6,7 +6,7 @@ var Const = struct {
 	Lot           float64
 	MaxTrade      int
 	Spread        float64
-	SpreadClose   float64
+	MinProfit     float64
 	Split         float64
 	DecimalPrice  int
 	DecimalVolume int
@@ -14,9 +14,9 @@ var Const = struct {
 	BatchSize     int
 }{
 	Lot:           10.1,
-	MaxTrade:      1,
-	Spread:        0.4,
-	SpreadClose:   0.1,
+	MaxTrade:      2,
+	Spread:        0.55,
+	MinProfit:     0.26,
 	Split:         3,
 	DecimalPrice:  4,
 	DecimalVolume: 2,

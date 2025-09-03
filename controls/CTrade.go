@@ -44,15 +44,15 @@ func TradeTaskHandler(task *models.TradeTask) {
 					task.Status = models.Pending
 				} else {
 					task.Status = models.Err
-					task.Message = "Ошибка операции: " + string(oprBuy.Side) + " " + string(oBuy.Status) + "; " + string(oprSell.Side) + " " + string(oSell.Status)
+					task.Message = fmt.Sprintf("Ошибка открытия позиций: %s %s, %s %s", oprBuy.Side, oBuy.Status, oprSell.Side, oSell.Status)
 				}
 			} else {
 				task.Status = models.Err
-				task.Message = "Ошибка операции: " + string(oprSell.Side)
+				task.Message = fmt.Sprintf("Ошибка операции: %s", oprSell.Side)
 			}
 		} else {
 			task.Status = models.Err
-			task.Message = ntBuy.Message + ntSell.Message
+			task.Message = fmt.Sprintf("%s %s", ntBuy.Message, ntSell.Message)
 		}
 
 		task.OpTask = append(task.OpTask, oprSell, oprBuy)

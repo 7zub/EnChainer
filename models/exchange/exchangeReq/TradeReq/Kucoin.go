@@ -52,8 +52,6 @@ func (KucoinTradeParams) GetParams(task any) *models.Request {
 				Margin: "CROSS",
 			})
 
-			fmt.Println("round", math.Floor(t.Volume*t.Price*10)/10)
-
 			timestamp := fmt.Sprintf("%d", time.Now().UnixNano()/1e6)
 			payload := fmt.Sprintf("%sPOST%s%s", timestamp, endpoint, string(jsonBody[:]))
 			sign := models.Sign(payload, models.Conf.Exchanges[string(t.Ex)].SecretKey, sha256.New, "base64")

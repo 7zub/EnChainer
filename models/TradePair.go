@@ -115,11 +115,3 @@ func GetVolume(valueBook *JsonValueBook) (ValueBook, int) {
 	}
 	return ValueBook{Price: p / float64(deep), Volume: v}, deep
 }
-
-func ProfitBid(orderBooks *[]OrderBook) {
-
-}
-
-func ProfitAsk(orderBooks *[]OrderBook) {
-
-}

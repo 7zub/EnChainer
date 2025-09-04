@@ -113,5 +113,9 @@ func GetVolume(valueBook *JsonValueBook) (ValueBook, int) {
 			return ValueBook{Price: p / float64(deep), Volume: v}, deep
 		}
 	}
+
+	if deep == 0 {
+		deep = 1
+	}
 	return ValueBook{Price: p / float64(deep), Volume: v}, deep
 }

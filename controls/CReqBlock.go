@@ -37,7 +37,10 @@ func SearchReqBlock(ccy models.Ccy, ex models.Exchange) string {
 	ReqBlock.Range(func(key, val any) bool {
 		b, _ := val.(*models.RequestBlock)
 		if ccy == b.Ccy && ex == b.Ex && b.Active == true {
-			if b.ReasonCode == 400 || time.Since(b.RepeatDate) < models.Const.TimeoutBlock*time.Second {
+			loc, _ := time.LoadLocation("Europe/Moscow")
+			rptDate := time.Date(b.RepeatDate.Year(), b.RepeatDate.Month(), b.RepeatDate.Day(), b.RepeatDate.Hour(), b.RepeatDate.Minute(), b.RepeatDate.Second(), b.RepeatDate.Nanosecond(), loc)
+
+			if b.ReasonCode == 400 || time.Since(rptDate) < models.Const.TimeoutBlock*time.Second {
 				res = b.ReqId
 			} else {
 				b.Active = false

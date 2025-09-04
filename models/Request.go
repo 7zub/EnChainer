@@ -101,6 +101,7 @@ func (r *Request) UrlExec(rq *http.Request) {
 	r.Url = rq.URL.String()
 	client := http.Client{}
 	resp, err := client.Do(rq)
+	r.ReqDate = time.Now()
 	r.Code = -1
 	r.Log = Result{Status: INFO, Message: fmt.Sprintf("Запрос %s %s", r.ReqId, rq.URL.String())}
 

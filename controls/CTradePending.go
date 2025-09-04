@@ -9,17 +9,21 @@ func PendingHandler(ccy models.Ccy, book []models.OrderBook) {
 	if pendId := SearchPendTask(ccy); pendId != nil {
 		task := LoadTask(*pendId)
 
-		var i int
+		var i, deep1, deep2 int
+		var valBook models.ValueBook
 		var bid, ask float64
 		var bkid []string
+
+		if book[i].Exchange == task.Sell.Ex {
+			valBook, deep1 = models.GetVolume(&book[i].Asks)
+			ask = valBook.Price
+			bkid = append(bkid, book[i].ReqId)
+		}
+
 		for i = range book {
 			if book[i].Exchange == task.Buy.Ex {
-				bid = book[i].Bids[0].Price
-				bkid = append(bkid, book[i].ReqId)
-			}
-
-			if book[i].Exchange == task.Sell.Ex {
-				ask = book[i].Asks[0].Price
+				valBook, deep2 = models.GetVolume(&book[i].Bids)
+				bid = valBook.Price
 				bkid = append(bkid, book[i].ReqId)
 			}
 		}
@@ -27,7 +31,7 @@ func PendingHandler(ccy models.Ccy, book []models.OrderBook) {
 		if bid <= 0 || ask <= 0 {
 			ToLog(models.Result{
 				Status: models.WAR,
-				Message: fmt.Sprintf("Отсутствует книга: bids %f, ask %f для запросов %v, TaskId: %s, Ccy: %s",
+				Message: fmt.Sprintf("Отсутствует книга: bid %f, ask %f для запросов %v, TaskId: %s, Ccy: %s",
 					bid, ask, bkid, task.TaskId, task.Ccy.Currency)})
 			return
 		}
@@ -62,8 +66,10 @@ func PendingHandler(ccy models.Ccy, book []models.OrderBook) {
 
 		opr1.Operation.Side = models.Buy
 		opr1.Operation.Price = ask
+		opr1.Operation.Deep = deep1
 		opr2.Operation.Side = models.Sell
 		opr2.Operation.Price = bid
+		opr2.Operation.Deep = deep2
 
 		PreparedOperation(&opr1, true)
 		PreparedOperation(&opr2, true)

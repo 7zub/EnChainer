@@ -16,6 +16,7 @@ func HandleRequests() {
 	myRouter.HandleFunc("/offpair", OffPair)
 	//myRouter.HandleFunc("/ws", views.Ws)
 	myRouter.HandleFunc("/trade", TradeTaskControl)
+	myRouter.HandleFunc("/settings", Settings)
 
 	log.Fatal(http.ListenAndServe(":10", myRouter))
 }

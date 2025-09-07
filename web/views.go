@@ -32,3 +32,7 @@ func Ws(w http.ResponseWriter, rr *http.Request) {
 func TradeTaskControl(w http.ResponseWriter, rr *http.Request) {
 	controls.TradeTaskControl(w)
 }
+
+func Settings(w http.ResponseWriter, rr *http.Request) {
+	controls.Settings(w, rr)
+}

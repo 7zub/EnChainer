@@ -3,6 +3,7 @@ package controls
 import (
 	"enchainer/models"
 	"encoding/json"
+	"fmt"
 	"math/rand"
 	"net/http"
 	"slices"
@@ -98,4 +99,21 @@ func SearchPair(pairid string) (int, models.Result) {
 		}
 	}
 	return -1, models.Result{Status: "ERR", Message: "Пары " + pairid + " не существует"}
+}
+
+func Settings(w http.ResponseWriter, r *http.Request) {
+	params := r.URL.Query()
+	if v, _ := strconv.Atoi(params.Get("value")); v > 0 {
+		switch params.Get("param") {
+		case "max_trade":
+			cnt = v
+		case "spread", "min_profit":
+			models.Const.Spread = float64(v)
+		default:
+			json.NewEncoder(w).Encode(models.Result{Status: models.ERR, Message: fmt.Sprintf("Параметра: %s не существует", params.Get("param"))})
+			return
+		}
+
+		json.NewEncoder(w).Encode(models.Result{Status: models.OK, Message: fmt.Sprintf("Параметр: %s = %d", params.Get("param"), v)})
+	}
 }

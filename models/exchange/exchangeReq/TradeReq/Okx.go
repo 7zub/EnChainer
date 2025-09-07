@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math"
 	"net/http"
 	"time"
 )
@@ -28,16 +29,23 @@ func (OkxTradeParams) GetParams(task any) *models.Request {
 	t := task.(models.OperationTask)
 	endpoint := "/api/v5/trade/order"
 
-	var ccy, PosSide string
+	var params OkxTradeParams
 	switch t.Market {
 	case models.Market.Spot:
-		ccy = t.Ccy.Currency + "-" + t.Ccy.Currency2
+		params = OkxTradeParams{
+			Ccy:    t.Ccy.Currency + "-" + t.Ccy.Currency2,
+			Volume: t.Volume,
+		}
 	case models.Market.Futures:
-		ccy = t.Ccy.Currency + "-" + t.Ccy.Currency2 + "-SWAP"
+		params = OkxTradeParams{
+			Ccy:    t.Ccy.Currency + "-" + t.Ccy.Currency2 + "-SWAP",
+			Volume: math.Floor(t.Volume / t.Cct),
+		}
+
 		if t.Side == "sell" {
-			PosSide = "short"
+			params.PosSide = "short"
 		} else {
-			PosSide = "long"
+			params.PosSide = "long"
 		}
 	}
 
@@ -46,15 +54,15 @@ func (OkxTradeParams) GetParams(task any) *models.Request {
 		ReqType: models.ReqType.Trade,
 		SignWay: func(rq *http.Request) {
 			jsonBody, _ := json.Marshal(OkxTradeParams{
-				Ccy:       ccy,
+				Ccy:       params.Ccy,
 				Side:      string(t.Side),
 				Type:      "limit",
-				Volume:    t.Volume,
+				Volume:    params.Volume,
 				Price:     t.Price,
 				Margin:    "cross",
 				MarginCcy: t.Currency2,
 
-				PosSide: PosSide,
+				PosSide: params.PosSide,
 			})
 
 			timestamp := time.Now().UTC().Format("2006-01-02T15:04:05.000Z")

@@ -68,7 +68,7 @@ func NeedTransfer(opr *models.OperationTask, isl bool) models.Result {
 }
 
 func NeedContract(opr *models.OperationTask) models.Result {
-	if !((opr.Ex == models.GATEIO || opr.Ex == models.HUOBI) && opr.Market == models.Market.Futures) {
+	if !((opr.Ex == models.GATEIO || opr.Ex == models.OKX || opr.Ex == models.HUOBI) && opr.Market == models.Market.Futures) {
 		return models.Result{Status: models.OK}
 	}
 
@@ -86,8 +86,8 @@ func NeedContract(opr *models.OperationTask) models.Result {
 			}
 		}
 
-	case models.HUOBI:
-		opr.Cct = act.Any.(ContractRes.HuobiContract).Data[0].ContractSize
+	case models.OKX, models.HUOBI:
+		opr.Cct = act.Any.(float64)
 	}
 
 	return models.Result{Status: models.ERR, Message: "Не найдена валюта"}

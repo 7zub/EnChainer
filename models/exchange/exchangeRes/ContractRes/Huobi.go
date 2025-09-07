@@ -16,7 +16,7 @@ func (a HuobiContract) Mapper() any {
 	if a.Data[0].ContractSize > 0 {
 		return models.Result{
 			Status: models.OK,
-			Any:    a,
+			Any:    a.Data[0].ContractSize,
 		}
 	}
 

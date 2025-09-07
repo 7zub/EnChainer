@@ -12,20 +12,20 @@ func Trade() {
 	task := models.TradeTask{
 		TaskId: "10",
 		Ccy: models.Ccy{
-			Currency:  "1INCH",
+			Currency:  "FLOW",
 			Currency2: "USDT",
 		},
 		Spread: 0.9,
 		Buy: models.Operation{
 			Ex:     models.COINEX,
-			Price:  0.22,
+			Price:  0.11,
 			Volume: 300,
 			Side:   models.Buy,
 			Market: models.Market.Futures,
 		},
 		Sell: models.Operation{
-			Ex:     models.HUOBI,
-			Price:  0.5,
+			Ex:     models.OKX,
+			Price:  0.6,
 			Volume: 300,
 			Side:   models.Sell,
 			Market: models.Market.Futures,
@@ -84,4 +84,13 @@ func Lever() {
 	rq.SendRequest()
 	ToLog(*rq)
 	ChanAny <- rq
+}
+
+func Contract() {
+	oo := models.Operation{Ex: models.GATEIO, Market: models.Market.Futures}
+	ooo := models.OperationTask{
+		Ccy:       models.Ccy{Currency: "LUNC", Currency2: "USDT"},
+		Operation: oo,
+	}
+	fmt.Println(NeedContract(&ooo))
 }

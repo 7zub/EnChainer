@@ -43,8 +43,8 @@ func TradeTaskValidation(task *models.TradeTask) {
 		task.Message += "Фьючерсная торговля на MEXC отключена; "
 	}
 
-	if task.Buy.Ex == models.OKX || task.Sell.Ex == models.OKX {
+	if task.Ccy.Currency == "PLAY" || task.Ccy.Currency == "ALU" {
 		task.Status = models.Stop
-		task.Message += "Объем в OKX указан в контрактах; "
+		task.Message += "Временно игнорируем " + task.Ccy.Currency + "; "
 	}
 }

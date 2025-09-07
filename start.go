@@ -16,13 +16,18 @@ func main() {
 	controls.LoadBlockDb(&[]models.RequestBlock{})
 	controls.LoadBookDb(&controls.TradePair)
 	go controls.DbSaver(controls.ChanBook, controls.ChanAny)
+
+	//controls.Lever()
 	//controls.Trade()
-	for i, pair := range controls.TradePair {
-		if pair.Status == models.On {
-			controls.StartPair(&controls.TradePair[i])
-			time.Sleep(100 * time.Millisecond)
+
+	go func() {
+		for i, pair := range controls.TradePair {
+			if pair.Status == models.On {
+				controls.StartPair(&controls.TradePair[i])
+				time.Sleep(100 * time.Millisecond)
+			}
 		}
-	}
+	}()
 	web.HandleRequests()
 }
 

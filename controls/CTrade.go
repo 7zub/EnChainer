@@ -4,9 +4,12 @@ import (
 	"enchainer/models"
 	"fmt"
 	"reflect"
+	"sync"
 )
 
-var cnt = 0
+var mu sync.Mutex
+var maxTrade = 0
+var activeTrade = 0
 
 func TradeTaskHandler(task *models.TradeTask) {
 	task.Mu.Lock()
@@ -42,6 +45,13 @@ func TradeTaskHandler(task *models.TradeTask) {
 			if oSell, oprSell.ReqId = CreateAction(oprSell, models.ReqType.Trade); oSell.Status == models.OK {
 				if oBuy, oprBuy.ReqId = CreateAction(oprBuy, models.ReqType.Trade); oBuy.Status == models.OK {
 					task.Status = models.Pending
+					mu.Lock()
+					TaskTime(task.Ccy)
+					activeTrade += 1
+					if activeTrade >= models.Const.MaxTrade {
+						TaskPause()
+					}
+					mu.Unlock()
 				} else {
 					task.Status = models.Err
 					task.Message = fmt.Sprintf("Ошибка открытия позиций: %s %s, %s %s", oprBuy.Side, oBuy.Status, oprSell.Side, oSell.Status)
@@ -56,7 +66,9 @@ func TradeTaskHandler(task *models.TradeTask) {
 		}
 
 		task.OpTask = append(task.OpTask, oprSell, oprBuy)
-		cnt += 1
+		mu.Lock()
+		maxTrade += 1
+		mu.Unlock()
 	}
 
 	if task.Stage == models.Validation && task.Status == models.Stop {

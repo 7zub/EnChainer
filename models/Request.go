@@ -61,7 +61,7 @@ func (r *Request) DescRequest(date time.Time, rid string) {
 func GenDescRequest() (time.Time, string) {
 	reqDate := time.Now()
 	reqIdCount = reqIdCount + 1
-	reqId := fmt.Sprintf("%07d-%04d", reqIdCount, rand.Intn(10000))
+	reqId := fmt.Sprintf("%07d_%04d", reqIdCount, rand.Intn(10000))
 	return reqDate, reqId
 }
 

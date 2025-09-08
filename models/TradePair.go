@@ -19,7 +19,7 @@ type TradePair struct {
 	Title      string
 	Market     MarketType
 	Ccy        Ccy `gorm:"embedded"`
-	Status     int
+	Status     StPair
 	SessTime   time.Duration
 	CreateDate time.Time      `gorm:"type:timestamp;autoCreateTime"`
 	UpdateDate time.Time      `gorm:"type:timestamp;autoUpdateTime"`
@@ -63,12 +63,13 @@ type ValueBook struct {
 	Volume float64 `json:"volume"`
 }
 
-const (
-	Off     = 0
-	On      = 1
-	Warning = 2
-	Error   = 3
-)
+type StPair string
+
+var StatusPair = struct {
+	On, Off, Pause StPair
+}{
+	On: "On", Off: "Off", Pause: "Pause",
+}
 
 func (v *JsonValueBook) Scan(value interface{}) error {
 	bytes, ok := value.([]byte)
@@ -109,7 +110,7 @@ func GetVolume(valueBook *JsonValueBook) (ValueBook, int) {
 		usd += book.Price * book.Volume
 		deep = i + 1
 
-		if usd > Const.Lot {
+		if usd > Const.Lot*1.5 {
 			return ValueBook{Price: p / float64(deep), Volume: v}, deep
 		}
 	}

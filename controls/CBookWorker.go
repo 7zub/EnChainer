@@ -4,6 +4,7 @@ import (
 	"context"
 	"enchainer/models"
 	"enchainer/models/exchange/exchangeReq/BookReq"
+	"fmt"
 	"sync"
 	"time"
 )
@@ -152,5 +153,26 @@ func isDone(ctx context.Context) bool {
 		return true
 	default:
 		return false
+	}
+}
+
+func TaskPause() {
+	for i, _ := range TradePair {
+		if TradePair[i].Status == models.StatusPair.On && SearchPendTask(TradePair[i].Ccy) == nil {
+			close(TradePair[i].StopCh)
+		}
+	}
+	ToLog(models.Result{Status: models.WAR, Message: fmt.Sprintf("Отключены все пары, кроме pending")})
+}
+
+func TaskTime(ccy models.Ccy) {
+	for i, pair := range TradePair {
+		if pair.Ccy == ccy {
+			TradePair[i].SessTime = 4 * time.Second
+			ToLog(models.Result{
+				Status:  models.WAR,
+				Message: fmt.Sprintf("Выставлен интервал для %s: %d", ccy.Currency, TradePair[i].SessTime),
+			})
+		}
 	}
 }

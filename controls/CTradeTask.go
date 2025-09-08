@@ -44,7 +44,7 @@ func SearchPendTask(ccy models.Ccy) *string {
 
 func GenTaskId() string {
 	taskIdCount = taskIdCount + 1
-	taskId := fmt.Sprintf("%07d-%04d", taskIdCount, rand.Intn(10000))
+	taskId := fmt.Sprintf("%07d_%04d", taskIdCount, rand.Intn(10000))
 	return taskId
 }
 

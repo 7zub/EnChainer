@@ -22,7 +22,7 @@ func main() {
 
 	go func() {
 		for i, pair := range controls.TradePair {
-			if pair.Status == models.On {
+			if pair.Status == models.StatusPair.On {
 				controls.StartPair(&controls.TradePair[i])
 				time.Sleep(100 * time.Millisecond)
 			}

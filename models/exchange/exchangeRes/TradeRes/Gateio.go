@@ -5,12 +5,12 @@ import (
 )
 
 type GateioTrade struct {
-	OrderId  string `json:"id"`
+	OrderId  int    `json:"id"`
 	Contract string `json:"contract"`
 }
 
 func (book GateioTrade) Mapper() any {
-	if len(book.OrderId) > 1 || len(book.Contract) > 1 {
+	if book.OrderId > 0 || len(book.Contract) > 1 {
 		return models.Result{
 			Status: models.OK,
 		}

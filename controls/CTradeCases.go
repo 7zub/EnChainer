@@ -19,7 +19,11 @@ func PreparedOperation(opr *models.OperationTask, pend bool) {
 		mode = "down"
 	}
 
-	if opr.Deep > 1 {
+	if opr.Ex == models.KUCOIN {
+		slip = models.Const.Slip * 5
+	} else if opr.Deep >= 3 {
+		slip = models.Const.Slip * 3
+	} else if opr.Deep > 1 {
 		slip = models.Const.Slip * 2
 	} else {
 		slip = models.Const.Slip

@@ -34,7 +34,7 @@ func AddPair(w http.ResponseWriter, r *http.Request) {
 			Currency:  params.Get("currency"),
 			Currency2: "USDT",
 		},
-		Status:   models.Off,
+		Status:   models.StatusPair.Off,
 		SessTime: time.Duration(sessTime+rand.Int63n(1500)) * time.Millisecond,
 	}
 
@@ -51,7 +51,7 @@ func AddPair(w http.ResponseWriter, r *http.Request) {
 func DeletePair(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 	if i, res := SearchPair(params.Get("id")); i != -1 {
-		if TradePair[i].Status == models.Off {
+		if TradePair[i].Status == models.StatusPair.Off {
 			DeleteBookDb(&TradePair[i])
 			TradePair = slices.Delete(TradePair, i, i+1)
 
@@ -67,8 +67,8 @@ func DeletePair(w http.ResponseWriter, r *http.Request) {
 func OnPair(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 	if i, res := SearchPair(params.Get("id")); i != -1 {
-		if TradePair[i].Status != models.On {
-			TradePair[i].Status = models.On
+		if TradePair[i].Status != models.StatusPair.On {
+			TradePair[i].Status = models.StatusPair.On
 			SaveDb(&TradePair[i])
 			StartPair(&TradePair[i])
 			json.NewEncoder(w).Encode(models.Result{Status: models.OK, Message: "Мониторинг пары запущен"})
@@ -83,7 +83,7 @@ func OnPair(w http.ResponseWriter, r *http.Request) {
 func OffPair(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 	if i, res := SearchPair(params.Get("id")); i != -1 {
-		TradePair[i].Status = models.Off
+		TradePair[i].Status = models.StatusPair.Off
 		close(TradePair[i].StopCh)
 		SaveDb(&TradePair[i])
 		json.NewEncoder(w).Encode(models.Result{Status: models.OK, Message: "Пара остановлена"})
@@ -106,14 +106,13 @@ func Settings(w http.ResponseWriter, r *http.Request) {
 	if v, _ := strconv.Atoi(params.Get("value")); v > 0 {
 		switch params.Get("param") {
 		case "max_trade":
-			cnt = v
+			models.Const.MaxTrade = v
 		case "spread", "min_profit":
 			models.Const.Spread = float64(v)
 		default:
 			json.NewEncoder(w).Encode(models.Result{Status: models.ERR, Message: fmt.Sprintf("Параметра: %s не существует", params.Get("param"))})
 			return
 		}
-
 		json.NewEncoder(w).Encode(models.Result{Status: models.OK, Message: fmt.Sprintf("Параметр: %s = %d", params.Get("param"), v)})
 	}
 }

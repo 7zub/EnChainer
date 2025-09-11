@@ -34,7 +34,7 @@ func TaskTicker(pair *models.TradePair, reqList []models.IParams) {
 			TaskCreate(pair, reqList)
 
 		case <-pair.StopCh:
-			ToLog("Остановлена пара " + pair.Ccy.Currency)
+			ToLog(models.Result{Status: models.WAR, Message: "Остановлена пара " + pair.Ccy.Currency})
 			return
 		}
 	}
@@ -44,7 +44,7 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 	var Wg sync.WaitGroup
 
 	for _, req := range reqList {
-		if SearchReqBlock(pair.Ccy, GetEx(req)) != "" {
+		if SearchReqBlock(pair, GetEx(req)) != nil {
 			ToLog(models.Result{Status: models.INFO, Message: "Запрос в блок-листе " + pair.Ccy.Currency + " - " + string(GetEx(req))})
 			continue
 		}
@@ -79,7 +79,7 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 				pair.OrderBook = append(pair.OrderBook, rs)
 				pair.Mu.Unlock()
 			} else {
-				rb := CreateReqBlock(*rq, pair.Ccy, rs.Exchange)
+				rb := CreateReqBlock(*rq, pair, rs.Exchange)
 				ChanAny <- rb
 				ChanAny <- rq
 
@@ -159,7 +159,12 @@ func isDone(ctx context.Context) bool {
 func TaskPause() {
 	for i, _ := range TradePair {
 		if TradePair[i].Status == models.StatusPair.On && SearchPendTask(TradePair[i].Ccy) == nil {
-			close(TradePair[i].StopCh)
+			if TradePair[i].StopCh != nil {
+				var once sync.Once
+				once.Do(func() {
+					close(TradePair[i].StopCh)
+				})
+			}
 		}
 	}
 	ToLog(models.Result{Status: models.WAR, Message: fmt.Sprintf("Отключены все пары, кроме pending")})
@@ -168,7 +173,11 @@ func TaskPause() {
 func TaskTime(ccy models.Ccy) {
 	for i, pair := range TradePair {
 		if pair.Ccy == ccy {
-			TradePair[i].SessTime = 4 * time.Second
+			TradePair[i].SessTime = 2 * time.Second
+			if TradePair[i].StopCh != nil {
+				close(TradePair[i].StopCh)
+			}
+			StartPair(&TradePair[i])
 			ToLog(models.Result{
 				Status:  models.WAR,
 				Message: fmt.Sprintf("Выставлен интервал для %s: %d", ccy.Currency, TradePair[i].SessTime),

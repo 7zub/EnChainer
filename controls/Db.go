@@ -91,7 +91,7 @@ func LoadBlockDb(block *[]models.RequestBlock) {
 	}
 
 	for i := range *block {
-		ReqBlock.Store((*block)[i].Ccy.Currency+string((*block)[i].Ex), &(*block)[i])
+		ReqBlock.Store(string((*block)[i].Market)+(*block)[i].Ccy.Currency+string((*block)[i].Ex), &(*block)[i])
 	}
 }
 

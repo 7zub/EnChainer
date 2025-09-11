@@ -8,9 +8,9 @@ import (
 
 var ReqBlock sync.Map
 
-func CreateReqBlock(rq models.Request, ccy models.Ccy, ex models.Exchange) *models.RequestBlock {
+func CreateReqBlock(rq models.Request, pair *models.TradePair, ex models.Exchange) *models.RequestBlock {
 	var reqb *models.RequestBlock
-	v, ok := ReqBlock.Load(ccy.Currency + string(ex)) //TODO
+	v, ok := ReqBlock.Load(string(pair.Market) + pair.Ccy.Currency + string(ex))
 
 	if ok {
 		reqb = v.(*models.RequestBlock)
@@ -18,7 +18,8 @@ func CreateReqBlock(rq models.Request, ccy models.Ccy, ex models.Exchange) *mode
 	} else {
 		reqb = &models.RequestBlock{
 			ReqId:      rq.ReqId,
-			Ccy:        ccy,
+			Market:     pair.Market,
+			Ccy:        pair.Ccy,
 			Ex:         ex,
 			ReasonCode: rq.Code,
 			Reason:     rq.ResponseRaw,
@@ -28,29 +29,26 @@ func CreateReqBlock(rq models.Request, ccy models.Ccy, ex models.Exchange) *mode
 		}
 	}
 
-	ReqBlock.Store(ccy.Currency+string(ex), reqb)
+	ReqBlock.Store(string(pair.Market)+pair.Ccy.Currency+string(ex), reqb)
 	return reqb
 }
 
-func SearchReqBlock(ccy models.Ccy, ex models.Exchange) string {
-	var res string
-	ReqBlock.Range(func(key, val any) bool {
-		b, _ := val.(*models.RequestBlock)
-		if ccy == b.Ccy && ex == b.Ex && b.Active == true {
-			loc, _ := time.LoadLocation("Europe/Moscow")
-			rptDate := time.Date(b.RepeatDate.Year(), b.RepeatDate.Month(), b.RepeatDate.Day(), b.RepeatDate.Hour(), b.RepeatDate.Minute(), b.RepeatDate.Second(), b.RepeatDate.Nanosecond(), loc)
+func SearchReqBlock(pair *models.TradePair, ex models.Exchange) *string {
+	v, _ := ReqBlock.Load(string(pair.Market) + pair.Ccy.Currency + string(ex))
+	b, _ := v.(*models.RequestBlock)
 
-			if b.ReasonCode == 400 || time.Since(rptDate) < models.Const.TimeoutBlock*time.Second {
-				res = b.ReqId
-			} else {
-				b.Active = false
-				b.RepeatDate = time.Now()
-				ReqBlock.Store(ccy.Currency+string(ex), b)
-				ChanAny <- b
-			}
-			return false
+	if b != nil && b.Active == true {
+		loc, _ := time.LoadLocation("Europe/Moscow")
+		rptDate := time.Date(b.RepeatDate.Year(), b.RepeatDate.Month(), b.RepeatDate.Day(), b.RepeatDate.Hour(), b.RepeatDate.Minute(), b.RepeatDate.Second(), b.RepeatDate.Nanosecond(), loc)
+
+		if b.ReasonCode == 400 || time.Since(rptDate) < models.Const.TimeoutBlock*time.Second {
+			return &b.ReqId
+		} else {
+			b.Active = false
+			b.RepeatDate = time.Now()
+			ReqBlock.Store(string(pair.Market)+pair.Ccy.Currency+string(ex), b)
+			ChanAny <- b
 		}
-		return true
-	})
-	return res
+	}
+	return nil
 }

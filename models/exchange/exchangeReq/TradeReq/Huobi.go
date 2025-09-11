@@ -53,12 +53,17 @@ func (HuobiTradeParams) GetParams(task any) *models.Request {
 		endpoint = "/linear-swap-api/v1/swap_cross_order"
 		params = HuobiTradeParams{
 			Contract: strings.ToLower(t.Ccy.Currency + "-" + t.Ccy.Currency2),
-			Vol:      int(t.Volume / t.Cct),
 			Price:    t.Price,
 			Dir:      string(t.Side),
 			//Offset:   "open", в реж. хеджирования
 			Lever: 10,
-			Mark:  "limit",
+			Mark:  "market",
+		}
+
+		if r := int(t.Volume / t.Cct); r != 0 {
+			params.Vol = r
+		} else {
+			params.Vol = 1
 		}
 	}
 

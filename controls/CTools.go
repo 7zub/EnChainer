@@ -86,7 +86,7 @@ func GetEx(structValue interface{}) models.Exchange {
 	return "nil"
 }
 
-func GetTypeEx(exch models.Exchange, reqType string) reflect.Type {
+func GetTypeEx(exch models.Exchange, reqType models.RqType) reflect.Type {
 	for typ, info := range exchange.ExInfo {
 		if info.Exchange == exch && info.ReqType == reqType {
 			return typ

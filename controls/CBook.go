@@ -103,7 +103,7 @@ func SearchPair(pairid string) (int, models.Result) {
 
 func Settings(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
-	if v, _ := strconv.Atoi(params.Get("value")); v > 0 {
+	if v, _ := strconv.Atoi(params.Get("value")); v != 0 {
 		switch params.Get("param") {
 		case "max_trade":
 			models.Const.MaxTrade = v

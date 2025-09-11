@@ -82,7 +82,7 @@ func TradeTaskHandler(task *models.TradeTask) {
 func CreateAction(act any, reqtype models.RqType) (models.Result, string) {
 	v := reflect.ValueOf(act)
 	ex := v.FieldByName("Ex")
-	typ := GetTypeEx(models.Exchange(ex.String()), string(reqtype))
+	typ := GetTypeEx(models.Exchange(ex.String()), reqtype)
 	rr, _ := reflect.New(typ).Interface().(models.IParams)
 	rq := rr.GetParams(act)
 	rq.DescRequest(models.GenDescRequest())

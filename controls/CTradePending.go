@@ -38,7 +38,7 @@ func PendingHandler(ccy models.Ccy, book []models.OrderBook) {
 
 		profit := ((bid-task.Buy.Price)/task.Buy.Price + (task.Sell.Price-ask)/task.Sell.Price) * 100
 
-		if profit < models.Const.MinProfit {
+		if profit < task.Spread/2 {
 			ToLog(models.Result{
 				Status: models.WAR,
 				Message: fmt.Sprintf("Неприбыльный спред: %f, спред: %f, TaskId: %s, Ccy: %s",

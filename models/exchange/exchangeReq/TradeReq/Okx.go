@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"math"
 	"net/http"
 	"time"
 )
@@ -21,8 +20,6 @@ type OkxTradeParams struct {
 	Price     float64 `url:"-" json:"px"`
 	Margin    string  `url:"-" json:"tdMode"`
 	MarginCcy string  `url:"-" json:"ccy"`
-
-	PosSide string `url:"-" json:"posSide,omitempty"`
 }
 
 func (OkxTradeParams) GetParams(task any) *models.Request {
@@ -38,14 +35,13 @@ func (OkxTradeParams) GetParams(task any) *models.Request {
 		}
 	case models.Market.Futures:
 		params = OkxTradeParams{
-			Ccy:    t.Ccy.Currency + "-" + t.Ccy.Currency2 + "-SWAP",
-			Volume: math.Floor(t.Volume / t.Cct),
+			Ccy: t.Ccy.Currency + "-" + t.Ccy.Currency2 + "-SWAP",
 		}
 
-		if t.Side == "sell" {
-			params.PosSide = "short"
+		if r := int(t.Volume / t.Cct); r != 0 {
+			params.Volume = float64(r)
 		} else {
-			params.PosSide = "long"
+			params.Volume = 1
 		}
 	}
 
@@ -61,8 +57,6 @@ func (OkxTradeParams) GetParams(task any) *models.Request {
 				Price:     t.Price,
 				Margin:    "cross",
 				MarginCcy: t.Currency2,
-
-				PosSide: params.PosSide,
 			})
 
 			timestamp := time.Now().UTC().Format("2006-01-02T15:04:05.000Z")

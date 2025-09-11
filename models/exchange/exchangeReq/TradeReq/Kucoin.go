@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"math"
 	"math/rand"
 	"net/http"
 	"time"
@@ -19,7 +18,7 @@ type KucoinTradeParams struct {
 	Ccy    string  `url:"-" json:"symbol"`
 	Side   string  `url:"-" json:"side"`
 	Type   string  `url:"-" json:"type"`
-	Volume float64 `url:"-" json:"valueQty"`
+	Volume float64 `url:"-" json:"qty"`
 	Price  float64 `url:"-" json:"price"`
 	Margin string  `url:"-" json:"marginMode"`
 }
@@ -46,8 +45,8 @@ func (KucoinTradeParams) GetParams(task any) *models.Request {
 				Id:     fmt.Sprintf("kc%06d", rand.Intn(1000000)),
 				Ccy:    ccy,
 				Side:   string(t.Side),
-				Type:   "limit",
-				Volume: math.Floor(t.Volume*t.Price*10) / 10,
+				Type:   "market",
+				Volume: t.Volume, //math.Floor(t.Volume*t.Price*10) / 10,
 				Price:  t.Price,
 				Margin: "CROSS",
 			})

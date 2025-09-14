@@ -24,7 +24,7 @@ func main() {
 		for i, pair := range controls.TradePair {
 			if pair.Status == models.StatusPair.On {
 				controls.StartPair(&controls.TradePair[i])
-				time.Sleep(100 * time.Millisecond)
+				time.Sleep(50 * time.Millisecond)
 			}
 		}
 	}()

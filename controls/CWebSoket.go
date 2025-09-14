@@ -1,6 +1,7 @@
 package controls
 
 import (
+	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
 	"net/url"
@@ -8,6 +9,36 @@ import (
 	"os/signal"
 	"time"
 )
+
+func Ws2() {
+	log.SetOutput(os.Stdout)
+	for {
+		token := "!" //curl.exe -X POST https://api-futures.kucoin.com/api/v1/bullet-public
+		wss := "wss://ws-api-futures.kucoin.com" + "?token=" + token + "&connectId=test16"
+		conn, _, _ := websocket.DefaultDialer.Dial(wss, nil)
+		fmt.Println("wss: ", wss)
+
+		conn.WriteJSON(map[string]interface{}{"id": 2, "type": "subscribe", "topic": "/contractMarket/level2Depth5:SOLUSDTM"})
+
+		go func() {
+			for range time.Tick(15 * time.Second) {
+				conn.WriteJSON(map[string]interface{}{"id": time.Now().UnixNano(), "type": "ping"})
+			}
+		}()
+
+		for {
+			_, msg, err := conn.ReadMessage()
+			if err != nil {
+				log.Printf("Переподключение: %v", err)
+				conn.Close()
+				time.Sleep(2 * time.Second)
+				break
+			}
+
+			fmt.Println(string(msg) + "\n")
+		}
+	}
+}
 
 func Ws() {
 	//Create Message Out
@@ -22,6 +53,8 @@ func Ws() {
 		log.Fatal("dial:", err)
 	}
 	var o = 1
+	log.SetOutput(os.Stdout)
+	log.Println("проверка старта ")
 
 	defer c.Close()
 	done := make(chan struct{})

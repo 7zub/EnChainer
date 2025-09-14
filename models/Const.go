@@ -8,16 +8,18 @@ var Const = struct {
 	Spread        float64
 	MinProfit     float64
 	Slip          float64
+	LotReserve    float64
 	DecimalPrice  int
 	DecimalVolume int
 	TimeoutBlock  time.Duration
 	BatchSize     int
 }{
-	Lot:           24.1,
-	MaxTrade:      2,
-	Spread:        0.49,
+	Lot:           19.1,
+	MaxTrade:      0,
+	Spread:        0.65,
 	MinProfit:     0.3,
 	Slip:          3,
+	LotReserve:    1.1,
 	DecimalPrice:  4,
 	DecimalVolume: 2,
 	TimeoutBlock:  160,

@@ -23,12 +23,12 @@ func TradeTaskValidation(task *models.TradeTask) {
 		task.Message += "Низкий спред; "
 	}
 
-	if task.Buy.Price*task.Buy.Volume < models.Const.Lot*1.5 {
+	if task.Buy.Price*task.Buy.Volume < models.Const.Lot*models.Const.LotReserve {
 		task.Status = models.Stop
 		task.Message += fmt.Sprintf("Низкий объем на покупку: %g; ", task.Buy.Price*task.Buy.Volume)
 	}
 
-	if task.Sell.Price*task.Sell.Volume < models.Const.Lot*1.5 {
+	if task.Sell.Price*task.Sell.Volume < models.Const.Lot*models.Const.LotReserve {
 		task.Status = models.Stop
 		task.Message += fmt.Sprintf("Низкий объем на продажу: %g; ", task.Sell.Price*task.Sell.Volume)
 	}

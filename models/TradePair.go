@@ -4,6 +4,7 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
+	"math"
 	"sort"
 	"sync"
 	"time"
@@ -91,6 +92,28 @@ func SortOrderBooks(orderBooks *[]OrderBook) {
 			return false
 		}
 	})
+
+	if len(*orderBooks) > 2 {
+		bestAskIndex := 0
+		bestAskPrice := math.MaxFloat64
+
+		for i, ob := range *orderBooks {
+			if len(ob.Asks) > 0 && ob.Asks[0].Price < bestAskPrice {
+				bestAskPrice = ob.Asks[0].Price
+				bestAskIndex = i
+			}
+		}
+
+		// Перемещаем элемент с лучшим asks в конец массива
+		if bestAskIndex != len(*orderBooks)-1 {
+			bestAskOb := (*orderBooks)[bestAskIndex]
+			// Удаляем из текущей позиции и добавляем в конец
+			*orderBooks = append(
+				append((*orderBooks)[:bestAskIndex], (*orderBooks)[bestAskIndex+1:]...),
+				bestAskOb,
+			)
+		}
+	}
 }
 
 func (book OrderBook) BookExist() bool {
@@ -110,7 +133,7 @@ func GetVolume(valueBook *JsonValueBook) (ValueBook, int) {
 		usd += book.Price * book.Volume
 		deep = i + 1
 
-		if usd > Const.Lot*1.5 {
+		if usd > Const.Lot*Const.LotReserve {
 			return ValueBook{Price: p / float64(deep), Volume: v}, deep
 		}
 	}

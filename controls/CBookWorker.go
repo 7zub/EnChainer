@@ -172,7 +172,7 @@ func TaskPause() {
 
 func TaskTime(ccy models.Ccy) {
 	for i, pair := range TradePair {
-		if pair.Ccy == ccy {
+		if pair.Ccy == ccy && pair.Status == models.StatusPair.On {
 			TradePair[i].SessTime = 2 * time.Second
 			if TradePair[i].StopCh != nil {
 				close(TradePair[i].StopCh)

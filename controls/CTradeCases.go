@@ -20,7 +20,7 @@ func PreparedOperation(opr *models.OperationTask, pend bool) {
 	}
 
 	if opr.Ex == models.KUCOIN {
-		slip = models.Const.Slip * 5
+		slip = 0
 	} else if opr.Deep >= 3 {
 		slip = models.Const.Slip * 3
 	} else if opr.Deep > 1 {
@@ -33,10 +33,15 @@ func PreparedOperation(opr *models.OperationTask, pend bool) {
 		if opr.Price > 0.2 && opr.Price < 1 {
 			decPrice = 3
 		}
-
 		if models.Const.Lot/opr.Price > 3 && models.Const.Lot/opr.Price < 100 {
 			decVol = 2
 		}
+	} else if opr.Ex == models.KUCOIN {
+		decPrice = 3
+		decVol = 1
+	} else if opr.Ex == models.BINANCE && opr.Volume > 0.01 && opr.Volume < 1 {
+		decPrice = 3
+		decVol = 1
 	}
 
 	opr.Price = RoundSn(opr.Price, decPrice, mode, slip)

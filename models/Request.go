@@ -114,7 +114,12 @@ func (r *Request) UrlExec(rq *http.Request) {
 	r.Code = resp.StatusCode
 	body, err := io.ReadAll(resp.Body)
 	if resp.StatusCode != 403 {
-		r.ResponseRaw = string(body)
+		if len(body) > 1000 {
+			r.ResponseRaw = string(body)[:1000]
+		} else {
+			r.ResponseRaw = string(body)
+		}
+
 	} else {
 		r.Log = Result{Status: WAR, Message: fmt.Sprintf("Доступ к api заблокирован %s %s", rq.URL.String(), r.ReqId)}
 		return

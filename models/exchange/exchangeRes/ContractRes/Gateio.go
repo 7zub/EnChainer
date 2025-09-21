@@ -2,6 +2,7 @@ package ContractRes
 
 import (
 	"enchainer/models"
+	"strconv"
 )
 
 type GateioContract []struct {
@@ -11,9 +12,14 @@ type GateioContract []struct {
 
 func (a GateioContract) Mapper() any {
 	if len(a) > 0 {
+		m := make(map[string]float64)
+		for i := range a {
+			m[a[i].Ccy], _ = strconv.ParseFloat(a[i].Cct, 64)
+		}
+
 		return models.Result{
 			Status: models.OK,
-			Any:    a,
+			Any:    m,
 		}
 	}
 

@@ -13,12 +13,10 @@ func main() {
 	logOn()
 	controls.LoadConf()
 	controls.CreateDb()
-	controls.LoadBlockDb(&[]models.RequestBlock{})
-	controls.LoadBookDb(&controls.TradePair)
-	go controls.DbSaver(controls.ChanBook, controls.ChanAny)
-
-	//controls.Lever()
-	//controls.Trade()
+	controls.LoadBlockDb()
+	controls.LoadPairDb()
+	controls.LoadCcyInfo()
+	go controls.DbSaver()
 
 	go func() {
 		for i, pair := range controls.TradePair {

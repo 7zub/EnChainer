@@ -2,8 +2,6 @@ package controls
 
 import (
 	"enchainer/models"
-	"enchainer/models/exchange/exchangeRes/ContractRes"
-	"strconv"
 	"time"
 )
 
@@ -77,24 +75,13 @@ func NeedTransfer(opr *models.OperationTask, isl bool) models.Result {
 }
 
 func NeedContract(opr *models.OperationTask) models.Result {
-	if !((opr.Ex == models.GATEIO || opr.Ex == models.OKX || opr.Ex == models.HUOBI) && opr.Market == models.Market.Futures) {
+	if !(opr.Ex == models.OKX && opr.Market == models.Market.Futures) {
 		return models.Result{Status: models.OK}
 	}
 
 	var act, _ = CreateAction(*opr, models.ReqType.Contract)
 
 	switch opr.Ex {
-	case models.GATEIO:
-		for _, c := range act.Any.(ContractRes.GateioContract) {
-			if c.Ccy == opr.Ccy.Currency+"_"+opr.Ccy.Currency2 {
-				opr.Cct, _ = strconv.ParseFloat(c.Cct, 64)
-				if opr.Cct <= 0 {
-					return models.Result{Status: models.ERR, Message: "Ошибка получения контракта"}
-				}
-				return act
-			}
-		}
-
 	case models.OKX, models.HUOBI:
 		opr.Cct = act.Any.(float64)
 	}

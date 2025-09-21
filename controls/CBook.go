@@ -52,7 +52,7 @@ func DeletePair(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 	if i, res := SearchPair(params.Get("id")); i != -1 {
 		if TradePair[i].Status == models.StatusPair.Off {
-			DeleteBookDb(&TradePair[i])
+			DeletePairDb(&TradePair[i])
 			TradePair = slices.Delete(TradePair, i, i+1)
 
 			json.NewEncoder(w).Encode(models.Result{Status: models.OK, Message: "Пара удалена"})

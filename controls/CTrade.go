@@ -25,10 +25,12 @@ func TradeTaskHandler(task *models.TradeTask) {
 		oprBuy := models.OperationTask{
 			Ccy:       task.Ccy,
 			Operation: task.Buy,
+			Cct:       PairInfo[task.Ccy.Currency+"-"+string(task.Buy.Ex)].Cct,
 		}
 		oprSell := models.OperationTask{
 			Ccy:       task.Ccy,
 			Operation: task.Sell,
+			Cct:       PairInfo[task.Ccy.Currency+"-"+string(task.Sell.Ex)].Cct,
 		}
 
 		PreparedOperation(&oprBuy, false)
@@ -42,27 +44,25 @@ func TradeTaskHandler(task *models.TradeTask) {
 
 		if ntBuy.Status == models.OK && ntSell.Status == models.OK {
 			var oSell, oBuy models.Result
-			if oSell, oprSell.ReqId = CreateAction(oprSell, models.ReqType.Trade); oSell.Status == models.OK {
-				if oBuy, oprBuy.ReqId = CreateAction(oprBuy, models.ReqType.Trade); oBuy.Status == models.OK {
-					task.Status = models.Pending
-					mu.Lock()
-					TaskTime(task.Ccy)
-					activeTrade += 1
-					if activeTrade >= models.Const.MaxTrade {
-						TaskPause()
-					}
-					mu.Unlock()
-				} else {
-					task.Status = models.Err
-					task.Message = fmt.Sprintf("Ошибка открытия позиций: %s %s, %s %s", oprBuy.Side, oBuy.Status, oprSell.Side, oSell.Status)
-				}
+			oSell, oprSell.ReqId = CreateAction(oprSell, models.ReqType.Trade)
+			oBuy, oprBuy.ReqId = CreateAction(oprBuy, models.ReqType.Trade)
+
+			if oSell.Status == models.OK && oBuy.Status == models.OK {
+				task.Status = models.Pending
+				mu.Lock()
+				TaskTime(task.Ccy)
+				//activeTrade += 1
+				//if activeTrade == models.Const.MaxTrade {
+				//	go TaskPause()
+				//}
+				mu.Unlock()
 			} else {
 				task.Status = models.Err
-				task.Message = fmt.Sprintf("Ошибка операции: %s", oprSell.Side)
+				task.Message = fmt.Sprintf("Ошибка открытия позиций: %s %s, %s %s", oprBuy.Side, oBuy.Status, oprSell.Side, oSell.Status)
 			}
 		} else {
 			task.Status = models.Err
-			task.Message = fmt.Sprintf("%s %s", ntBuy.Message, ntSell.Message)
+			task.Message = fmt.Sprintf("Ошибка трансфера: %s %s", ntBuy.Message, ntSell.Message)
 		}
 
 		task.OpTask = append(task.OpTask, oprSell, oprBuy)
@@ -80,9 +80,8 @@ func TradeTaskHandler(task *models.TradeTask) {
 }
 
 func CreateAction(act any, reqtype models.RqType) (models.Result, string) {
-	v := reflect.ValueOf(act)
-	ex := v.FieldByName("Ex")
-	typ := GetTypeEx(models.Exchange(ex.String()), reqtype)
+	ex := reflect.ValueOf(act).FieldByName("Ex").String()
+	typ := GetTypeEx(models.Exchange(ex), reqtype)
 	rr, _ := reflect.New(typ).Interface().(models.IParams)
 	rq := rr.GetParams(act)
 	rq.DescRequest(models.GenDescRequest())
@@ -95,7 +94,7 @@ func CreateAction(act any, reqtype models.RqType) (models.Result, string) {
 	case models.ERR:
 		res.Message = fmt.Sprintf("%s %s не выполнен: %s", reqtype, rq.ReqId, rq.ResponseRaw)
 	case models.OK:
-		res.Message = fmt.Sprintf("%s %s успешна: %s", reqtype, rq.ReqId, rq.ResponseRaw)
+		res.Message = fmt.Sprintf("%s %s выполнен: %s", reqtype, rq.ReqId, rq.ResponseRaw)
 	}
 	ToLog(res)
 	return res, rq.ReqId

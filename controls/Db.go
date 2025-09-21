@@ -36,8 +36,6 @@ func CreateDb() {
 	} else {
 		d.Migrator().DropTable(
 			&models.Request{},
-			//&models.RequestBlock{}
-			//&models.TradePair{},
 			&models.OrderBook{},
 			&models.TradeTask{},
 			&models.OperationTask{},
@@ -47,6 +45,7 @@ func CreateDb() {
 		err := d.AutoMigrate(
 			&models.Request{},
 			&models.RequestBlock{},
+			&models.PairInfo{},
 			&models.TradePair{},
 			&models.OrderBook{},
 			&models.TradeTask{},
@@ -68,14 +67,14 @@ func SaveDb(obj any) {
 	}
 }
 
-func LoadBookDb(pairs *[]models.TradePair) {
-	result := db.Find(pairs)
+func LoadPairDb() {
+	result := db.Find(&TradePair)
 	if result.Error != nil {
 		ToLog(fmt.Sprintf("Ошибка БД load book: %s", result.Error))
 	}
 }
 
-func DeleteBookDb(pair *models.TradePair) {
+func DeletePairDb(pair *models.TradePair) {
 	result := db.Delete(&pair)
 
 	if result.Error != nil {
@@ -83,7 +82,8 @@ func DeleteBookDb(pair *models.TradePair) {
 	}
 }
 
-func LoadBlockDb(block *[]models.RequestBlock) {
+func LoadBlockDb() {
+	block := &[]models.RequestBlock{}
 	result := db.Find(block)
 	if result.Error != nil {
 		ToLog(fmt.Sprintf("Ошибка БД load block: %s", result.Error))
@@ -95,23 +95,35 @@ func LoadBlockDb(block *[]models.RequestBlock) {
 	}
 }
 
-func DbSaver(ch1 <-chan []models.OrderBook, ch2 <-chan any) {
+func LoadPairInfoDb() {
+	var ci []models.PairInfo
+	result := db.Find(&ci)
+	if result.Error != nil {
+		ToLog(fmt.Sprintf("Ошибка БД load pair info: %s", result.Error))
+	}
+
+	for _, c := range ci {
+		PairInfo[c.Ccy.Currency+"-"+string(c.Ex)] = &c
+	}
+}
+
+func DbSaver() {
 	batch := make([]models.OrderBook, 0, 1000)
 	ticker := time.NewTicker(time.Second * 200)
 	defer ticker.Stop()
 
 	for {
 		select {
-		case p := <-ch2:
+		case p := <-ChanAny:
 			result := db.Save(p)
 
 			if result.Error != nil {
 				ToLog(fmt.Sprintf("Ошибка БД %T: %s", p, result.Error))
 			}
 
-		case ob := <-ch1:
+		case ob := <-ChanBook:
 			batch = append(batch, ob...)
-			if len(batch) >= models.Const.BatchSize {
+			if len(batch) >= models.Const.BatchSize { //TODO добавить немедленное сохранение batch
 				result := db.Save(batch)
 				if result.Error != nil {
 					ToLog(fmt.Sprintf("Ошибка БД при сохранении batch %T: %s", batch, result.Error))

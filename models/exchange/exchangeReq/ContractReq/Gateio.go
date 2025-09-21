@@ -6,8 +6,7 @@ import (
 )
 
 type GateioContractParams struct {
-	Ccy      string
-	Contract float64
+	Ccy string
 }
 
 func (GateioContractParams) GetParams(any) *models.Request {

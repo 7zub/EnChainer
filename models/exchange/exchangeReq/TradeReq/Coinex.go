@@ -41,9 +41,9 @@ func (CoinexTradeParams) GetParams(task any) *models.Request {
 			jsonBody, _ := json.Marshal(CoinexTradeParams{
 				Ccy:    t.Currency + t.Currency2,
 				Side:   strings.ToLower(string(t.Side)),
-				Type:   "limit",
+				Type:   "market",
 				Volume: t.Volume,
-				Price:  t.Price,
+				//Price:  t.Price,
 				Margin: string(t.Market),
 			})
 

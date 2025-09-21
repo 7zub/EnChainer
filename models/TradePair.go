@@ -104,10 +104,8 @@ func SortOrderBooks(orderBooks *[]OrderBook) {
 			}
 		}
 
-		// Перемещаем элемент с лучшим asks в конец массива
 		if bestAskIndex != len(*orderBooks)-1 {
 			bestAskOb := (*orderBooks)[bestAskIndex]
-			// Удаляем из текущей позиции и добавляем в конец
 			*orderBooks = append(
 				append((*orderBooks)[:bestAskIndex], (*orderBooks)[bestAskIndex+1:]...),
 				bestAskOb,

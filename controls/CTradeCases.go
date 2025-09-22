@@ -56,15 +56,7 @@ func NeedContract(opr *models.OperationTask) {
 		return
 	}
 
-	var act, _ = CreateAction(*opr, models.ReqType.Contract)
-
-	switch opr.Ex {
-	case models.GATEIO, models.HUOBI:
-		opr.Cct = PairInfo[opr.Ccy.Currency+"-"+string(opr.Ex)].Cct
-
-	case models.OKX:
-		opr.Cct = act.Any.(float64)
-	}
+	opr.Cct = PairInfo[opr.Ccy.Currency+"-"+string(opr.Ex)].Cct
 }
 
 func NeedTransfer(opr *models.OperationTask, isl bool) models.Result {

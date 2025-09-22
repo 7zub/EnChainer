@@ -31,6 +31,7 @@ func LoadCcyInfo() {
 	var exList = []models.Exchange{
 		models.GATEIO,
 		models.HUOBI,
+		models.OKX,
 	}
 
 	for _, ex := range exList {

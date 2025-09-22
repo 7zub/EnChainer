@@ -18,9 +18,9 @@ func LoadCcyInfo() {
 	}
 
 	loc, _ := time.LoadLocation("Europe/Moscow")
-	actualDate := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), 0, loc)
+	reloadDate := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), 0, loc)
 
-	if time.Since(actualDate) < 4*time.Hour {
+	if time.Since(reloadDate) < 4*time.Hour {
 		return
 	} else {
 		ToLog(models.Result{

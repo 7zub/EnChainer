@@ -51,6 +51,22 @@ func PreparedOperation(opr *models.OperationTask, pend bool) {
 	opr.CreateDate = time.Now()
 }
 
+func NeedContract(opr *models.OperationTask) {
+	if !((opr.Ex == models.GATEIO || opr.Ex == models.HUOBI || opr.Ex == models.OKX) && opr.Market == models.Market.Futures) {
+		return
+	}
+
+	var act, _ = CreateAction(*opr, models.ReqType.Contract)
+
+	switch opr.Ex {
+	case models.GATEIO, models.HUOBI:
+		opr.Cct = PairInfo[opr.Ccy.Currency+"-"+string(opr.Ex)].Cct
+
+	case models.OKX:
+		opr.Cct = act.Any.(float64)
+	}
+}
+
 func NeedTransfer(opr *models.OperationTask, isl bool) models.Result {
 	if opr.Ex != models.COINEX || opr.Market == models.Market.Futures {
 		return models.Result{Status: models.OK}
@@ -72,19 +88,4 @@ func NeedTransfer(opr *models.OperationTask, isl bool) models.Result {
 
 	trf, _ := CreateAction(tr, models.ReqType.Transfer)
 	return trf
-}
-
-func NeedContract(opr *models.OperationTask) models.Result {
-	if !(opr.Ex == models.OKX && opr.Market == models.Market.Futures) {
-		return models.Result{Status: models.OK}
-	}
-
-	var act, _ = CreateAction(*opr, models.ReqType.Contract)
-
-	switch opr.Ex {
-	case models.OKX, models.HUOBI:
-		opr.Cct = act.Any.(float64)
-	}
-
-	return models.Result{Status: models.ERR, Message: "Не найдена валюта"}
 }

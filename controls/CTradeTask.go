@@ -20,7 +20,7 @@ func SearchOpenTask(task *models.TradeTask) *string {
 	var res *string = nil
 	TradeTask.Range(func(key, val any) bool {
 		t, _ := val.(*models.TradeTask)
-		if task.TaskId != t.TaskId && task.Ccy == t.Ccy && !(t.Stage == models.Trade && t.Status == models.Done) && t.Status != models.Stop {
+		if task.TaskId != t.TaskId && task.Ccy == t.Ccy && t.Status != models.Stop {
 			res = &task.TaskId
 			return false
 		}

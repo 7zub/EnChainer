@@ -25,12 +25,10 @@ func TradeTaskHandler(task *models.TradeTask) {
 		oprBuy := models.OperationTask{
 			Ccy:       task.Ccy,
 			Operation: task.Buy,
-			Cct:       PairInfo[task.Ccy.Currency+"-"+string(task.Buy.Ex)].Cct,
 		}
 		oprSell := models.OperationTask{
 			Ccy:       task.Ccy,
 			Operation: task.Sell,
-			Cct:       PairInfo[task.Ccy.Currency+"-"+string(task.Sell.Ex)].Cct,
 		}
 
 		PreparedOperation(&oprBuy, false)

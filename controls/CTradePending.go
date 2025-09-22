@@ -40,7 +40,7 @@ func PendingHandler(ccy models.Ccy, book []models.OrderBook) {
 
 		ToLog(models.Result{
 			Status: models.WAR,
-			Message: fmt.Sprintf("Проверка спреда: %f, спред: %f, %f - %f, %f - %f, TaskId: %s, Ccy: %s",
+			Message: fmt.Sprintf("Проверка спреда: %f, спред: %f, new_sell %f - old_buy %f, old_sell %f - new_buy %f, TaskId: %s, Ccy: %s",
 				profit, task.Spread, bid, task.Buy.Price, task.Sell.Price, ask, task.TaskId, task.Ccy.Currency)})
 
 		if profit < task.Spread*0.6 {

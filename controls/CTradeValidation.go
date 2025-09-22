@@ -43,7 +43,8 @@ func TradeTaskValidation(task *models.TradeTask) {
 		task.Message += "Фьючерсная торговля на MEXC отключена; "
 	}
 
-	if task.Ccy.Currency == "PLAY" || task.Ccy.Currency == "ALU" {
+	if task.Ccy.Currency == "PLAY" || task.Ccy.Currency == "ALU" || task.Ccy.Currency == "XPL" ||
+		task.Ccy.Currency == "NEIROETH" || task.Ccy.Currency == "MYX" || task.Ccy.Currency == "MAVIA" {
 		task.Status = models.Stop
 		task.Message += "Временно игнорируем " + task.Ccy.Currency + "; "
 	}

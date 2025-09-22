@@ -92,5 +92,5 @@ func Contract() {
 		Ccy:       models.Ccy{Currency: "LUNC", Currency2: "USDT"},
 		Operation: oo,
 	}
-	fmt.Println(NeedContract(&ooo))
+	NeedContract(&ooo)
 }

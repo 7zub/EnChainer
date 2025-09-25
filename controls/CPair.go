@@ -13,14 +13,11 @@ func LoadCcyInfo() {
 
 	var t time.Time
 	for _, p := range PairInfo {
-		t = p.ReloadDate
+		t = UniZone(p.ReloadDate)
 		break
 	}
 
-	loc, _ := time.LoadLocation("Europe/Moscow")
-	reloadDate := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), 0, loc)
-
-	if time.Since(reloadDate) < 4*time.Hour {
+	if time.Since(t) < 4*time.Hour {
 		return
 	} else {
 		ToLog(models.Result{

@@ -38,8 +38,7 @@ func SearchReqBlock(pair *models.TradePair, ex models.Exchange) *string {
 	b, _ := v.(*models.RequestBlock)
 
 	if b != nil && b.Active == true {
-		loc, _ := time.LoadLocation("Europe/Moscow")
-		rptDate := time.Date(b.RepeatDate.Year(), b.RepeatDate.Month(), b.RepeatDate.Day(), b.RepeatDate.Hour(), b.RepeatDate.Minute(), b.RepeatDate.Second(), b.RepeatDate.Nanosecond(), loc)
+		rptDate := UniZone(b.RepeatDate)
 
 		if b.ReasonCode == 400 || time.Since(rptDate) < models.Const.TimeoutBlock*time.Second {
 			return &b.ReqId

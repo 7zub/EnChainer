@@ -49,10 +49,7 @@ func TradeTaskHandler(task *models.TradeTask) {
 				task.Status = models.Pending
 				mu.Lock()
 				TaskTime(task.Ccy)
-				//activeTrade += 1
-				//if activeTrade == models.Const.MaxTrade {
-				//	go TaskPause()
-				//}
+				activeTrade += 1
 				mu.Unlock()
 			} else {
 				task.Status = models.Err

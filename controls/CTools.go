@@ -12,6 +12,7 @@ import (
 	"path"
 	"reflect"
 	"runtime"
+	"time"
 )
 
 func ToLog(ifc interface{}) {
@@ -93,4 +94,9 @@ func GetTypeEx(exch models.Exchange, reqType models.RqType) reflect.Type {
 		}
 	}
 	return nil
+}
+
+func UniZone(t time.Time) time.Time {
+	loc, _ := time.LoadLocation("Europe/Moscow")
+	return time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), loc)
 }

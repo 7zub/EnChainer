@@ -3,6 +3,7 @@ package controls
 import (
 	"enchainer/models"
 	"fmt"
+	"time"
 )
 
 func PendingHandler(ccy models.Ccy, book []models.OrderBook) {
@@ -14,10 +15,12 @@ func PendingHandler(ccy models.Ccy, book []models.OrderBook) {
 		var bid, ask float64
 		var bkid []string
 
-		if book[i].Exchange == task.Sell.Ex {
-			valBook, deep1 = models.GetVolume(&book[i].Asks)
-			ask = valBook.Price
-			bkid = append(bkid, book[i].ReqId)
+		for i = range book {
+			if book[i].Exchange == task.Sell.Ex {
+				valBook, deep1 = models.GetVolume(&book[i].Asks)
+				ask = valBook.Price
+				bkid = append(bkid, book[i].ReqId)
+			}
 		}
 
 		for i = range book {
@@ -38,15 +41,22 @@ func PendingHandler(ccy models.Ccy, book []models.OrderBook) {
 
 		profit := ((bid-task.Buy.Price)/task.Buy.Price + (task.Sell.Price-ask)/task.Sell.Price) * 100
 
+		k := 0.6
+		if time.Since(UniZone(task.CreateDate)) > 25*time.Minute {
+			k = -1
+		} else if time.Since(UniZone(task.CreateDate)) > 7*time.Minute {
+			k = 0.3
+		}
+
 		ToLog(models.Result{
 			Status: models.WAR,
-			Message: fmt.Sprintf("Проверка спреда: %f, спред: %f, new_sell %f - old_buy %f, old_sell %f - new_buy %f, TaskId: %s, Ccy: %s",
-				profit, task.Spread, bid, task.Buy.Price, task.Sell.Price, ask, task.TaskId, task.Ccy.Currency)})
+			Message: fmt.Sprintf("Расчетная прибыль: %.2f, порог: x%g, спред: %.2f, Ccy: %s, new_sell %f - old_buy %f, old_sell %f - new_buy %f, TaskId: %s",
+				profit, k, task.Spread, task.Ccy.Currency, bid, task.Buy.Price, task.Sell.Price, ask, task.TaskId)})
 
-		if profit < task.Spread*0.6 {
+		if profit < task.Spread*k {
 			ToLog(models.Result{
 				Status: models.WAR,
-				Message: fmt.Sprintf("Неприбыльный спред: %f, спред: %f, %f, %f, %f, %f, TaskId: %s, Ccy: %s",
+				Message: fmt.Sprintf("Неприбыльный спред: %.2f, спред: %.2f, %f, %f, %f, %f, TaskId: %s, Ccy: %s",
 					profit, task.Spread, bid, task.Buy.Price, task.Sell.Price, ask, task.TaskId, task.Ccy.Currency)})
 			return
 		}
@@ -92,6 +102,9 @@ func PendingHandler(ccy models.Ccy, book []models.OrderBook) {
 		if o1.Status == models.OK && o2.Status == models.OK {
 			if nt1.Status == models.OK && nt2.Status == models.OK {
 				task.Status = models.Done
+				mu.Lock()
+				activeTrade += 1
+				mu.Unlock()
 			} else {
 				task.Status = models.Err
 				task.Message = nt1.Message + nt2.Message

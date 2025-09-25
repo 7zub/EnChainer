@@ -157,13 +157,11 @@ func isDone(ctx context.Context) bool {
 }
 
 func TaskPause() {
+	//time.Sleep(15 * time.Second)
 	for i, _ := range TradePair {
 		if TradePair[i].Status == models.StatusPair.On && SearchPendTask(TradePair[i].Ccy) == nil {
 			if TradePair[i].StopCh != nil {
-				var once sync.Once
-				once.Do(func() {
-					close(TradePair[i].StopCh)
-				})
+				close(TradePair[i].StopCh)
 			}
 		}
 	}

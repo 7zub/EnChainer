@@ -168,10 +168,10 @@ func TaskPause() {
 	ToLog(models.Result{Status: models.WAR, Message: fmt.Sprintf("Отключены все пары, кроме pending")})
 }
 
-func TaskTime(ccy models.Ccy) {
+func TaskTime(ccy models.Ccy, sec time.Duration) {
 	for i, pair := range TradePair {
 		if pair.Ccy == ccy && pair.Status == models.StatusPair.On {
-			TradePair[i].SessTime = 2 * time.Second
+			TradePair[i].SessTime = sec * time.Second
 			if TradePair[i].StopCh != nil {
 				close(TradePair[i].StopCh)
 			}

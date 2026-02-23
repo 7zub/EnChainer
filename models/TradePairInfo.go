@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-type PairInfo struct {
+type TradePairInfo struct {
 	Id         uint `gorm:"primaryKey;autoIncrement"`
 	Ex         Exchange
 	Ccy        Ccy `gorm:"embedded"`

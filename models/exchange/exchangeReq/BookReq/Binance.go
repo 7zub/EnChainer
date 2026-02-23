@@ -24,7 +24,7 @@ func (BinanceBookParams) GetParams(pair any) *models.Request {
 	return &models.Request{
 		Url:      url,
 		ReqType:  models.ReqType.Book,
-		Params:   BinanceBookParams{Ccy: p.Ccy.Currency + p.Ccy.Currency2, Limit: 5},
+		Params:   BinanceBookParams{Ccy: p.Ccy.Currency + p.Ccy.Currency2, Limit: 10},
 		Response: &BookRes.BinanceBook{},
 	}
 }

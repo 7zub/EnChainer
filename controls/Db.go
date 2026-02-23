@@ -45,7 +45,7 @@ func CreateDb() {
 		err := d.AutoMigrate(
 			&models.Request{},
 			&models.RequestBlock{},
-			&models.PairInfo{},
+			&models.TradePairInfo{},
 			&models.TradePair{},
 			&models.OrderBook{},
 			&models.TradeTask{},
@@ -96,7 +96,7 @@ func LoadBlockDb() {
 }
 
 func LoadPairInfoDb() {
-	var ci []models.PairInfo
+	var ci []models.TradePairInfo
 	result := db.Find(&ci)
 	if result.Error != nil {
 		ToLog(fmt.Sprintf("Ошибка БД load pair info: %s", result.Error))

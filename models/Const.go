@@ -5,6 +5,7 @@ import "time"
 var Const = struct {
 	Lot           float64
 	MaxTrade      int
+	ActiveTrade   int
 	Spread        float64
 	MinProfit     float64
 	Slip          float64
@@ -17,6 +18,7 @@ var Const = struct {
 	Lot:           19.1,
 	MaxTrade:      0,
 	Spread:        0.65,
+	ActiveTrade:   2,
 	MinProfit:     0.3,
 	Slip:          3,
 	LotReserve:    1.1,

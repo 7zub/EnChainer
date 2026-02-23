@@ -42,13 +42,24 @@ func TradeTaskHandler(task *models.TradeTask) {
 
 		if ntBuy.Status == models.OK && ntSell.Status == models.OK {
 			var oSell, oBuy models.Result
-			oSell, oprSell.ReqId = CreateAction(oprSell, models.ReqType.Trade)
-			oBuy, oprBuy.ReqId = CreateAction(oprBuy, models.ReqType.Trade)
+			var wg sync.WaitGroup
+			wg.Add(2)
+
+			go func() {
+				defer wg.Done()
+				oSell, oprSell.ReqId = CreateAction(oprSell, models.ReqType.Trade)
+			}()
+
+			go func() {
+				defer wg.Done()
+				oBuy, oprBuy.ReqId = CreateAction(oprBuy, models.ReqType.Trade)
+			}()
+			wg.Wait()
 
 			if oSell.Status == models.OK && oBuy.Status == models.OK {
 				task.Status = models.Pending
 				mu.Lock()
-				TaskTime(task.Ccy)
+				TaskTime(task.Ccy, 2)
 				activeTrade += 1
 				mu.Unlock()
 			} else {

@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-var PairInfo = make(map[string]*models.PairInfo)
+var PairInfo = make(map[string]*models.TradePairInfo)
 
 func LoadCcyInfo() {
 	LoadPairInfoDb()
@@ -50,7 +50,7 @@ func LoadCcyInfo() {
 					c.ReloadDate = time.Now()
 					SaveDb(c)
 				} else {
-					PairInfo[pair.Ccy.Currency+"-"+string(ex)] = &models.PairInfo{
+					PairInfo[pair.Ccy.Currency+"-"+string(ex)] = &models.TradePairInfo{
 						Ex:  ex,
 						Ccy: pair.Ccy,
 						Cct: data[pair.Ccy.Currency+"_"+pair.Ccy.Currency2],

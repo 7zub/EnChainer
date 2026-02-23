@@ -33,7 +33,7 @@ func SearchPendTask(ccy models.Ccy) *string {
 	var res *string = nil
 	TradeTask.Range(func(key, val any) bool {
 		t, _ := val.(*models.TradeTask)
-		if ccy == t.Ccy && t.Stage == models.Trade && (t.Status == models.Pending || t.Status == models.Progress) {
+		if ccy == t.Ccy && t.Stage == models.Trade && (t.Status == models.Pending || t.Status == models.Done) {
 			res = &t.TaskId
 			return false
 		}

@@ -3,6 +3,7 @@ package controls
 import (
 	"enchainer/models"
 	"fmt"
+	"sync"
 	"time"
 )
 
@@ -14,6 +15,7 @@ func PendingHandler(ccy models.Ccy, book []models.OrderBook) {
 		var valBook models.ValueBook
 		var bid, ask float64
 		var bkid []string
+		var arch string
 
 		for i = range book {
 			if book[i].Exchange == task.Sell.Ex {
@@ -31,6 +33,10 @@ func PendingHandler(ccy models.Ccy, book []models.OrderBook) {
 			}
 		}
 
+		if task.Stage == models.Trade && task.Status == models.Done {
+			arch = " (архив)"
+		}
+
 		if bid <= 0 || ask <= 0 {
 			ToLog(models.Result{
 				Status: models.WAR,
@@ -42,30 +48,34 @@ func PendingHandler(ccy models.Ccy, book []models.OrderBook) {
 		profit := ((bid-task.Buy.Price)/task.Buy.Price + (task.Sell.Price-ask)/task.Sell.Price) * 100
 
 		k := 0.6
-		if time.Since(UniZone(task.CreateDate)) > 25*time.Minute {
-			k = -1
-		} else if time.Since(UniZone(task.CreateDate)) > 7*time.Minute {
+		if time.Since(UniZone(task.CreateDate)) > 60*time.Minute {
+			k = -3
+		} else if time.Since(UniZone(task.CreateDate)) > 40*time.Minute {
 			k = 0.3
 		}
 
 		ToLog(models.Result{
 			Status: models.WAR,
-			Message: fmt.Sprintf("Расчетная прибыль: %.2f, порог: x%g, спред: %.2f, Ccy: %s, new_sell %f - old_buy %f, old_sell %f - new_buy %f, TaskId: %s",
-				profit, k, task.Spread, task.Ccy.Currency, bid, task.Buy.Price, task.Sell.Price, ask, task.TaskId)})
+			Message: fmt.Sprintf("Расчетная прибыль%s: %.2f, порог: x%g, спред: %.2f, Ccy: %s, new_sell %f - old_buy %f, old_sell %f - new_buy %f, TaskId: %s",
+				arch, profit, k, task.Spread, task.Ccy.Currency, bid, task.Buy.Price, task.Sell.Price, ask, task.TaskId)})
 
 		if profit < task.Spread*k {
 			ToLog(models.Result{
 				Status: models.WAR,
-				Message: fmt.Sprintf("Неприбыльный спред: %.2f, спред: %.2f, %f, %f, %f, %f, TaskId: %s, Ccy: %s",
-					profit, task.Spread, bid, task.Buy.Price, task.Sell.Price, ask, task.TaskId, task.Ccy.Currency)})
+				Message: fmt.Sprintf("Неприбыльный спред%s: %.2f, спред: %.2f, %f, %f, %f, %f, TaskId: %s, Ccy: %s",
+					arch, profit, task.Spread, bid, task.Buy.Price, task.Sell.Price, ask, task.TaskId, task.Ccy.Currency)})
 			return
 		}
 
 		ToLog(models.Result{
 			Status: models.WAR,
-			Message: fmt.Sprintf("Возможность для прибыли: %f%%, спред: %f%%, TaskId: %s, Ccy: %s",
-				profit, task.Spread, task.TaskId, task.Ccy.Currency),
+			Message: fmt.Sprintf("Возможность для прибыли%s: %f%%, спред: %f%%, TaskId: %s, Ccy: %s",
+				arch, profit, task.Spread, task.TaskId, task.Ccy.Currency),
 		})
+
+		if arch != "" {
+			return
+		}
 
 		opr1 := models.OperationTask{
 			Ccy:       task.Ccy,
@@ -90,8 +100,19 @@ func PendingHandler(ccy models.Ccy, book []models.OrderBook) {
 		PreparedOperation(&opr2, true)
 
 		var o1, o2 models.Result
-		o1, opr1.ReqId = CreateAction(opr1, models.ReqType.Trade)
-		o2, opr2.ReqId = CreateAction(opr2, models.ReqType.Trade)
+		var wg sync.WaitGroup
+		wg.Add(2)
+
+		go func() {
+			defer wg.Done()
+			o1, opr1.ReqId = CreateAction(opr1, models.ReqType.Trade)
+		}()
+
+		go func() {
+			defer wg.Done()
+			o2, opr2.ReqId = CreateAction(opr2, models.ReqType.Trade)
+		}()
+		wg.Wait()
 
 		task.OpTask = append(task.OpTask, opr1, opr2)
 		TradeTask.Store(task.TaskId, task)
@@ -103,7 +124,8 @@ func PendingHandler(ccy models.Ccy, book []models.OrderBook) {
 			if nt1.Status == models.OK && nt2.Status == models.OK {
 				task.Status = models.Done
 				mu.Lock()
-				activeTrade += 1
+				TaskTime(task.Ccy, 90)
+				activeTrade -= 1
 				mu.Unlock()
 			} else {
 				task.Status = models.Err

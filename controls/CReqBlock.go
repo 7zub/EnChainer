@@ -40,7 +40,7 @@ func SearchReqBlock(pair *models.TradePair, ex models.Exchange) *string {
 	if b != nil && b.Active == true {
 		rptDate := UniZone(b.RepeatDate)
 
-		if b.ReasonCode == 400 || time.Since(rptDate) < models.Const.TimeoutBlock*time.Second {
+		if b.ReasonCode == 400 || time.Since(rptDate) < models.Const.TimeoutBlock {
 			return &b.ReqId
 		} else {
 			b.Active = false

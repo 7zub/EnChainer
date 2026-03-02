@@ -1,4 +1,4 @@
 .idea
 app.log
-rsc/config.yml
-rsc/*.http
+src/config.yml
+src/*.http

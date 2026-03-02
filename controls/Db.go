@@ -1,12 +1,14 @@
 package controls
 
 import (
+	"enchainer/controls/load"
 	"enchainer/models"
 	"fmt"
+	"time"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
-	"time"
 )
 
 var db = gorm.DB{}
@@ -31,7 +33,7 @@ func CreateDb() {
 		}})
 
 	if err != nil {
-		ToLog(err)
+		load.ToLog(err)
 		panic("Не удалось подключиться к БД")
 	} else {
 		d.Migrator().DropTable(
@@ -52,7 +54,7 @@ func CreateDb() {
 			&models.OperationTask{},
 			&models.TransferTask{})
 		if err != nil {
-			ToLog(err)
+			load.ToLog(err)
 			panic("Ошибка миграции БД")
 		}
 		db = *d
@@ -63,14 +65,14 @@ func SaveDb(obj any) {
 	result := db.Save(obj)
 
 	if result.Error != nil {
-		ToLog(fmt.Sprintf("Ошибка БД %T: %s", obj, result.Error))
+		load.ToLog(fmt.Sprintf("Ошибка БД %T: %s", obj, result.Error))
 	}
 }
 
 func LoadPairDb() {
 	result := db.Find(&TradePair)
 	if result.Error != nil {
-		ToLog(fmt.Sprintf("Ошибка БД load book: %s", result.Error))
+		load.ToLog(fmt.Sprintf("Ошибка БД load book: %s", result.Error))
 	}
 }
 
@@ -78,7 +80,7 @@ func DeletePairDb(pair *models.TradePair) {
 	result := db.Delete(&pair)
 
 	if result.Error != nil {
-		ToLog(fmt.Sprintf("Ошибка БД order book: %s", result.Error))
+		load.ToLog(fmt.Sprintf("Ошибка БД order book: %s", result.Error))
 	}
 }
 
@@ -86,7 +88,7 @@ func LoadBlockDb() {
 	block := &[]models.RequestBlock{}
 	result := db.Find(block)
 	if result.Error != nil {
-		ToLog(fmt.Sprintf("Ошибка БД load block: %s", result.Error))
+		load.ToLog(fmt.Sprintf("Ошибка БД load block: %s", result.Error))
 		return
 	}
 
@@ -99,7 +101,7 @@ func LoadPairInfoDb() {
 	var ci []models.TradePairInfo
 	result := db.Find(&ci)
 	if result.Error != nil {
-		ToLog(fmt.Sprintf("Ошибка БД load pair info: %s", result.Error))
+		load.ToLog(fmt.Sprintf("Ошибка БД load pair info: %s", result.Error))
 	}
 
 	for _, c := range ci {
@@ -112,23 +114,40 @@ func DbSaver() {
 	ticker := time.NewTicker(time.Second * 200)
 	defer ticker.Stop()
 
+	//stop := make(chan os.Signal, 1)
+	//signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
+
+	defer func() {
+		if len(batch) > 0 {
+			result := db.Save(batch)
+			if result.Error != nil {
+				load.ToLog(fmt.Sprintf("Ошибка БД при финальном сохранении: %s", result.Error))
+			} else {
+				load.ToLog(models.Result{Status: models.INFO, Message: fmt.Sprintf("Финально сохранен batch размером %d", len(batch))})
+			}
+		}
+	}()
+
 	for {
 		select {
+		//case <-stop:
+		//	return
+
 		case p := <-ChanAny:
 			result := db.Save(p)
 
 			if result.Error != nil {
-				ToLog(fmt.Sprintf("Ошибка БД %T: %s", p, result.Error))
+				load.ToLog(fmt.Sprintf("Ошибка БД %T: %s", p, result.Error))
 			}
 
 		case ob := <-ChanBook:
 			batch = append(batch, ob...)
-			if len(batch) >= models.Const.BatchSize { //TODO добавить немедленное сохранение batch
+			if len(batch) >= models.Const.BatchSize {
 				result := db.Save(batch)
 				if result.Error != nil {
-					ToLog(fmt.Sprintf("Ошибка БД при сохранении batch %T: %s", batch, result.Error))
+					load.ToLog(fmt.Sprintf("Ошибка БД при сохранении batch %T: %s", batch, result.Error))
 				} else {
-					ToLog(models.Result{Status: models.INFO, Message: fmt.Sprintf("Сохранен batch %T: размером %v", batch, len(batch))})
+					load.ToLog(models.Result{Status: models.INFO, Message: fmt.Sprintf("Сохранен batch %T: размером %d", batch, len(batch))})
 				}
 				batch = batch[:0]
 			}
@@ -139,7 +158,7 @@ func DbSaver() {
 				batch = batch[:0]
 
 				if result.Error != nil {
-					ToLog(fmt.Sprintf("Ошибка БД при сохранении batch %T: %s", batch, result.Error))
+					load.ToLog(fmt.Sprintf("Ошибка БД при сохранении batch %T: %s", batch, result.Error))
 				}
 			}
 		}

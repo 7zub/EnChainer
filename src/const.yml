@@ -1,0 +1,13 @@
+constants:
+  Lot: 10.4
+  MaxTrade: 2
+  ActiveTrade: 2
+  Spread: 0.8
+  MinProfit: 0.3
+  Slip: 3
+  LotReserve: 1.1
+  DecimalPrice: 4
+  DecimalVolume: 2
+  TimeoutBlock: "300s"
+  TimeoutCcyInfo: "28h"
+  BatchSize: 700

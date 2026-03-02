@@ -11,7 +11,8 @@ import (
 
 func main() {
 	logOn()
-	controls.LoadConf()
+	models.LoadConf()
+	models.LoadConst()
 	controls.CreateDb()
 	controls.LoadBlockDb()
 	controls.LoadPairDb()
@@ -32,7 +33,7 @@ func main() {
 func logOn() {
 	file, err := os.OpenFile("app.log", os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0666)
 	if err != nil {
-		log.Fatal("Failed to open log file:", err)
+		log.Fatal("Ошибка инициализации файла логов:", err)
 	}
 	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
 	log.SetOutput(file)

@@ -2,6 +2,7 @@ package controls
 
 import (
 	"context"
+	"enchainer/controls/load"
 	"enchainer/models"
 	"enchainer/models/exchange/exchangeReq/BookReq"
 	"fmt"
@@ -34,7 +35,7 @@ func TaskTicker(pair *models.TradePair, reqList []models.IParams) {
 			TaskCreate(pair, reqList)
 
 		case <-pair.StopCh:
-			ToLog(models.Result{Status: models.WAR, Message: "Остановлена пара " + pair.Ccy.Currency})
+			load.ToLog(models.Result{Status: models.WAR, Message: "Остановлена пара " + pair.Ccy.Currency})
 			return
 		}
 	}
@@ -42,10 +43,11 @@ func TaskTicker(pair *models.TradePair, reqList []models.IParams) {
 
 func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 	var Wg sync.WaitGroup
+	var taskId string
 
 	for _, req := range reqList {
 		if SearchReqBlock(pair, GetEx(req)) != nil {
-			ToLog(models.Result{Status: models.INFO, Message: "Запрос в блок-листе " + pair.Ccy.Currency + " - " + string(GetEx(req))})
+			load.ToLog(models.Result{Status: models.INFO, Message: "Запрос в блок-листе " + pair.Ccy.Currency + " - " + string(GetEx(req))})
 			continue
 		}
 
@@ -61,13 +63,13 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 			rq := rr.GetParams(pair)
 			rq.DescRequest(date, rid)
 			rq.SendRequest()
-			ToLog(*rq)
+			load.ToLog(rq.Log)
 			rs := rq.Response.Mapper().(models.OrderBook)
 
 			if isDone(ctx) {
 				rq.Log = models.Result{Status: models.WAR, Message: "Задержка запроса " + rq.ReqId + ": " + rq.Url}
 				ChanAny <- rq
-				ToLog(*rq)
+				load.ToLog(rq.Log)
 				return
 			}
 
@@ -85,19 +87,27 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 
 				if rq.Log.Status == models.INFO {
 					rq.Log = models.Result{Status: models.WAR, Message: "Некорректный результат запроса " + rq.ReqId}
-					ToLog(*rq)
+					load.ToLog(rq.Log)
 				}
 			}
 		}(req)
 	}
 
 	Wg.Wait()
-	var taskId string
 
-	if len(pair.OrderBook) > 1 {
-		models.SortOrderBooks(&pair.OrderBook)
-		ask, deepAsk := models.GetVolume(&pair.OrderBook[len(pair.OrderBook)-1].Asks)
-		bid, deepBid := models.GetVolume(&pair.OrderBook[0].Bids)
+	pair.Mu.Lock()
+	if len(pair.OrderBook) == 0 {
+		pair.Mu.Unlock()
+		return
+	}
+	ob := append([]models.OrderBook(nil), pair.OrderBook...)
+	pair.OrderBook = nil
+	pair.Mu.Unlock()
+
+	if len(ob) > 1 {
+		models.SortOrderBooks(&ob)
+		ask, deepAsk := models.GetVolume(&ob[len(ob)-1].Asks)
+		bid, deepBid := models.GetVolume(&ob[0].Bids)
 
 		taskId = GenTaskId()
 		task := models.TradeTask{
@@ -107,7 +117,7 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 				Currency2: pair.Ccy.Currency2,
 			},
 			Buy: models.Operation{
-				Ex:     pair.OrderBook[len(pair.OrderBook)-1].Exchange,
+				Ex:     ob[len(ob)-1].Exchange,
 				Price:  ask.Price,
 				Volume: ask.Volume,
 				Side:   models.Buy,
@@ -115,7 +125,7 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 				Market: pair.Market,
 			},
 			Sell: models.Operation{
-				Ex:     pair.OrderBook[0].Exchange,
+				Ex:     ob[0].Exchange,
 				Price:  bid.Price,
 				Volume: bid.Volume,
 				Side:   models.Sell,
@@ -128,23 +138,21 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 			Status:     models.Done,
 		}
 
-		go func(ob []models.OrderBook) {
-			TradeTask.Store(taskId, &task)
-			ChanAny <- task
-			PendingHandler(pair.Ccy, ob)
-			TradeTaskHandler(&task)
-		}(pair.OrderBook)
+		go func(obCopy []models.OrderBook, t models.TradeTask) {
+			TradeTask.Store(t.TaskId, &t)
+			ChanAny <- t
+			PendingHandler(t.Ccy, obCopy)
+			TradeTaskHandler(&t)
+		}(ob, task)
 	}
 
-	if len(pair.OrderBook) > 0 {
-		go func() {
-			for i := range pair.OrderBook {
-				pair.OrderBook[i].TaskId = taskId
-			}
-			ChanBook <- pair.OrderBook
-			pair.OrderBook = []models.OrderBook{}
-		}()
+	for i := range ob {
+		ob[i].TaskId = taskId
 	}
+
+	go func(obCopy []models.OrderBook) {
+		ChanBook <- obCopy
+	}(ob)
 }
 
 func isDone(ctx context.Context) bool {
@@ -165,7 +173,7 @@ func TaskPause() {
 			}
 		}
 	}
-	ToLog(models.Result{Status: models.WAR, Message: fmt.Sprintf("Отключены все пары, кроме pending")})
+	load.ToLog(models.Result{Status: models.WAR, Message: fmt.Sprintf("Отключены все пары, кроме pending")})
 }
 
 func TaskTime(ccy models.Ccy, sec time.Duration) {
@@ -176,7 +184,7 @@ func TaskTime(ccy models.Ccy, sec time.Duration) {
 				close(TradePair[i].StopCh)
 			}
 			StartPair(&TradePair[i])
-			ToLog(models.Result{
+			load.ToLog(models.Result{
 				Status:  models.WAR,
 				Message: fmt.Sprintf("Выставлен интервал для %s: %d", ccy.Currency, TradePair[i].SessTime),
 			})

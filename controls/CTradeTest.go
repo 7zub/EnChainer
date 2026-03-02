@@ -1,6 +1,7 @@
 package controls
 
 import (
+	"enchainer/controls/load"
 	"enchainer/models"
 	"enchainer/models/exchange/exchangeReq/LeverReq"
 	"enchainer/models/exchange/exchangeReq/OtherReq"
@@ -59,7 +60,7 @@ func Trans() {
 	rq := rr.GetParams(tr)
 	rq.DescRequest(models.GenDescRequest())
 	rq.SendRequest()
-	ToLog(*rq)
+	load.ToLog(*rq)
 	go SaveDb(rq)
 	SaveDb(&tr)
 }
@@ -82,7 +83,7 @@ func Lever() {
 	rq := rr.GetParams(tr)
 	rq.DescRequest(models.GenDescRequest())
 	rq.SendRequest()
-	ToLog(*rq)
+	load.ToLog(*rq)
 	ChanAny <- rq
 }
 

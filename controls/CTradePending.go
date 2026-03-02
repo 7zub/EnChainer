@@ -1,6 +1,7 @@
 package controls
 
 import (
+	"enchainer/controls/load"
 	"enchainer/models"
 	"fmt"
 	"sync"
@@ -38,7 +39,7 @@ func PendingHandler(ccy models.Ccy, book []models.OrderBook) {
 		}
 
 		if bid <= 0 || ask <= 0 {
-			ToLog(models.Result{
+			load.ToLog(models.Result{
 				Status: models.WAR,
 				Message: fmt.Sprintf("Отсутствует книга: bid %f, ask %f для запросов %v, TaskId: %s, Ccy: %s",
 					bid, ask, bkid, task.TaskId, task.Ccy.Currency)})
@@ -48,26 +49,26 @@ func PendingHandler(ccy models.Ccy, book []models.OrderBook) {
 		profit := ((bid-task.Buy.Price)/task.Buy.Price + (task.Sell.Price-ask)/task.Sell.Price) * 100
 
 		k := 0.6
-		if time.Since(UniZone(task.CreateDate)) > 60*time.Minute {
+		if time.Since(UniZone(task.CreateDate)) > 80*time.Minute {
 			k = -3
-		} else if time.Since(UniZone(task.CreateDate)) > 40*time.Minute {
+		} else if time.Since(UniZone(task.CreateDate)) > 60*time.Minute {
 			k = 0.3
 		}
 
-		ToLog(models.Result{
+		load.ToLog(models.Result{
 			Status: models.WAR,
 			Message: fmt.Sprintf("Расчетная прибыль%s: %.2f, порог: x%g, спред: %.2f, Ccy: %s, new_sell %f - old_buy %f, old_sell %f - new_buy %f, TaskId: %s",
 				arch, profit, k, task.Spread, task.Ccy.Currency, bid, task.Buy.Price, task.Sell.Price, ask, task.TaskId)})
 
 		if profit < task.Spread*k {
-			ToLog(models.Result{
+			load.ToLog(models.Result{
 				Status: models.WAR,
 				Message: fmt.Sprintf("Неприбыльный спред%s: %.2f, спред: %.2f, %f, %f, %f, %f, TaskId: %s, Ccy: %s",
 					arch, profit, task.Spread, bid, task.Buy.Price, task.Sell.Price, ask, task.TaskId, task.Ccy.Currency)})
 			return
 		}
 
-		ToLog(models.Result{
+		load.ToLog(models.Result{
 			Status: models.WAR,
 			Message: fmt.Sprintf("Возможность для прибыли%s: %f%%, спред: %f%%, TaskId: %s, Ccy: %s",
 				arch, profit, task.Spread, task.TaskId, task.Ccy.Currency),

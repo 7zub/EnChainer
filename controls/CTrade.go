@@ -1,6 +1,7 @@
 package controls
 
 import (
+	"enchainer/controls/load"
 	"enchainer/models"
 	"fmt"
 	"reflect"
@@ -92,7 +93,7 @@ func CreateAction(act any, reqtype models.RqType) (models.Result, string) {
 	rq := rr.GetParams(act)
 	rq.DescRequest(models.GenDescRequest())
 	rq.SendRequest()
-	ToLog(*rq)
+	load.ToLog(rq.Log)
 	ChanAny <- rq
 	res := rq.Response.Mapper().(models.Result)
 
@@ -102,6 +103,6 @@ func CreateAction(act any, reqtype models.RqType) (models.Result, string) {
 	case models.OK:
 		res.Message = fmt.Sprintf("%s %s выполнен: %s", reqtype, rq.ReqId, rq.ResponseRaw)
 	}
-	ToLog(res)
+	load.ToLog(res)
 	return res, rq.ReqId
 }

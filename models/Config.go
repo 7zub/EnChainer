@@ -1,5 +1,9 @@
 package models
 
+import (
+	"enchainer/controls/load"
+)
+
 var Conf Config
 
 type Config struct {
@@ -22,4 +26,8 @@ type Db struct {
 	Port     int    `yaml:"port"`
 	Path     string `yaml:"search_path"`
 	SslMode  string `yaml:"sslmode"`
+}
+
+func LoadConf() {
+	Conf = load.Yaml[Config]("src/config.yml")
 }

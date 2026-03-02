@@ -14,3 +14,11 @@ const (
 	WAR  Status = "WAR"
 	ERR  Status = "ERR"
 )
+
+func (r Result) GetStatus() any {
+	return r.Status
+}
+
+func (r Result) GetMessage() string {
+	return r.Message
+}

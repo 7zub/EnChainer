@@ -1,50 +1,19 @@
 package controls
 
 import (
+	"enchainer/controls/load"
 	"enchainer/models"
 	"enchainer/models/exchange"
 	"fmt"
-	"gopkg.in/yaml.v3"
-	"log"
 	"math"
 	"math/big"
-	"os"
-	"path"
 	"reflect"
-	"runtime"
 	"time"
 )
 
-func ToLog(ifc interface{}) {
-	pc, _, _, _ := runtime.Caller(1)
-	funcName := path.Base(runtime.FuncForPC(pc).Name())
-
-	switch v := ifc.(type) {
-	case models.Request:
-		log.Printf("%-4s %-25s %s", v.Log.Status, funcName, v.Log.Message)
-	case models.Result:
-		log.Printf("%-4s %-25s %s", v.Status, funcName, v.Message)
-	default:
-		log.Printf("%-4s %-25s %s", models.ERR, funcName, v)
-	}
-}
-
 func exceptTask(ex string) {
 	if r := recover(); r != nil {
-		ToLog(fmt.Sprintf("Паника в запросе %s: %s", ex, r))
-	}
-}
-
-func LoadConf() {
-	data, err := os.ReadFile("rsc/config.yml")
-	if err != nil {
-		ToLog(err)
-		panic("Ошибка загрузки конфигурации")
-	}
-
-	if err := yaml.Unmarshal(data, &models.Conf); err != nil {
-		ToLog(err)
-		panic("Ошибка десериализации конфигурации")
+		load.ToLog(fmt.Sprintf("Паника в запросе %s: %s", ex, r))
 	}
 }
 

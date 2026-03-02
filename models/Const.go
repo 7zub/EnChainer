@@ -1,29 +1,30 @@
 package models
 
-import "time"
+import (
+	"enchainer/controls/load"
+	"time"
+)
 
-var Const = struct {
-	Lot           float64
-	MaxTrade      int
-	ActiveTrade   int
-	Spread        float64
-	MinProfit     float64
-	Slip          float64
-	LotReserve    float64
-	DecimalPrice  int
-	DecimalVolume int
-	TimeoutBlock  time.Duration
-	BatchSize     int
-}{
-	Lot:           19.1,
-	MaxTrade:      0,
-	Spread:        0.65,
-	ActiveTrade:   2,
-	MinProfit:     0.3,
-	Slip:          3,
-	LotReserve:    1.1,
-	DecimalPrice:  4,
-	DecimalVolume: 2,
-	TimeoutBlock:  160,
-	BatchSize:     700,
+var Const Constant
+
+type Constants struct {
+	Constants Constant `yaml:"constants"`
+}
+type Constant struct {
+	Lot            float64       `yaml:"Lot"`
+	MaxTrade       int           `yaml:"MaxTrade"`
+	ActiveTrade    int           `yaml:"ActiveTrade"`
+	Spread         float64       `yaml:"Spread"`
+	MinProfit      float64       `yaml:"MinProfit"`
+	Slip           float64       `yaml:"Slip"`
+	LotReserve     float64       `yaml:"LotReserve"`
+	DecimalPrice   int           `yaml:"DecimalPrice"`
+	DecimalVolume  int           `yaml:"DecimalVolume"`
+	TimeoutBlock   time.Duration `yaml:"TimeoutBlock"`
+	TimeoutCcyInfo time.Duration `yaml:"TimeoutCcyInfo"`
+	BatchSize      int           `yaml:"BatchSize"`
+}
+
+func LoadConst() {
+	Const = load.Yaml[Constants]("src/const.yml").Constants
 }

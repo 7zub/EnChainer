@@ -1,6 +1,7 @@
 package controls
 
 import (
+	"enchainer/controls/load"
 	"enchainer/models"
 	"fmt"
 	"time"
@@ -17,10 +18,13 @@ func LoadCcyInfo() {
 		break
 	}
 
-	if time.Since(t) < 4*time.Hour {
+	if time.Since(t) < models.Const.TimeoutCcyInfo {
+		load.ToLog(models.Result{
+			Status:  models.WAR,
+			Message: fmt.Sprintf("Обновление справочника контрактов не требуется, не прошло %.2f часов", models.Const.TimeoutCcyInfo.Hours())})
 		return
 	} else {
-		ToLog(models.Result{
+		load.ToLog(models.Result{
 			Status:  models.WAR,
 			Message: fmt.Sprintf("Перезагрузка справочника контрактов: текущий размер %d", len(PairInfo))})
 	}
@@ -42,7 +46,7 @@ func LoadCcyInfo() {
 						cctOld := c.Cct
 						c.Cct = data[pair.Ccy.Currency+"_"+pair.Ccy.Currency2]
 						c.UpdateDate = &[]time.Time{time.Now()}[0]
-						ToLog(models.Result{
+						load.ToLog(models.Result{
 							Status: models.WAR,
 							Message: fmt.Sprintf("Обновился контракт: %f на %f, Ex: %s, Ccy: %s",
 								cctOld, c.Cct, c.Ex, c.Ccy.Currency)})

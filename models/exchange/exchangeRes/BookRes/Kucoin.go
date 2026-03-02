@@ -11,7 +11,7 @@ type KucoinBook struct {
 }
 
 type KucoinBookData struct {
-	Ts   int64   `json:"time"`
+	Ts   int64   `json:"ts"`
 	Bids [][]any `json:"bids"`
 	Asks [][]any `json:"asks"`
 }

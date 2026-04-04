@@ -1,8 +1,8 @@
 constants:
   Lot: 10.4
-  MaxTrade: 2
+  MaxTrade: 0
   ActiveTrade: 2
-  Spread: 0.8
+  Spread: 0.7
   MinProfit: 0.3
   Slip: 3
   LotReserve: 1.1
@@ -11,3 +11,12 @@ constants:
   TimeoutBlock: "300s"
   TimeoutCcyInfo: "28h"
   BatchSize: 700
+  Exchanges:
+    - BINANCE
+    - GATEIO
+    - HUOBI
+    - OKX
+    - MEXC
+    - BYBIT
+    - KUCOIN
+    - COINEX

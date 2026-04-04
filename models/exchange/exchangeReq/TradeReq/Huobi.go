@@ -57,7 +57,7 @@ func (HuobiTradeParams) GetParams(task any) *models.Request {
 			Dir:      string(t.Side),
 			//Offset:   "open", в реж. хеджирования
 			Lever: 10,
-			Mark:  "market",
+			Mark:  "fok",
 		}
 
 		if r := int(t.Volume / t.Cct); r != 0 {

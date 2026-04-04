@@ -20,6 +20,7 @@ type OperationTask struct {
 	Cct        float64
 	Commission float32
 	CreateDate time.Time `gorm:"type:timestamp"`
+	Result
 }
 
 type Side string
@@ -28,3 +29,12 @@ const (
 	Buy  Side = "buy"
 	Sell Side = "sell"
 )
+
+func (side *Side) Opposite() {
+	switch *side {
+	case Buy:
+		*side = Sell
+	case Sell:
+		*side = Buy
+	}
+}

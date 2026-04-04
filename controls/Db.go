@@ -13,7 +13,7 @@ import (
 
 var db = gorm.DB{}
 var ChanBook = make(chan []models.OrderBook, 1000)
-var ChanAny = make(chan any, 100)
+var ChanAny = make(chan any, 5000)
 
 func CreateDb() {
 	dsn := fmt.Sprintf(
@@ -134,6 +134,13 @@ func DbSaver() {
 		//	return
 
 		case p := <-ChanAny:
+			//if len(ChanAny) > cap(ChanAny)/2 {
+			load.ToLog(models.Result{
+				Status:  models.WAR,
+				Message: fmt.Sprintf("ChanAny заполнен на %d/%d", len(ChanAny), cap(ChanAny)),
+			})
+			//}
+
 			result := db.Save(p)
 
 			if result.Error != nil {

@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
-	"sort"
 	"sync"
 	"time"
 )
@@ -85,33 +84,32 @@ func (v JsonValueBook) Value() (driver.Value, error) {
 }
 
 func SortOrderBooks(orderBooks *[]OrderBook) {
-	sort.Slice(*orderBooks, func(i, j int) bool {
-		if len((*orderBooks)[i].Bids) > 0 && len((*orderBooks)[j].Bids) > 0 {
-			return (*orderBooks)[i].Bids[0].Price > (*orderBooks)[j].Bids[0].Price
-		} else {
-			return false
+	bestBidIdx, bestAskIdx := 0, 0
+	bestBid := -1.0
+	bestAsk := math.MaxFloat64
+
+	for i, ob := range *orderBooks {
+		if len(ob.Bids) > 0 && ob.Bids[0].Price > bestBid {
+			bestBid = ob.Bids[0].Price
+			bestBidIdx = i
 		}
-	})
-
-	if len(*orderBooks) > 2 {
-		bestAskIndex := 0
-		bestAskPrice := math.MaxFloat64
-
-		for i, ob := range *orderBooks {
-			if len(ob.Asks) > 0 && ob.Asks[0].Price < bestAskPrice {
-				bestAskPrice = ob.Asks[0].Price
-				bestAskIndex = i
-			}
-		}
-
-		if bestAskIndex != len(*orderBooks)-1 {
-			bestAskOb := (*orderBooks)[bestAskIndex]
-			*orderBooks = append(
-				append((*orderBooks)[:bestAskIndex], (*orderBooks)[bestAskIndex+1:]...),
-				bestAskOb,
-			)
+		if len(ob.Asks) > 0 && ob.Asks[0].Price < bestAsk {
+			bestAsk = ob.Asks[0].Price
+			bestAskIdx = i
 		}
 	}
+
+	obs := *orderBooks
+	obs[0], obs[bestBidIdx] = obs[bestBidIdx], obs[0]
+
+	// После свопа bestAskIdx мог сдвинуться
+	if bestAskIdx == 0 {
+		bestAskIdx = bestBidIdx
+	}
+
+	last := len(obs) - 1
+	obs[last], obs[bestAskIdx] = obs[bestAskIdx], obs[last]
+	*orderBooks = obs
 }
 
 func (book OrderBook) BookExist() bool {

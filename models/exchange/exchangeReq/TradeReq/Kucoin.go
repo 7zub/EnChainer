@@ -20,6 +20,7 @@ type KucoinTradeParams struct {
 	Type   string  `url:"-" json:"type"`
 	Volume float64 `url:"-" json:"qty"`
 	Price  float64 `url:"-" json:"price"`
+	Live   string  `url:"-" json:"timeInForce"`
 	Margin string  `url:"-" json:"marginMode"`
 }
 
@@ -45,9 +46,10 @@ func (KucoinTradeParams) GetParams(task any) *models.Request {
 				Id:     fmt.Sprintf("kc%06d", rand.Intn(1000000)),
 				Ccy:    ccy,
 				Side:   string(t.Side),
-				Type:   "market",
+				Type:   "limit",
 				Volume: t.Volume, //math.Floor(t.Volume*t.Price*10) / 10,
 				Price:  t.Price,
+				Live:   "FOK",
 				Margin: "CROSS",
 			})
 

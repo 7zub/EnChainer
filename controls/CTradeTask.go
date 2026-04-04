@@ -4,13 +4,13 @@ import (
 	"enchainer/models"
 	"encoding/json"
 	"fmt"
-	"math/rand"
 	"net/http"
 	"sync"
+	"sync/atomic"
 )
 
 var TradeTask sync.Map
-var taskIdCount int
+var taskIdCount atomic.Int64
 
 func TradeTaskControl(w http.ResponseWriter) {
 	json.NewEncoder(w).Encode(TradeTask)
@@ -43,8 +43,8 @@ func SearchPendTask(ccy models.Ccy) *string {
 }
 
 func GenTaskId() string {
-	taskIdCount = taskIdCount + 1
-	taskId := fmt.Sprintf("%07d_%04d", taskIdCount, rand.Intn(10000))
+	id := taskIdCount.Add(1)
+	taskId := fmt.Sprintf("T%07d", id)
 	return taskId
 }
 

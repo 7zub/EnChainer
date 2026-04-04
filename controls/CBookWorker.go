@@ -4,22 +4,20 @@ import (
 	"context"
 	"enchainer/controls/load"
 	"enchainer/models"
-	"enchainer/models/exchange/exchangeReq/BookReq"
 	"fmt"
+	"reflect"
 	"sync"
 	"time"
 )
 
 func StartPair(pair *models.TradePair) {
-	RqList := []models.IParams{
-		BookReq.BinanceBookParams{},
-		BookReq.GateioBookParams{},
-		BookReq.HuobiBookParams{},
-		BookReq.OkxBookParams{},
-		BookReq.MexcBookParams{},
-		BookReq.BybitBookParams{},
-		BookReq.KucoinBookParams{},
-		BookReq.CoinexBookParams{},
+	var RqList []models.IParams
+	for _, ex := range models.Const.Exchanges {
+		typ := GetTypeEx(ex, models.ReqType.Book)
+		if typ != nil {
+			params := reflect.New(typ).Elem().Interface().(models.IParams)
+			RqList = append(RqList, params)
+		}
 	}
 	go TaskTicker(pair, RqList)
 }
@@ -106,6 +104,7 @@ func TaskCreate(pair *models.TradePair, reqList []models.IParams) {
 
 	if len(ob) > 1 {
 		models.SortOrderBooks(&ob)
+
 		ask, deepAsk := models.GetVolume(&ob[len(ob)-1].Asks)
 		bid, deepBid := models.GetVolume(&ob[0].Bids)
 

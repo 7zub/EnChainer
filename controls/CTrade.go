@@ -6,11 +6,12 @@ import (
 	"fmt"
 	"reflect"
 	"sync"
+	"sync/atomic"
 )
 
 var mu sync.Mutex
-var maxTrade = 0
-var activeTrade = 0
+var maxTrade atomic.Int32
+var activeTrade atomic.Int32
 
 func TradeTaskHandler(task *models.TradeTask) {
 	task.Mu.Lock()
@@ -41,31 +42,34 @@ func TradeTaskHandler(task *models.TradeTask) {
 		ntBuy := NeedTransfer(&oprBuy, false)
 		ntSell := NeedTransfer(&oprSell, false)
 
+		activeTrade.Add(1)
+
 		if ntBuy.Status == models.OK && ntSell.Status == models.OK {
-			var oSell, oBuy models.Result
 			var wg sync.WaitGroup
 			wg.Add(2)
 
 			go func() {
 				defer wg.Done()
-				oSell, oprSell.ReqId = CreateAction(oprSell, models.ReqType.Trade)
+				oprSell.Result, oprSell.ReqId = CreateAction(oprSell, models.ReqType.Trade)
 			}()
 
 			go func() {
 				defer wg.Done()
-				oBuy, oprBuy.ReqId = CreateAction(oprBuy, models.ReqType.Trade)
+				oprBuy.Result, oprBuy.ReqId = CreateAction(oprBuy, models.ReqType.Trade)
 			}()
 			wg.Wait()
 
-			if oSell.Status == models.OK && oBuy.Status == models.OK {
+			if oprSell.Status == models.OK && oprBuy.Status == models.OK {
 				task.Status = models.Pending
-				mu.Lock()
 				TaskTime(task.Ccy, 2)
-				activeTrade += 1
-				mu.Unlock()
 			} else {
 				task.Status = models.Err
-				task.Message = fmt.Sprintf("Ошибка открытия позиций: %s %s, %s %s", oprBuy.Side, oBuy.Status, oprSell.Side, oSell.Status)
+				if op := TradeCancel(oprSell, oprBuy); op != nil {
+					task.OpTask = append(task.OpTask, *op)
+					task.Status = models.Cancel
+				}
+
+				task.Message = fmt.Sprintf("Ошибка открытия позиций: %s %s, %s %s", oprBuy.Side, oprBuy.Status, oprSell.Side, oprSell.Status)
 			}
 		} else {
 			task.Status = models.Err
@@ -73,9 +77,7 @@ func TradeTaskHandler(task *models.TradeTask) {
 		}
 
 		task.OpTask = append(task.OpTask, oprSell, oprBuy)
-		mu.Lock()
-		maxTrade += 1
-		mu.Unlock()
+		maxTrade.Add(1)
 	}
 
 	if task.Stage == models.Validation && task.Status == models.Stop {
@@ -86,9 +88,23 @@ func TradeTaskHandler(task *models.TradeTask) {
 	ChanAny <- task
 }
 
-func CreateAction(act any, reqtype models.RqType) (models.Result, string) {
+func TradeCancel(oprSell, oprBuy models.OperationTask) *models.OperationTask {
+	var cancel models.OperationTask
+	if oprSell.Status != models.OK && oprBuy.Status == models.OK {
+		cancel = oprBuy
+	} else if oprSell.Status == models.OK && oprBuy.Status != models.OK {
+		cancel = oprSell
+	} else {
+		return nil
+	}
+	cancel.Side.Opposite()
+	cancel.Result, cancel.ReqId = CreateAction(cancel, models.ReqType.Trade)
+	return &cancel
+}
+
+func CreateAction(act any, reqType models.RqType) (models.Result, string) {
 	ex := reflect.ValueOf(act).FieldByName("Ex").String()
-	typ := GetTypeEx(models.Exchange(ex), reqtype)
+	typ := GetTypeEx(models.Exchange(ex), reqType)
 	rr, _ := reflect.New(typ).Interface().(models.IParams)
 	rq := rr.GetParams(act)
 	rq.DescRequest(models.GenDescRequest())
@@ -99,9 +115,9 @@ func CreateAction(act any, reqtype models.RqType) (models.Result, string) {
 
 	switch res.Status {
 	case models.ERR:
-		res.Message = fmt.Sprintf("%s %s не выполнен: %s", reqtype, rq.ReqId, rq.ResponseRaw)
+		res.Message = fmt.Sprintf("%s %s не выполнен: %s", reqType, rq.ReqId, rq.ResponseRaw)
 	case models.OK:
-		res.Message = fmt.Sprintf("%s %s выполнен: %s", reqtype, rq.ReqId, rq.ResponseRaw)
+		res.Message = fmt.Sprintf("%s %s выполнен: %s", reqType, rq.ReqId, rq.ResponseRaw)
 	}
 	load.ToLog(res)
 	return res, rq.ReqId

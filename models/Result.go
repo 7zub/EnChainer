@@ -3,7 +3,7 @@ package models
 type Result struct {
 	Status  Status
 	Message string
-	Any     any
+	Any     any `gorm:"-"`
 }
 
 type Status string

@@ -29,9 +29,9 @@ const (
 )
 
 const (
-	Done     StatusTask = "done"
-	Stop     StatusTask = "stop"
-	Pending  StatusTask = "pending"
-	Progress StatusTask = "progress"
-	Err      StatusTask = "error"
+	Done    StatusTask = "done"
+	Stop    StatusTask = "stop"
+	Pending StatusTask = "pending"
+	Cancel  StatusTask = "cancel"
+	Err     StatusTask = "error"
 )

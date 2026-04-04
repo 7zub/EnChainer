@@ -90,10 +90,10 @@ func PendingHandler(ccy models.Ccy, book []models.OrderBook) {
 			Cct:       task.OpTask[1].Cct,
 		}
 
-		opr1.Operation.Side = models.Buy
+		opr1.Operation.Side.Opposite()
 		opr1.Operation.Price = ask
 		opr1.Operation.Deep = deep1
-		opr2.Operation.Side = models.Sell
+		opr2.Operation.Side.Opposite()
 		opr2.Operation.Price = bid
 		opr2.Operation.Deep = deep2
 
@@ -124,10 +124,8 @@ func PendingHandler(ccy models.Ccy, book []models.OrderBook) {
 		if o1.Status == models.OK && o2.Status == models.OK {
 			if nt1.Status == models.OK && nt2.Status == models.OK {
 				task.Status = models.Done
-				mu.Lock()
 				TaskTime(task.Ccy, 90)
-				activeTrade -= 1
-				mu.Unlock()
+				activeTrade.Add(-1)
 			} else {
 				task.Status = models.Err
 				task.Message = nt1.Message + nt2.Message

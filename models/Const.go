@@ -23,6 +23,7 @@ type Constant struct {
 	TimeoutBlock   time.Duration `yaml:"TimeoutBlock"`
 	TimeoutCcyInfo time.Duration `yaml:"TimeoutCcyInfo"`
 	BatchSize      int           `yaml:"BatchSize"`
+	Exchanges      []Exchange    `yaml:"Exchanges"`
 }
 
 func LoadConst() {

@@ -9,14 +9,15 @@ import (
 	"fmt"
 	"hash"
 	"io"
-	"math/rand"
+	"net"
 	"net/http"
 	"reflect"
 	"strings"
+	"sync/atomic"
 	"time"
 )
 
-var reqIdCount int
+var reqIdCount atomic.Int64
 
 type IParams interface {
 	GetParams(t any) *Request
@@ -60,8 +61,8 @@ func (r *Request) DescRequest(date time.Time, rid string) {
 
 func GenDescRequest() (time.Time, string) {
 	reqDate := time.Now()
-	reqIdCount = reqIdCount + 1
-	reqId := fmt.Sprintf("%07d_%04d", reqIdCount, rand.Intn(10000))
+	id := reqIdCount.Add(1)
+	reqId := fmt.Sprintf("R%07d", id)
 	return reqDate, reqId
 }
 
@@ -99,7 +100,6 @@ func (r *Request) UrlBuild() *http.Request {
 
 func (r *Request) UrlExec(rq *http.Request) {
 	r.Url = rq.URL.String()
-	client := http.Client{}
 	resp, err := client.Do(rq)
 	r.ReqDate = time.Now()
 	r.Code = -1
@@ -167,4 +167,26 @@ func (h Header) Value() (driver.Value, error) {
 		parts = append(parts, fmt.Sprintf("%s: %s", k, strings.Join(v, ", ")))
 	}
 	return strings.Join(parts, "\n"), nil
+}
+
+var client *http.Client
+
+func init() {
+	transport := &http.Transport{
+		MaxIdleConns:        300,
+		MaxIdleConnsPerHost: 50,
+		MaxConnsPerHost:     50,
+		IdleConnTimeout:     60 * time.Second,
+		DialContext: (&net.Dialer{
+			Timeout:   10 * time.Second,
+			KeepAlive: 30 * time.Second,
+		}).DialContext,
+		TLSHandshakeTimeout: 10 * time.Second,
+		ForceAttemptHTTP2:   false,
+	}
+
+	client = &http.Client{
+		Transport: transport,
+		Timeout:   30 * time.Second,
+	}
 }

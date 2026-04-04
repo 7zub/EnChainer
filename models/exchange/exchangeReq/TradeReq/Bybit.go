@@ -46,7 +46,7 @@ func (BybitTradeParams) GetParams(task any) *models.Request {
 				Type:    "Limit",
 				Volume:  fmt.Sprintf("%g", t.Volume),
 				Price:   fmt.Sprintf("%g", t.Price),
-				Live:    "GTC",
+				Live:    "FOK",
 				Account: mark,
 				Margin:  1,
 			})

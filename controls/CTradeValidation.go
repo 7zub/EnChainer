@@ -8,12 +8,12 @@ import (
 func TradeTaskValidation(task *models.TradeTask) {
 	task.Stage = models.Validation
 
-	if maxTrade >= models.Const.MaxTrade {
+	if maxTrade.Load() >= int32(models.Const.MaxTrade) {
 		task.Status = models.Stop
 		task.Message += "Превышен лимит тасок; "
 	}
 
-	if activeTrade >= models.Const.ActiveTrade {
+	if activeTrade.Load() >= int32(models.Const.ActiveTrade) {
 		task.Status = models.Stop
 		task.Message += "Превышен лимит активных тасок; "
 	}

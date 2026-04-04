@@ -48,7 +48,7 @@ func (BinanceTradeParams) GetParams(task any) *models.Request {
 			Type:       "LIMIT",
 			Volume:     t.Volume,
 			Price:      t.Price,
-			Live:       "GTC",
+			Live:       "FOK",
 			Time:       time.Now().UnixMilli(),
 			AutoBorrow: autoBorrow,
 		},

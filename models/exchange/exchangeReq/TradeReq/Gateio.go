@@ -53,7 +53,7 @@ func (GateioTradeParams) GetParams(task any) *models.Request {
 		endpoint = "/api/v4/futures/" + strings.ToLower(t.Ccy.Currency2) + "/orders"
 		params = GateioTradeParams{
 			Contract: t.Ccy.Currency + "_" + t.Ccy.Currency2,
-			Live1:    "gtc",
+			Live1:    "fok",
 		}
 
 		if r := int(t.Volume / t.Cct); r != 0 {

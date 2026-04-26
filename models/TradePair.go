@@ -84,11 +84,12 @@ func (v JsonValueBook) Value() (driver.Value, error) {
 }
 
 func SortOrderBooks(orderBooks *[]OrderBook) {
+	obs := *orderBooks
 	bestBidIdx, bestAskIdx := 0, 0
 	bestBid := -1.0
 	bestAsk := math.MaxFloat64
 
-	for i, ob := range *orderBooks {
+	for i, ob := range obs {
 		if len(ob.Bids) > 0 && ob.Bids[0].Price > bestBid {
 			bestBid = ob.Bids[0].Price
 			bestBidIdx = i
@@ -99,16 +100,19 @@ func SortOrderBooks(orderBooks *[]OrderBook) {
 		}
 	}
 
-	obs := *orderBooks
 	obs[0], obs[bestBidIdx] = obs[bestBidIdx], obs[0]
 
-	// После свопа bestAskIdx мог сдвинуться
-	if bestAskIdx == 0 {
+	if bestAskIdx == bestBidIdx {
+		bestAskIdx = 0
+	} else if bestAskIdx == 0 {
 		bestAskIdx = bestBidIdx
 	}
 
-	last := len(obs) - 1
-	obs[last], obs[bestAskIdx] = obs[bestAskIdx], obs[last]
+	if bestAskIdx != 0 {
+		last := len(obs) - 1
+		obs[last], obs[bestAskIdx] = obs[bestAskIdx], obs[last]
+	}
+
 	*orderBooks = obs
 }
 

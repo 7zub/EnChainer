@@ -9,7 +9,6 @@ import (
 	"sync/atomic"
 )
 
-var mu sync.Mutex
 var maxTrade atomic.Int32
 var activeTrade atomic.Int32
 

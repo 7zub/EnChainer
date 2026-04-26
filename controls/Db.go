@@ -134,12 +134,12 @@ func DbSaver() {
 		//	return
 
 		case p := <-ChanAny:
-			//if len(ChanAny) > cap(ChanAny)/2 {
-			load.ToLog(models.Result{
-				Status:  models.WAR,
-				Message: fmt.Sprintf("ChanAny заполнен на %d/%d", len(ChanAny), cap(ChanAny)),
-			})
-			//}
+			if len(ChanAny) > cap(ChanAny)/50 {
+				load.ToLog(models.Result{
+					Status:  models.WAR,
+					Message: fmt.Sprintf("Канал для записи в БД заполнен на %d/%d", len(ChanAny), cap(ChanAny)),
+				})
+			}
 
 			result := db.Save(p)
 
